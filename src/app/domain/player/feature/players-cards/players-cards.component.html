@@ -1,0 +1,6 @@
+@for (player of players(); track player.id) {
+    <app-block class="flex flex-col w-20 ">
+        <img class="rounded-full w-full h-16" [src]="player.profileUrl" />
+        <div class="text-1xl text-nowrap text-ellipsis overflow-hidden ...">{{player.name}}</div>
+    </app-block>
+}

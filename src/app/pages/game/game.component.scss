@@ -1,0 +1,12 @@
+:host {
+  @apply p-4;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+app-canvas {
+  height:100%;
+  width: 100%;
+}

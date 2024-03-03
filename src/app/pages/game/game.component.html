@@ -1,0 +1,29 @@
+<div class="absolute top-4 flex left-2/4 -translate-x-2/4 flex gap-4">
+    <app-block class="flex flex-col items-center w-20 justify-center">
+        <fa-icon [icon]="icons['clock']" class="text-3xl" />
+        <app-title>
+            5:00
+        </app-title>
+    </app-block>
+    <app-players-cards />
+</div>
+<div class="flex h-full">
+    <app-canvas />
+    <div class="w-72 flex flex-col gap-8">
+        <app-resource-cards />
+        <app-block class="block">
+            <app-title class="flex justify-center">Winning Points : 0</app-title>
+        </app-block>
+    </div>
+</div>
+<!-- <div class="p-4 w-[400px] flex flex-col gap-8">
+    
+</div> -->
+<div class="flex gap-4 justify-center flex-grow-0 h-60 relative">
+
+    <app-buildings-selection />
+    <app-trade-card />
+    <app-block class="flex items-center justify-center w-44 absolute right-0 h-full cursor-pointer transition ease-in-out hover:scale-105">
+        <app-title>End Round</app-title>
+    </app-block>
+</div>

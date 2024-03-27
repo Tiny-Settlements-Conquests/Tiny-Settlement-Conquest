@@ -1,0 +1,19 @@
+<app-block class="flex flex-row gap-1">
+    <app-action-card-side-stack mode="darkGreen" [count]="inventory?.wood ?? 0">
+        <img src="/assets/images/wood.png" class="absolute w-8 h-8" />
+    </app-action-card-side-stack>
+    <app-action-card-side-stack mode="lightGreen" [count]="inventory?.wool ?? 0">
+        <img src="/assets/images/sheep.png" class="absolute w-8 h-8" />
+    </app-action-card-side-stack>
+    <app-action-card-side-stack mode="yellow" [count]="inventory?.straw ?? 0">
+        <img src="/assets/images/wheat.png" class="absolute w-10 h-10" />
+
+    </app-action-card-side-stack>
+    <app-action-card-side-stack mode="gray" [count]="inventory?.stone ?? 0">
+        <img src="/assets/images/stone.png" class="absolute w-10 h-10" />
+
+    </app-action-card-side-stack>
+    <app-action-card-side-stack mode="red" [count]="inventory?.bricks ?? 0">
+        <img src="/assets/images/brick.png" class="absolute w-10 h-8" />
+    </app-action-card-side-stack>
+</app-block>

@@ -1,23 +1,26 @@
 import { Graph } from "../../../graph/domain/classes/graph";
 import { Inventory } from "../../../inventory/domain/classes/inventory";
+import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
-interface User {
+export interface User {
   id: string;
   name: string;
+  profileUrl: string;
 }
 
 export class Player {
-  private winningPoints: number = 0;
-
   constructor(
-    private readonly _user: User,
-    private readonly _color: string,
+    private readonly _roundPlayer: RoundPlayer,
     private readonly _inventory: Inventory,
     private readonly _buildingGraph: Graph
   ) { }
+  
+  public get id() {
+    return this._roundPlayer.id;
+  }
 
-  public get user(): User {
-    return this._user;
+  public get roundPlayer(): RoundPlayer {
+    return this._roundPlayer;
   }
 
   public get buildingGraph(): Graph {
@@ -29,7 +32,7 @@ export class Player {
   }
 
   public get color(): string {
-    return this._color;
+    return this._roundPlayer.color;
   }
 
 }

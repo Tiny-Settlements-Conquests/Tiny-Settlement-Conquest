@@ -83,7 +83,6 @@ export function getIntersection(A: Point, B: Point, C: Point, D: Point) {
     return new Point(lerp(A.x, B.x, t), lerp(A.y, B.y, t));
  }
  
- // if you're following along, this comes in a few minutes ;-)
  export function getRandomColor() {
     const hue = 290 + Math.random() * 260;
     return "hsl(" + hue + ", 100%, 60%)";

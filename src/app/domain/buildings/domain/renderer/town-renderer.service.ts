@@ -11,10 +11,8 @@ export class TownRendererService {
     private readonly viewPort: Viewport
   ) { }
 
-  public renderHouse(centerPoint: Point, color: string) {
+  public render(centerPoint: Point, color: string, { houseSize = 13, houseHeight = 80 } = { houseSize: 13, houseHeight: 80}) {
     const viewPoint = this.viewPort.getViewPoint();
-    const houseHeight = 80;
-    const houseSize = 20;
     const basePoints = this.calculateBasePoints(centerPoint, houseSize);
     const topPoints = this.calculateTopPoints(basePoints, viewPoint, houseHeight);
     const ceiling = this.createCeilingPolygon(topPoints);
@@ -71,7 +69,11 @@ export class TownRendererService {
     return [
       new Polygon([ceiling.points[0], ceiling.points[3], topMidpoints[1], topMidpoints[0]]),
       new Polygon([ceiling.points[2], ceiling.points[1], topMidpoints[0], topMidpoints[1]])
-    ];
+    ].sort(
+      (a, b) =>
+        this.getMinPointOfPolygonDistanceToPoint(b, this.viewPort.getViewPoint()) -
+        this.getMinPointOfPolygonDistanceToPoint(a, this.viewPort.getViewPoint())
+  );
   }
 
   private renderBase(basePoints: Point[]): void {

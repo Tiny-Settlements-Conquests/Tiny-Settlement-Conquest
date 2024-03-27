@@ -1,0 +1,3 @@
+@for (player of players(); track player.id) {
+    <app-player-card [player]="player" [ngClass]="{'brightness-50': player.id !== activePlayer()?.id}"  />
+}

@@ -1,0 +1,47 @@
+:host {
+  @apply w-14 h-[76px] border-2 border-solid border-gray-700 rounded ;
+  display: block;
+  &.blue {
+    background: radial-gradient(circle, rgba(15,169,205,1) 4%, rgba(15,143,205,1) 36%, rgba(0,1,255,1) 100%);
+    div {
+      @apply border-cyan-500 ;
+    }
+  }
+  &.darkGreen {
+    background: radial-gradient(circle, rgba(114,255,108,1) 4%, rgba(15,205,43,1) 41%, rgba(7,79,21,1) 100%);
+    div {
+      @apply border-green-500
+    }
+  }
+  &.lightGreen {
+    background: radial-gradient(circle, rgba(99,221,95,1) 4%, rgba(82,201,99,1) 41%, rgba(53,140,80,1) 84%);
+    div {
+      @apply border-lime-500
+    }
+  }
+  &.yellow {
+    background: radial-gradient(circle, rgba(242,228,18,1) 4%, rgba(231,204,65,1) 26%, rgba(232,155,19,1) 67%);
+    div {
+      @apply border-yellow-300
+    }
+  }
+  &.red {
+    background: radial-gradient(circle, rgba(214,120,53,1) 4%, rgba(233,107,49,1) 29%, rgba(186,58,7,1) 73%);
+    div {
+      @apply border-orange-500
+    }
+  }
+  &.gray {
+    background: radial-gradient(circle, rgba(182,182,182,1) 4%, rgba(157,157,157,1) 35%, rgba(98,98,98,1) 91%);
+    div {
+      @apply border-slate-300
+    }
+  }
+  &.purple { 
+    background: radial-gradient(circle, rgba(129,140,248,1) 4%, rgba(99,102,241,1) 51%, rgba(79,70,229,1) 89%);
+    div {
+      @apply border-indigo-400
+    }
+  }
+}
+

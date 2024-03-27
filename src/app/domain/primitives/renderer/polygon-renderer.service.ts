@@ -19,8 +19,8 @@ export class PolygonRendererService {
     for (let i = 1; i < points.length; i++) {
         ctx.lineTo(points[i].x, points[i].y);
     }
-    ctx.closePath();
     ctx.fill();
+    ctx.closePath();
     ctx.stroke();
    }
 }

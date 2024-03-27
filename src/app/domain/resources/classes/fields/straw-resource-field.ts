@@ -4,7 +4,7 @@ import { Resource } from "./resource-field";
 
 export class StrawResourceField extends Resource implements ResourceField{
   public readonly typ ='straw';
-  public readonly color = '#FDB750';
+  public readonly color = '#eab308';
 
   constructor(
     public readonly field: Field,

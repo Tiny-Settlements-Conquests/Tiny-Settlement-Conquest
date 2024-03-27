@@ -1,43 +1,18 @@
-<div class="flex gap-4 justify-center flex-grow-0 h-60">
-    <app-block class="relative overflow-hidden w-44 cursor-pointer transition ease-in-out hover:scale-105  ">
-        <div class="bg-blue-500 h-20 w-40 block -rotate-45 absolute top-[-50px] left-[-60px]"></div>
-        <app-title class="absolute left-3 top-2">0</app-title>
-        <div class="h-32 flex justify-center">
-            <img class="w-32" src="assets/buildings/bridge.png" />
-        </div>
-        <app-title class="text-center">Bridge</app-title>
-        <div class="flex gap-2 h-8">
-            <img src="assets/images/wood.png" class="w-8" />
-            <img src="assets/images/brick.png" class="w-8" />
-        </div>
-    </app-block>
-    <app-block class="relative overflow-hidden w-44 opacity-50 cursor-pointer transition ease-in-out hover:scale-105">
-        <div class="bg-blue-500 h-20 w-40 block -rotate-45 absolute top-[-50px] left-[-60px]"></div>
-        <app-title class="absolute left-3 top-2">1</app-title>
-        <div class="h-32 flex justify-center">
-            <img class=" w-48 pt-8" src="assets/buildings/town.png" />
-        </div>
-        <app-title class="text-center">Town</app-title>
-        <div class="flex gap-2 h-8">
-            <img src="assets/images/wood.png" class="w-8" />
-            <img src="assets/images/brick.png" class="w-8" />
-            <img src="assets/images/stone.png" class="w-8" />
-            <img src="assets/images/sheep.png" class="w-8" />
-        </div>
-    </app-block>
-    <app-block class="text-red-300 relative overflow-hidden opacity-50 cursor-pointer transition ease-in-out hover:scale-105">
-        <div class="bg-blue-500 h-20 w-40 block -rotate-45 absolute top-[-50px] left-[-60px]"></div>
-        <app-title class="absolute left-3 top-2">2</app-title>
-        <div class="h-32 flex justify-center">
-            <img class="w-32 pt-8" src="assets/buildings/city.png" />
-        </div>
-        <app-title class="text-center">City</app-title>
-        <div class="flex h-8">
-            <img src="assets/images/wheat.png" class="w-8" />
-            <img src="assets/images/wheat.png" class="w-8" />
-            <img src="assets/images/stone.png" class="w-8" />
-            <img src="assets/images/stone.png" class="w-8" />
-            <img src="assets/images/stone.png" class="w-8" />
-        </div>
-    </app-block>
-</div>
+<app-block 
+    (click)="updateGameMode('road')"
+    [ngClass]="{ ' border-cyan-400': activeMode() == 'road' }"
+    class="background border-4 border-solid border-cyan-400 flex items-center justify-center relative w-24 cursor-pointer transition ease-in-out hover:scale-95  ">
+    <img src="assets/buildings/road.png" />
+</app-block>
+<app-block 
+    (click)="updateGameMode('town')"
+    [ngClass]="{ ' border-cyan-400': activeMode() == 'town' }"
+    class="background border-4 border-solid border-cyan-100 flex items-center justify-center relative w-24 brightness-50 cursor-pointer transition ease-in-out hover:scale-95">
+    <img src="assets/buildings/town.png" />
+</app-block>
+<app-block 
+    (click)="updateGameMode('city')"
+    [ngClass]="{ ' border-cyan-400': activeMode() == 'city' }"
+    class="background border-4 border-solid border-cyan-100 flex items-center justify-center relative w-24 overflow-hidden brightness-50 cursor-pointer transition ease-in-out hover:scale-95">
+    <img src="assets/buildings/city.png" />
+</app-block>

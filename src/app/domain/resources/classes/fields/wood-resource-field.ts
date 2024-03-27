@@ -4,7 +4,7 @@ import { Resource } from "./resource-field";
 
 export class WoodResourceField extends Resource implements ResourceField{
   public readonly typ ='wood';
-  public readonly color = '#81B622';
+  public readonly color = '#15803d';
 
   constructor(
     public readonly field: Field,

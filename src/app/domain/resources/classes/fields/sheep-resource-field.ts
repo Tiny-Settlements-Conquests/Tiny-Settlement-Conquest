@@ -4,7 +4,7 @@ import { Resource } from "./resource-field";
 
 export class SheepResourceField extends Resource implements ResourceField{
   public readonly typ ='wool';
-  public readonly color = '#DBE8D8';
+  public readonly color = '#84cc16';
 
   constructor(
     public readonly field: Field,

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { Viewport } from '../../../viewport/classes/viewport';
-import { Game } from '../../classes/game';
+import { Game } from '../../domain/classes/game';
 import { Playground } from '../../../playground/domain/classes/playground';
 import { PlaygroundGridGenerator } from '../../../playground/domain/generators/playground-grid-generator';
 import { ResourceGenerator } from '../../../resources/classes/generators/resource-generator';
@@ -21,6 +21,8 @@ import { BuildingBuildManager } from '../../../buildings/domain/classes/building
 import { GraphBuildingNode } from '../../../buildings/domain/graph/graph-building-node';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
+import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
+import { PlaygroundGenerator } from '../../../playground/domain/generators/playground-generator';
 
 @Component({
   selector: 'app-map-preview',
@@ -51,74 +53,58 @@ export class MapPreviewComponent implements AfterViewInit {
     console.log(canvas);
     this.viewport = new Viewport(canvas);
     const ctx = canvas.getContext('2d')!;
-    const buildingGraph = new Graph<GraphBuildingNode>();
-    const playground = new Playground(
+    const playgroundGenerator = new PlaygroundGenerator(
       new PlaygroundGridGenerator(),
-      new PlaygroundRenderService(
-        new ResourceFieldRendererService(ctx),
-        new FieldRenderService(ctx)
-      ),
       new ResourceGenerator(),
-      new PlaygroundGraphGenerator(),
-      new PointRendererService(ctx),
-      new PlaygroundGraphRenderer(ctx, 
-        new TownRendererService(
-          new PolygonRendererService(ctx),
+      new PlaygroundGraphGenerator()
+    );
+    const townRenderer = new TownRendererService(
+      new PolygonRendererService(ctx),
+      this.viewport
+    );
+    const playground = playgroundGenerator.generate({
+      fieldHeight: 9,
+      fieldWidth: 9
+    }, new Graph<GraphBuildingNode>())
+
+    const playgroundRenderer = new PlaygroundRenderService(
+      new ResourceFieldRendererService(ctx),
+      new FieldRenderService(ctx),
+      new PlaygroundGraphRenderer(
+        ctx,
+        townRenderer, 
+        new CityRendererService(
+          townRenderer, 
           this.viewport
         )
-      ),
-      buildingGraph
-    );
-    const player = new Player(
-      {
-        id: '543',
-        name: 'Andreas.'
-      },
-      'green',
-      new Inventory(),
-      new Graph()
-    );
-
-    this.game = new Game(
-      playground,
-      player,      
-      new RoadBuildManager(
-        buildingGraph,
-        player
-      ),
-      new BuildingBuildManager(
-        buildingGraph,
-        player
       )
     );
-    this.game.generate();
-    this.centerViewPort(this.game);
+    this.centerViewPort(playground);
     this.viewport.reset();
+    playgroundRenderer.render(playground);
+
     console.log(this.canvas);
-    this.game.render();
   }
 
   public regen() {
     this.game.generate();
-    this.game.render();
   }
 
   public save() {
-    this.game.save();
+    // this.game.save();
   }
 
   public restore() {
-    this.game.load();
-    this.game.render();
+    // this.game.load();
   }
 
-  private centerViewPort(game: Game) {
-    const { fieldHeight, fieldWidth } = this.game.playground.dimensions
+  private centerViewPort(playground: Playground) {
+    const { fieldHeight, fieldWidth } = playground.dimensions
     this.viewport.center = new Point(
       ( fieldWidth +1 * -90),
       ( fieldHeight +1 * -30)
     )
-    this.viewport.zoom = 2;
+    this.viewport.zoom = 3;
   }
 
 

@@ -1,0 +1,1 @@
+export type GameMode = 'road' | 'town' | 'city' |'spectate';

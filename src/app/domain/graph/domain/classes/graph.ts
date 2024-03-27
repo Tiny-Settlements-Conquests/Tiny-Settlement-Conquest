@@ -43,7 +43,7 @@ export class Graph<T extends GraphNode = GraphNode> {
     return this._nodes.find(node => node.id === id);
   }
 
-  public isNodeNeighbour(node1: T, node2: T): boolean {
+  public isNodeNeighbour(node1: GraphNode, node2: GraphNode): boolean {
     console.log(node1.connections.some(connection => connection.target.id === node2.id))
     return node1.connections.some(connection => connection.target.id === node2.id);
   }

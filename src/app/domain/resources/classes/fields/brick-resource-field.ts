@@ -4,7 +4,7 @@ import { Resource } from "./resource-field";
 
 export class BrickResourceField extends Resource implements ResourceField {
   public readonly typ ='clay';
-  public readonly color = '#C38370';
+  public readonly color = '#f97316';
 
   constructor(
     public readonly field: Field,

@@ -1,10 +1,14 @@
+import { Point } from "../../../primitives/classes/Point";
+import { Polygon } from "../../../primitives/classes/Polygon";
+import { scale, subtract } from "../../../primitives/functions/util";
+import { PolygonRendererService } from "../../../primitives/renderer/polygon-renderer.service";
 import { Field } from "../classes/field";
 
 export class FieldRenderService {
 
   constructor(private readonly ctx: CanvasRenderingContext2D) { }
 
-  render(field: Field,  {fillStyle = 'blue', strokeStyle = 'black', lineWidth = 5} = {}) {
+  render(field: Field,  {fillStyle = 'blue', strokeStyle = '#fcd34d', lineWidth = 5} = {}) {
     const ctx = this.ctx;
     const polygon = field.polygon;
     ctx.save();

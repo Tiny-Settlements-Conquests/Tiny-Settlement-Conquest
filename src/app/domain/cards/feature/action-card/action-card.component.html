@@ -1,0 +1,19 @@
+<div class="
+    p-4 
+    h-full 
+    w-full 
+    border-2 
+    border-solid 
+    rounded-sm 
+    flex 
+    items-center 
+    justify-center
+    relative
+    overflow-hidden
+    text-zinc-200
+">
+    <ng-content/>
+    @if(count > 0) {
+        <div class="absolute top-[-2px] right-[-2px] rounded-bl-full w-6 h-6 bg-blue-500 flex items-right justify-center font-semibold">{{count}}</div>
+    }
+</div>

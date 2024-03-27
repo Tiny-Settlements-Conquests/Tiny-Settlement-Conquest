@@ -1,3 +1,5 @@
 :host {
-  @apply p-2 bg-zinc-800 text-zinc-200 rounded;
+  @apply p-2 bg-zinc-800 rounded;
+  color: rgb(50, 50, 50);
+  background-image: linear-gradient(to bottom, #fcfaf5, #e2d7c4);
 }

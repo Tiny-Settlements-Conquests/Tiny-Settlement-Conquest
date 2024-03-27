@@ -9,8 +9,8 @@ export class ResourceFieldRendererService {
     const ctx = this.ctx;
 
     ctx.moveTo(x,y)
-    ctx.drawImage(image, x - 30, y + 5, 60, 60);
-    ctx.moveTo(x,y)
+    ctx.drawImage(image, x - 30, y - 50, 60, 60);
+
   }
 
   renderResourceValue(position: Point, value: number) {
@@ -25,7 +25,7 @@ export class ResourceFieldRendererService {
     if(value > 6 && value < 10) {
         ctx.strokeStyle = 'red';
     }
-    ctx.strokeText(value + "", (x - length * 7) / scale ,(y - 25) / scale) ;
+    ctx.strokeText(value + "", (x - length * 7) / scale ,(y + 55) / scale) ;
     ctx.restore()
 }
 

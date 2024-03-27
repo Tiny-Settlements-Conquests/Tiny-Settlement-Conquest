@@ -1,0 +1,8 @@
+<app-action-card class="relative z-50" [mode]="mode" [count]="count" >
+    <ng-content />
+</app-action-card>
+@for (v of countArray; track $index) {
+    <div [ngStyle]="{'z-index': countArray.length - $index}" class="relative w-2 right-[50px] brightness-75">
+        <app-action-card  [mode]="mode" />
+    </div>
+}

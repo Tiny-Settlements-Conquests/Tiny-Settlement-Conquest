@@ -18,12 +18,8 @@ export interface PlaygroundRenderer {
 }
 
 export class Playground {
-  private _resources: ResourceField[] = [];
-  private _grid: Field[] = [];
-  private _graph: Graph | null = null;
-
-  public get graph(): Graph | null {
-    return this._graph;
+  public get graph(): Graph {
+    return this._gridGraph;
   }
 
   public get buildingGraph(): Graph<GraphBuildingNode> {
@@ -31,37 +27,26 @@ export class Playground {
   }
 
   constructor(
-    private readonly gridGenerator: PlaygroundGridGenerator,
-    private readonly renderer: PlaygroundRenderer,
-    public readonly resourceGenerator: ResourceGenerator,
-    public readonly graphGenerator: PlaygroundGraphGenerator,
-    public readonly pointRenderer: PointRendererService,
-    public readonly graphRenderer: PlaygroundGraphRenderer,
+    private readonly _grid: Field[],
+    private readonly _resources: ResourceField[],
+    private readonly _gridGraph: Graph,
     private readonly _buildingGraph: Graph<GraphBuildingNode>,
+    // private readonly renderer: PlaygroundRenderer,
+    // public readonly pointRenderer: PointRendererService,
+    // public readonly graphRenderer: PlaygroundGraphRenderer,
+    // private readonly _buildingGraph: Graph<GraphBuildingNode>,
     public readonly dimensions: PlaygroundDimensions = { fieldWidth: 9, fieldHeight: 9 },
   ) { }
 
-  public generatePlayground(): void {
-    //todo eigenen generator für den playground erstellen
-    this._grid = this.gridGenerator.generateGrid(this.dimensions);
-    this._resources = this.resourceGenerator.generateResources(this._grid, this.dimensions);
-    this._graph = this.graphGenerator.generateGraph(
-      this._resources.map((r) => r.field)
-    )
-    console.log(
-      this._graph
-    )
-  }
-
   public render(): void {
-    this.renderer.render(this._grid, this._resources);
-    // todo build a buildingGraph renderer
-    this.graphRenderer.render(this._buildingGraph);
+    // this.renderer.render(this._grid, this._resources);
+    // ! build a buildingGraph renderer
+    // this.graphRenderer.render(this._buildingGraph);
   }
 
   public loadPlayground(grid: Field[], resources: ResourceField[]): void {
-    this._grid = grid;
-    this._resources = resources;
+    // this._grid = grid;
+    // this._resources = resources;
   }
 
   public getNearestGraphNode(point: Point): GraphNode | undefined {

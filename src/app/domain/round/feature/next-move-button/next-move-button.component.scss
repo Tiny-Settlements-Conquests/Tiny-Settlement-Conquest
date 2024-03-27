@@ -1,0 +1,5 @@
+:host {
+  @apply border-4 border-solid border-cyan-100 flex items-center justify-center rounded w-24 text-white text-5xl cursor-pointer transition ease-in-out hover:scale-95;
+  background: rgb(156,246,255);
+  background: linear-gradient(180deg, rgba(156,246,255,1) 23%, rgba(67,142,230,1) 95%);
+}

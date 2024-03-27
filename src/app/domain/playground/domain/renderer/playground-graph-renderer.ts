@@ -10,11 +10,13 @@ import { PolygonRendererService } from "../../../primitives/renderer/polygon-ren
 import { Viewport } from "../../../viewport/classes/viewport";
 import { TownRendererService } from "../../../buildings/domain/renderer/town-renderer.service";
 import { RoadRendererService } from "../../../buildings/domain/renderer/road-renderer.service";
+import { CityRendererService } from "../../../buildings/domain/renderer/city-renderer.service";
 
 export class PlaygroundGraphRenderer {
     constructor(
         private readonly ctx: CanvasRenderingContext2D, 
         private readonly townRenderer: TownRendererService,
+        private readonly cityRenderer: CityRendererService,
     ){}
 
     public render(graph: Graph<GraphBuildingNode>) {
@@ -38,12 +40,23 @@ export class PlaygroundGraphRenderer {
             
 
             if(node.hasBuilding()) {
+                if(node.buildingType === 'town') {
+                    this.townRenderer.render(
+                        node.position, 
+                        node.player.color, 
+                        {
+                            houseHeight: 40,
+                            houseSize: 20
+                        }
+                    );
+                } else {
+                    this.cityRenderer.render(
+                        node.position,
+                        node.player.color
+                    );
+                }
                 
                 // pointRenderer.render(node.position, { fillStyle: 'red'});
-                this.townRenderer.renderHouse(
-                    node.position, 
-                    node.player.color
-                );
             } else {
                 pointRenderer.render(node.position, { fillStyle: node.player.color, strokeStyle: node.player.color});
             }

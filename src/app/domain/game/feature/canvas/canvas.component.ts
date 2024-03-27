@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, HostListener, OnInit, ViewChild, effect, inject } from '@angular/core';
 import { Playground } from '../../../playground/domain/classes/playground';
 import { PlaygroundGridGenerator } from '../../../playground/domain/generators/playground-grid-generator';
 import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
@@ -8,7 +8,7 @@ import { PointRendererService } from '../../../primitives/renderer/point-rendere
 import { ResourceGenerator } from '../../../resources/classes/generators/resource-generator';
 import { ResourceFieldRendererService } from '../../../resources/classes/renderer/resource-field.renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
-import { Game } from '../../classes/game';
+import { Game } from '../../domain/classes/game';
 import { PlaygroundGraphGenerator } from '../../../playground/domain/generators/playground-graph-generator';
 import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
 import { Graph } from '../../../graph/domain/classes/graph';
@@ -19,6 +19,14 @@ import { BuildingBuildManager } from '../../../buildings/domain/classes/building
 import { GraphBuildingNode } from '../../../buildings/domain/graph/graph-building-node';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
+import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
+import { PlaygroundGenerator } from '../../../playground/domain/generators/playground-generator';
+import { Round } from '../../../round/domain/classes/round';
+import { GameModeRepository } from '../../domain/state/game-mode.repository';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
+import { RoundPlayer } from '../../../round/domain/models/round-player.model';
+import { BuildCostManager } from '../../../buildings/domain/classes/build-cost-manager';
 
 @Component({
   selector: 'app-canvas',
@@ -30,7 +38,11 @@ import { PolygonRendererService } from '../../../primitives/renderer/polygon-ren
   styleUrl: './canvas.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CanvasComponent implements AfterViewInit{
+export class CanvasComponent implements AfterViewInit, OnInit {
+  private readonly _gameModeRepository = inject(GameModeRepository);
+  private readonly _destroyRef = inject(DestroyRef);
+  private readonly _roundPlayerREpository = inject(RoundPlayerRepository);
+
   @ViewChild('canvas', {
     static: true,
   })
@@ -40,8 +52,14 @@ export class CanvasComponent implements AfterViewInit{
     static: true,
   })
   canvasWrapper: ElementRef<HTMLDivElement> | undefined ;
-  private game !: Game;
+  public game !: Game;
   private viewport !: Viewport;
+  private renderer !: PlaygroundRenderService;
+
+  public ngOnInit(): void {
+    
+  }
+
 
 
   public ngAfterViewInit(): void {
@@ -53,45 +71,81 @@ export class CanvasComponent implements AfterViewInit{
     this.viewport = new Viewport(canvas);
     const ctx = canvas.getContext('2d')!;
     const buildingGraph = new Graph<GraphBuildingNode>();
-    const playground = new Playground(
+    const townRenderer = new TownRendererService(
+      new PolygonRendererService(ctx),
+      this.viewport
+    );
+    const playgroundGenerator = new PlaygroundGenerator(
       new PlaygroundGridGenerator(),
-      new PlaygroundRenderService(
-        new ResourceFieldRendererService(ctx),
-        new FieldRenderService(ctx)
-      ),
       new ResourceGenerator(),
-      new PlaygroundGraphGenerator(),
-      new PointRendererService(ctx),
-      new PlaygroundGraphRenderer(ctx, 
-        new TownRendererService(
-          new PolygonRendererService(ctx),
+      new PlaygroundGraphGenerator()
+    );
+
+    const playground = playgroundGenerator.generate({
+      fieldHeight: 9,
+      fieldWidth: 9
+    }, buildingGraph)
+
+    const players: Player[] = this._roundPlayerREpository.getRoundPlayers().map((p, i) => {
+      return new Player(
+        p,
+        new Inventory({
+          wood: 10,
+          bricks: 10,
+          stone: 10,
+          straw: 10,
+          wool: 10
+        }), 
+        new Graph()
+      )
+    });
+
+    const round = new Round(players);
+
+    
+
+    const buildCostManager = new BuildCostManager()
+
+    this.renderer = new PlaygroundRenderService(
+      new ResourceFieldRendererService(ctx),
+      new FieldRenderService(ctx),
+      new PlaygroundGraphRenderer(
+        ctx,
+        townRenderer, 
+        new CityRendererService(
+          townRenderer, 
           this.viewport
         )
-      ),
-      buildingGraph
-    );
-    const player = new Player(
-      {
-        id: '543',
-        name: 'Andreas.'
-      },
-      '#DAF7A6',
-      new Inventory(),
-      new Graph()
+      )
     );
 
     this.game = new Game(
       playground,
-      player,      
+      round,
+      
       new RoadBuildManager(
         buildingGraph,
-        player
+        buildCostManager,
       ),
       new BuildingBuildManager(
         buildingGraph,
-        player
+        playground.graph,
+        buildCostManager
       )
     );
+    this._gameModeRepository.selectMode().pipe(
+      takeUntilDestroyed(this._destroyRef)
+    ).subscribe((mode) => {
+      this.game.mode = mode;
+    })
+
+    this._roundPlayerREpository.selectActiveRoundPlayer().subscribe((roundPlayer) => {
+      if(!roundPlayer) return;
+      this._gameModeRepository.updateMode('spectate');
+      console.log("update")
+      round.setActivePlayerById(roundPlayer.id);
+    })
+    
     this.game.generate();
     this.animate();
     console.log(this.canvas);
@@ -99,49 +153,29 @@ export class CanvasComponent implements AfterViewInit{
 
   public animate() {
     this.viewport.reset();
-    this.game.render();
+    this.renderer.render(this.game.playground);
     requestAnimationFrame(this.animate.bind(this));
   }
-
-  public regen() {
-    this.game.generate();
-  }
-
-  public save() {
-    this.game.save();
-  }
-
-  public restore() {
-    this.game.load();
-  }
-
 
   private determineCanvasSize(canvasWrapper: HTMLDivElement, canvas: HTMLCanvasElement): void {
     canvas.width = canvasWrapper.clientWidth - 50;
     canvas.height = canvasWrapper.clientHeight - 50;
   }
 
-  public test(event: MouseEvent) {
-    if(event.button === 0) {
+  @HostListener('mousedown', ['$event'])
+  public mouseDown(event: MouseEvent) {
+    if(event.button === 0 || event.button === 1) {
       const rect = this.canvas?.nativeElement.getBoundingClientRect()
       if(!rect) return;
-
-      console.log("fuck yea", event)
-
       this.game.checknearbyField(
         this.viewport.getMouse(event)
       )
-    }
-  }
-
-  @HostListener('mousedown', ['$event'])
-  public mouseDown(event: MouseEvent) {
-    if(event.button === 1){
       // middle mouse
       this.viewport.handleMiddleMouseDown(event);
     }
   }
 
+  // auslagern in ne directive
   @HostListener('mouseup', ['$event'])
   public mouseUp(event: MouseEvent) {
     this.viewport.handleMouseUp(event);

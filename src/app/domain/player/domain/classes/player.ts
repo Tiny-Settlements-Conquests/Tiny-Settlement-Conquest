@@ -35,4 +35,20 @@ export class Player {
     return this._roundPlayer.color;
   }
 
+  public get name() {
+    return this._roundPlayer.name
+  }
+
+  public get profileUrl() {
+    return this._roundPlayer.profileUrl;
+  }
+
+  public get resourceCardCount() {
+    return this._roundPlayer.resourceCardCount;
+  }
+  
+  public get researchCardCount() {
+    return this._roundPlayer.researchCardCount;
+  }
+
 }

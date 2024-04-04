@@ -50,7 +50,6 @@ export class MapPreviewComponent implements AfterViewInit {
     const canvasWrapper = this.hostEl.nativeElement;
     if(!canvas || !canvasWrapper) return;
     this.determineCanvasSize(canvasWrapper, canvas);
-    console.log(canvas);
     this.viewport = new Viewport(canvas);
     const ctx = canvas.getContext('2d')!;
     const playgroundGenerator = new PlaygroundGenerator(
@@ -87,7 +86,6 @@ export class MapPreviewComponent implements AfterViewInit {
   }
 
   public regen() {
-    this.game.generate();
   }
 
   public save() {

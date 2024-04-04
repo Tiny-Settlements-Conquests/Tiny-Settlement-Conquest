@@ -7,11 +7,11 @@ import { Inventory } from '../models/inventory.model';
 const inventoryStore = createStore(
     { name: 'inventory' },
     withProps<Inventory>({
-        bricks:1,
-        stone: 3,
-        straw: 2,
-        wood: 10,
-        wool: 2
+        bricks:0,
+        stone: 0,
+        straw: 0,
+        wood: 0,
+        wool: 0
     })
 );
 
@@ -22,6 +22,10 @@ export class InventoryRepository {
 
   public updateResourceAmount(resourceType: ResourceType, amount: number) {
     inventoryStore.update(state => ({ ...state, [resourceType]: amount }));
+  }
+
+  public setResources(resources: Inventory) {
+    inventoryStore.update(state => ({...state,...resources }));
   }
 
   public selectInventory() {

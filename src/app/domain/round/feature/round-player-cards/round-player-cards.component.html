@@ -1,3 +1,8 @@
 @for (player of players(); track player.id) {
-    <app-player-card [player]="player" [ngClass]="{'brightness-50': player.id !== activePlayer()?.id}"  />
+    <div class="relative">
+        @if(player.id === activePlayer()?.id) {
+            <app-dice-random-number class="text-3xl" />
+        }
+        <app-player-card [isMe]="me()?.id === player.id" [player]="player" [ngClass]="{'brightness-50': player.id !== activePlayer()?.id}"  />
+    </div>
 }

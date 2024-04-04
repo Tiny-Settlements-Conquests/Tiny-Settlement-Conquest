@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 import { ActionCardComponent, ActionCardMode } from '../action-card/action-card.component';
 

@@ -1,66 +1,64 @@
 import { Inventory } from "../../../inventory/domain/models/inventory.model";
+import { Inventory as BankInventory } from "../../../inventory/domain/classes/inventory";
+
 import { Player } from "../../../player/domain/classes/player";
+import { ResourceType } from "../../../resources/models/resource-field.model";
 import { BuildingType } from "../models/building.model";
 
 export class BuildCostManager {
 
-  constructor() { }
+  constructor(
+    private bank: BankInventory,
+    public readonly buildingCosts = {
+      city: {
+        stone: 2,
+        straw: 3
+      },
+      town: {
+        wood: 1,
+        straw: 1,
+        bricks: 1,
+        wool: 1
+      },
+      road: {
+        wood: 1,
+        bricks: 1
+      }
+    }
+  ) { }
 
-  public tryBuild(player: Player, buildingType: 'road' | 'city' | 'town') {
+  public tryIfBuildingCanBeBuild(player: Player, buildingType: BuildingType | 'road'): boolean {
     try {
       const inventory = player.inventory.resources;
-      switch (buildingType) {
-        case 'city': 
-          const cityResourceCost: Partial<Inventory> = {
-            stone: 2,
-            straw: 3
-          }
-          this.checkIfHasEnoughResources(inventory, cityResourceCost);
-          this.removeResources(inventory, cityResourceCost);
-
-         break;
-        case 'town':
-          const townResourceCost: Partial<Inventory> = {
-            wood: 1,
-            straw: 1,
-            bricks: 1,
-            wool: 1
-          }
-          this.checkIfHasEnoughResources(inventory, townResourceCost);
-          this.removeResources(inventory, townResourceCost);
-
-          break;
-        case 'road':
-          const roadResourceCost: Partial<Inventory> = {
-            wood: 1,
-            bricks: 1
-          }
-          this.checkIfHasEnoughResources(inventory, roadResourceCost);
-          this.removeResources(inventory, roadResourceCost);
-          break;
-      }
+      console.log(this.buildingCosts[buildingType])
+      if(!this.checkIfHasEnoughResources(inventory, this.buildingCosts[buildingType])) throw new Error('has not enought resources');
     } catch(e) {
-      console.log("not enough resources");
-      throw new Error()
+      console.log("not enough resources", player);
+      throw new Error('Not enough resources');
     }
+    return true;
   }
 
-  private checkIfHasEnoughResources(inventory: Inventory, resources: Partial<Inventory>) {
+  public removeResourcesByBuilding(player: Player, buildingType: BuildingType | 'road') {
+    this.tryIfBuildingCanBeBuild(player, buildingType);
+    this.removeResources(player, this.buildingCosts[buildingType])
+  }
+
+  private checkIfHasEnoughResources(inventory: Inventory, resources: Partial<Inventory>): boolean {
+    let hasEnough = true;
     Object.entries(resources).forEach(([key, value]) => {
-      if (typeof inventory[key as keyof Inventory] !== 'undefined') {
-        if (inventory[key as keyof Inventory] < value) {
-          console.log(value, key);
-          throw new Error('Not enough resources');
-        }
+      if (inventory[key as keyof Inventory] < value) {
+        hasEnough = false;
       }
     })
+    return hasEnough;
   }
 
-  private removeResources(inventory: Inventory, resources: Partial<Inventory>) {
+
+  private removeResources(player: Player, resources: Partial<Inventory>) {
     Object.entries(resources).forEach(([key, value]) => {
-      if (typeof inventory[key as keyof Inventory] !== 'undefined') {
-        inventory[key as keyof Inventory] -= value;
-      }
+      player.inventory.removeResource(key as ResourceType, value);
+      this.bank.addResource(key as ResourceType, value);
     })
   }
 

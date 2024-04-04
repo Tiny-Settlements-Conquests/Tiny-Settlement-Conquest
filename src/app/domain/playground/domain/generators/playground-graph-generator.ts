@@ -8,8 +8,6 @@ export class PlaygroundGraphGenerator {
 
   // public generateGraph(fields: Field[]): any {
     public generateGraph(fields: Field[]): Graph {
-      console.log(fields);
-      
       // Generate polygon graphs
       const subGraphs = this.generateSubGraphsForFields(fields);
       console.log(subGraphs);

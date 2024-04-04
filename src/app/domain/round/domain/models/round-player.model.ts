@@ -5,5 +5,5 @@ export interface RoundPlayer extends User {
     resourceCardCount: number;
     winningPoints: number;
     researchCardCount: number;
-    isControlable: boolean;
+    isBot: boolean;
 }

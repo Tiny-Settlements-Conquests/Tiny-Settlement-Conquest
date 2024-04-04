@@ -1,18 +1,18 @@
 <app-block 
     (click)="updateGameMode('road')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'road' }"
-    class="background border-4 border-solid border-cyan-400 flex items-center justify-center relative w-24 cursor-pointer transition ease-in-out hover:scale-95  ">
+    [ngClass]="{ ' border-cyan-400': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
+    class="background border-4 border-solid flex items-center justify-center relative w-24 cursor-pointer transition ease-in-out hover:scale-95  ">
     <img src="assets/buildings/road.png" />
 </app-block>
 <app-block 
     (click)="updateGameMode('town')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'town' }"
+    [ngClass]="{' border-cyan-400': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
     class="background border-4 border-solid border-cyan-100 flex items-center justify-center relative w-24 brightness-50 cursor-pointer transition ease-in-out hover:scale-95">
     <img src="assets/buildings/town.png" />
 </app-block>
 <app-block 
     (click)="updateGameMode('city')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'city' }"
+    [ngClass]="{ ' border-cyan-400': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
     class="background border-4 border-solid border-cyan-100 flex items-center justify-center relative w-24 overflow-hidden brightness-50 cursor-pointer transition ease-in-out hover:scale-95">
     <img src="assets/buildings/city.png" />
 </app-block>

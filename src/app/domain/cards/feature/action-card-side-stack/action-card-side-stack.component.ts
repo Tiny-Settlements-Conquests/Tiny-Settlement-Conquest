@@ -28,6 +28,7 @@ export class ActionCardSideStackComponent {
 
   private readonly _countArray = computed(() => {
     // - 1 because we have one display card which doesnt count!
+    if(this.count === 0) return [];
     return new Array(this.count - 1).fill(0);
   })
 

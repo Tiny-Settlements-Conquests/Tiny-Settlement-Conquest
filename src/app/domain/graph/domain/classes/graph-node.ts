@@ -43,4 +43,8 @@ export class GraphNode {
     } 
   }
 
+  public hasConnectionTo(target: GraphNode) {
+    return this.connections.find((c) => c.target_id === target.id)
+  }
+
 }

@@ -31,18 +31,8 @@ export class Playground {
     private readonly _resources: ResourceField[],
     private readonly _gridGraph: Graph,
     private readonly _buildingGraph: Graph<GraphBuildingNode>,
-    // private readonly renderer: PlaygroundRenderer,
-    // public readonly pointRenderer: PointRendererService,
-    // public readonly graphRenderer: PlaygroundGraphRenderer,
-    // private readonly _buildingGraph: Graph<GraphBuildingNode>,
     public readonly dimensions: PlaygroundDimensions = { fieldWidth: 9, fieldHeight: 9 },
   ) { }
-
-  public render(): void {
-    // this.renderer.render(this._grid, this._resources);
-    // ! build a buildingGraph renderer
-    // this.graphRenderer.render(this._buildingGraph);
-  }
 
   public loadPlayground(grid: Field[], resources: ResourceField[]): void {
     // this._grid = grid;

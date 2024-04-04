@@ -1,3 +1,7 @@
 :host {
   @apply flex flex-col gap-2
 }
+
+app-dice-random-number {
+  @apply absolute -left-20 z-20 bottom-[50%] transform-gpu translate-y-2/4
+}

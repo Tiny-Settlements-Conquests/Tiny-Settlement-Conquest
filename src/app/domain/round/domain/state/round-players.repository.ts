@@ -1,12 +1,14 @@
 import { createStore, withProps, select } from '@ngneat/elf';
-import { map } from 'rxjs';
+import { map, of, switchMap } from 'rxjs';
 import { getActiveEntity, getAllEntities, getEntity, selectActiveEntity, selectAllEntities, setActiveId, setEntities, withActiveId, withEntities } from '@ngneat/elf-entities';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { RoundPlayer } from '../models/round-player.model';
+import { UserRepository } from '../../../user/domain/state/user.repository';
+import { Player } from '../../../player/domain/classes/player';
 
 const roundPlayerStore = createStore(
     { name: 'roundPlayers' },
-    withEntities<RoundPlayer>(),
+    withEntities<Player>(),
     withActiveId()
 );
 
@@ -14,8 +16,9 @@ const roundPlayerStore = createStore(
   { providedIn: 'root' }
 )
 export class RoundPlayerRepository {
+  private readonly _userRepository = inject(UserRepository);
 
-  public setRoundPlayers(roundPlayers: RoundPlayer[]) {
+  public setRoundPlayers(roundPlayers: Player[]) {
     roundPlayerStore.update(setEntities(roundPlayers));
   }
 
@@ -27,7 +30,7 @@ export class RoundPlayerRepository {
     return roundPlayerStore.pipe(selectActiveEntity())
   }
 
-  public updateActiveRoundPlayer(roundPlayerId: RoundPlayer['id']) {
+  public updateActiveRoundPlayer(roundPlayerId: Player['id']) {
     roundPlayerStore.update(setActiveId(roundPlayerId))
   }
 
@@ -39,17 +42,30 @@ export class RoundPlayerRepository {
     return roundPlayerStore.query(getActiveEntity());
   }
 
-  public nextRoundPlayer() {
-    const activeRoundPlayer = this.getActiveRoundPlayer();
-    if(!activeRoundPlayer) return;
+  public selectMe() {
+    return this._userRepository.selectUser().pipe(
+      switchMap((user) => {
+        if(!user) return of(undefined);
+        return this.selectRoundPlayers().pipe(
+          map((roundPlayers) => {
+            return roundPlayers.find(roundPlayer => roundPlayer.id === user.id);
+          })
+        )
+      })
+    )
+  }
 
-    const roundPlayers = this.getRoundPlayers();
-    const activeIndex = roundPlayers.indexOf(activeRoundPlayer);
-    let nextIndex = activeIndex + 1;
-    if(nextIndex >= roundPlayers.length) {
-      nextIndex = 0;
-    }
-    this.updateActiveRoundPlayer(roundPlayers[nextIndex].id);
+  public selectIsMyTurn() {
+    return this.selectMe().pipe(
+      switchMap((player) => {
+        return this.selectActiveRoundPlayer().pipe(
+          map((activeRoundPlayer) => {
+            if(!activeRoundPlayer) return false;
+            return activeRoundPlayer.id === player?.id;
+          })
+        )
+      })
+    )
   }
 
 }

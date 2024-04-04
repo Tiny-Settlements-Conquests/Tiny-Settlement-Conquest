@@ -1,11 +1,9 @@
 import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
 import { BlockComponent } from '../../../layouts/ui/block/block.component';
-import { Player } from '../../../../pages/lobby';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
-import { User } from '../../domain/classes/player';
-import { RoundPlayer } from '../../../round/domain/models/round-player.model';
+import { Player, User } from '../../domain/classes/player';
 import { NgStyle } from '@angular/common';
 
 
@@ -28,14 +26,27 @@ export class PlayerCardComponent {
     question: faQuestion
   }
 
-  private readonly _player = signal<RoundPlayer | null>(null);
+  private readonly _player = signal<Player | null>(null);
 
   @Input({required: true})
-  public set player(v: RoundPlayer) {
+  public set player(v: Player) {
     this._player.set(v);
   }
 
-  public get player(): RoundPlayer | null {
+  public get player(): Player | null {
     return this._player();
   }
+
+  private readonly _isMe = signal<boolean>(false);
+  
+  @Input()
+  public set isMe(v: boolean) {
+    this._isMe.set(v);
+  }
+
+  public get isMe() {
+    return this._isMe();
+  }
+
+  
 }

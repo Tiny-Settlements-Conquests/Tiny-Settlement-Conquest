@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener, inject } from '@angul
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faForward } from '@fortawesome/free-solid-svg-icons';
 import { RoundPlayerRepository } from '../../domain/state/round-players.repository';
+import { GameComponent } from '../../../../pages/game';
 
 @Component({
   selector: 'app-next-move-button',
@@ -14,7 +15,7 @@ import { RoundPlayerRepository } from '../../domain/state/round-players.reposito
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NextMoveButtonComponent { 
-  public readonly roundPlayerRepository = inject(RoundPlayerRepository);
+  public readonly gameComponent = inject(GameComponent);
   
   public icons = {
     next: faForward
@@ -22,6 +23,7 @@ export class NextMoveButtonComponent {
 
   @HostListener('click')
   public endMove() {
-    this.roundPlayerRepository.nextRoundPlayer()
+    // todo hier muss noch ne abstraktion rein da sonst nur lokale matches funktionieren würden!
+    this.gameComponent.game?.nextRound();
   }
 }

@@ -1,9 +1,9 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostListener, Output, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, computed, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faDiceFive, faDiceFour, faDiceOne, faDiceSix, faDiceThree, faDiceTwo } from '@fortawesome/free-solid-svg-icons';
 import { finalize, interval, take } from 'rxjs';
+import { rollDice, rollDices } from '../../domain/functions/roll-dice.function';
 
 @Component({
   selector: 'app-dice-random-number',
@@ -42,9 +42,7 @@ export class DiceRandomNumberComponent {
     return this.icons[this.diceTwoValue()] as IconDefinition;
   });
 
-  public readonly result = output()
-
-  
+  public readonly result = output<[number, number]>();
 
   public readonly icons: { [key: number]: IconDefinition } = {
     0: faDiceOne,
@@ -55,16 +53,30 @@ export class DiceRandomNumberComponent {
     5: faDiceSix
   };
 
-  @HostListener('click')
   public roll() {
-    const done = interval(90).pipe(
+    interval(90).pipe(
       take(20),
       finalize(() => {
-        console.log("done")
+        this.result.emit(rollDices());
       })
     ).subscribe(() => {
-      this.diceOneValue.set(Math.floor(Math.random() * 6));
-      this.diceTwoValue.set(Math.floor(Math.random() * 6));
+      this.diceOneValue.set(rollDice() - 1 );
+      this.diceTwoValue.set(rollDice() - 1 );
+    })
+  }
+
+  @Input()
+  public set setDices(dices: [number, number]) {
+    interval(90).pipe(
+      take(20),
+      finalize(() => {
+        this.diceOneValue.set(dices[0] - 1);
+        this.diceTwoValue.set(dices[1] - 1);
+        this.result.emit(dices);
+      })
+    ).subscribe(() => {
+      this.diceOneValue.set(rollDice() - 1 );
+      this.diceTwoValue.set(rollDice() - 1 );
     })
   }
 

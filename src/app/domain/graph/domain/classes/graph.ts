@@ -1,3 +1,4 @@
+import { Point } from "../../../primitives/classes/Point";
 import { GraphConnection } from "./graph-connection";
 import { GraphNode } from "./graph-node";
 
@@ -19,7 +20,6 @@ export class Graph<T extends GraphNode = GraphNode> {
   public tryAddNode(node: T): void {
     try {
       if(this._nodes.some(n => n.id === node.id)) throw new Error('already exists');
-      console.log("ok")
       this._nodes.push(node);
 
     } catch(e) {
@@ -43,8 +43,11 @@ export class Graph<T extends GraphNode = GraphNode> {
     return this._nodes.find(node => node.id === id);
   }
 
+  public getNodeByPoint(point: Point): T | undefined {
+    return this._nodes.find(node => node.position.equals(point));
+  }
+
   public isNodeNeighbour(node1: GraphNode, node2: GraphNode): boolean {
-    console.log(node1.connections.some(connection => connection.target.id === node2.id))
     return node1.connections.some(connection => connection.target.id === node2.id);
   }
 

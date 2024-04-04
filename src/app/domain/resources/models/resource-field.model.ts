@@ -1,6 +1,6 @@
 import { Field } from "../../playground/domain/classes/field";
 
-export type ResourceType = 'iron' | 'wool' | 'clay' | 'wood' | 'straw';
+export type ResourceType = 'stone' | 'wool' | 'bricks' | 'wood' | 'straw';
 
 export interface ResourceField {
     typ: ResourceType

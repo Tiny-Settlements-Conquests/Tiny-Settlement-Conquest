@@ -1,7 +1,6 @@
 import { Graph } from "../../../graph/domain/classes/graph";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Player } from "../../../player/domain/classes/player";
-import { Playground } from "../../../playground/domain/classes/playground";
 import { GraphBuildingNode } from "../graph/graph-building-node";
 import { BuildCostManager } from "./build-cost-manager";
 
@@ -10,11 +9,23 @@ export class RoadBuildManager {
 
   constructor(
     private readonly buildingGraph: Graph<GraphBuildingNode>,
-    private readonly _buildCostManager: BuildCostManager
+    private readonly buildingCostManager: BuildCostManager,
   ) {}
 
   public resetSelectedGraphNode(){
     this._sourceGraphNode = null;
+  }
+
+  public tryBuildRoadBetween(player: Player, graphNodeA: GraphNode, graphNodeB: GraphNode) {
+    try {
+      this.buildingCostManager.tryIfBuildingCanBeBuild(player, 'road');
+      this.checkNodesValidForRoad(player, graphNodeA, graphNodeB);
+  
+      this.buildRoadBetweenNodes(player, graphNodeA, graphNodeB);
+      this.buildingCostManager.removeResourcesByBuilding(player, 'road')
+  } catch(e) {
+    this.resetSelectedGraphNode();
+  }
   }
 
   public tryBuildRoad(player: Player, graphNode: GraphNode) {
@@ -23,13 +34,12 @@ export class RoadBuildManager {
           this._sourceGraphNode = graphNode;
           return;
         }
-        this._buildCostManager.tryBuild(player, 'road')
+        this.buildingCostManager.tryIfBuildingCanBeBuild(player, 'road');
         this.checkNodesValidForRoad(player, graphNode, this._sourceGraphNode);
     
         this.buildRoadBetweenNodes(player, graphNode, this._sourceGraphNode);
-
+        this.buildingCostManager.removeResourcesByBuilding(player, 'road')
     } catch(e) {
-      console.log("REHSET")
       this.resetSelectedGraphNode();
     }
   }
@@ -47,6 +57,8 @@ export class RoadBuildManager {
       throw new Error('Not same player B');
     } else if(nodeBRealRef === undefined && nodeARealRef?.player.id !== player.id) {
       throw new Error('Not same player A');
+    } else if(nodeARealRef && nodeBRealRef && nodeARealRef.hasConnectionTo(nodeBRealRef)) {
+      throw new Error('has already a connection')
     }
 
     if (!this.buildingGraph.isNodeNeighbour(nodeA, nodeB)) {

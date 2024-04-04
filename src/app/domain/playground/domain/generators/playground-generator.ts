@@ -18,14 +18,17 @@ export class PlaygroundGenerator {
     dimensions: PlaygroundDimensions,
     buildingGraph: Graph<GraphBuildingNode>
   ): Playground {
-    const grid = this.gridGenerator.generateGrid(dimensions);
-    const resources = this.resourceGenerator.generateResources(grid, dimensions);
+    const fields = this.gridGenerator.generateGrid(dimensions);
+    const resources = this.resourceGenerator.generateResources(fields, dimensions);
     const graph = this.graphGenerator.generateGraph(
       resources.map((r) => r.field)
     );
 
+    // const test = new Grid
+    // const gridFields = 
+
     return new Playground(
-      grid, 
+      fields, 
       resources, 
       graph, 
       buildingGraph, 

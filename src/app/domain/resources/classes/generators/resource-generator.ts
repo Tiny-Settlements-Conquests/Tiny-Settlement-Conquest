@@ -11,9 +11,9 @@ export class ResourceGenerator {
   private resourceRarity = {
     wool: 0.2,
     wood: 0.3,
-    iron: 0.1,
+    stone: 0.1,
     straw: 0.2,
-    clay: 0.2,
+    bricks: 0.2,
   }
 
   public generateResources(grid: Field[], dimensions: PlaygroundDimensions): ResourceField[] {
@@ -51,11 +51,11 @@ export class ResourceGenerator {
 
   public getResourceByType(type: ResourceType, field: Field, value: number): ResourceField {
     switch(type) {
-      case 'clay':
+      case 'bricks':
         return new BrickResourceField(field, value);
       case 'wool':
         return new SheepResourceField(field, value);
-      case 'iron':
+      case 'stone':
         return new StoneResourceField(field, value);
       case 'straw':
         return new StrawResourceField(field, value);

@@ -12,17 +12,17 @@ import { rollDice, rollDices } from '../../domain/functions/roll-dice.function';
     FontAwesomeModule
   ],
   templateUrl: './dice-random-number.component.html',
-  styleUrl: './dice-random-number.component.scss',
+  styleUrls: ['./dice-random-number.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('center', [
       state('centered', style({
-        postion: 'absolute',
+        position: 'absolute',
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         fontSize: '200px'
-      })), 
+      })),
       transition('void <=> centered', [
         animate('4s')
       ]),

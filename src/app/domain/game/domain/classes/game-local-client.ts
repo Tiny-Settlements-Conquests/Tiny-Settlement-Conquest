@@ -53,14 +53,16 @@ export class GameLocalClient {
       tap(({me, activePlayer}) => {
         const bot = new MediumBot();
         if(activePlayer) {
-          bot.makeMove(this.game, activePlayer)
+          // bot.makeMove(this.game, activePlayer)
         }
-        if(me?.id !== activePlayer?.id) {
+        if(me?.id !== activePlayer?.id && activePlayer) {
+          bot.makeMove(this.game, activePlayer)
+
         }
       }),
       filter(({me, activePlayer}) => me?.id === activePlayer?.id),
     ).subscribe(() => {
-      // this.openDiceOverlay(this.game.rollDice()).subscribe();
+      this.openDiceOverlay(this.game.rollDice()).subscribe();
     })
 
     for(let i = 0; i < 5; i++) {

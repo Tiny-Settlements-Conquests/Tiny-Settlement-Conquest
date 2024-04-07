@@ -3,7 +3,17 @@ import { Routes } from '@angular/router';
 export const routes: Routes = [
     {
         path: '',
-        redirectTo: 'servers',
+        loadComponent() {
+            return import('./domain/layouts/ui/default-layout/').then(m => m.DefaultLayoutComponent);
+        },
+        children: [
+            {
+                path: '',
+                loadComponent() {
+                    return import('./pages/home/').then(m => m.HomeComponent);
+                },
+            }
+        ],
         pathMatch: 'full'
     },
     {

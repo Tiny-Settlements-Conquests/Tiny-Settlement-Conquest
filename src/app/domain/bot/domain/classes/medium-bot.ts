@@ -23,14 +23,14 @@ export class MediumBot implements Bot {
     const costs = game.getBuildCosts();
 
     try {
-      if(game._costManager.tryIfBuildingCanBeBuild(player, 'town')) {
+      if(game.costManager.tryIfBuildingCanBeBuild(player, 'town')) {
         console.log("i could yes")
         this.tryToBuildTown(game, player)
       }
     } catch(e) {
     }
     try {
-      if(game._costManager.tryIfBuildingCanBeBuild(player, 'road')) {
+      if(game.costManager.tryIfBuildingCanBeBuild(player, 'road')) {
         this.tryToBuildRoad(game, player)
       }
       

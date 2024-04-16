@@ -5,7 +5,7 @@
             <img class="rounded-full w-16 h-16 mx-8 border-4" [ngStyle]="{'borderColor': player?.color}" [src]="player?.profileUrl ?? ''" />
             <div class="absolute bottom-0 rounded bottom-2">
                 <div class="flag" [ngStyle]="{'border-color': player?.color}"></div>
-                <div class="w-10 h-5 relative z-10 flex items-center justify-center text-white" [ngStyle]="{'background': player?.color}">5</div>
+                <div class="w-10 h-5 relative z-10 flex items-center justify-center text-white" [ngStyle]="{'background': player?.color}">{{player?.winningPoints}}</div>
                 <div class="flag-rev" [ngStyle]="{'border-color': player?.color}"></div>
 
             </div>

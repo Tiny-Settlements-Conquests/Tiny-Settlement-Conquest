@@ -29,7 +29,7 @@ export class PlaygroundRenderService {
     if (resource) {
       this.renderResource(resource);
     } else {
-      this.fieldRendererService.render(field, {fillStyle: 'transparent', strokeStyle: 'transparent'});
+      // this.fieldRendererService.render(field, {fillStyle: 'transparent', strokeStyle: 'transparent'});
     }
   }
   
@@ -38,8 +38,10 @@ export class PlaygroundRenderService {
   }
   
   protected renderResource(resource: ResourceField) {
-    this.fieldRendererService.render(resource.field,  {fillStyle: resource.color, });
-    this.resourceFieldRendererService.renderResourceImage(resource.field.centerPoint, resource.getImage());
+    this.fieldRendererService.render3DField(resource.field)
+    this.fieldRendererService.render(resource.field,  {fillStyle: resource.color, backgroundImage: resource.resourceBackgroundImage});
+
+    this.resourceFieldRendererService.renderResourceImage(resource.field.centerPoint, resource.resourceImage);
     this.resourceFieldRendererService.renderResourceValue(resource.field.centerPoint, resource.value);
   }
 

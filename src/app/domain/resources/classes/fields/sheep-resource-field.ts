@@ -11,6 +11,6 @@ export class SheepResourceField extends Resource implements ResourceField{
     public readonly value: number
   ) { 
     super();
-    this._image.src = "/assets/images/sheep.png";
+    this.resourceImage.src = "/assets/images/sheep.png";
   }
 }

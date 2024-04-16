@@ -11,6 +11,7 @@ export class StrawResourceField extends Resource implements ResourceField{
     public readonly value: number
   ) { 
     super()
-    this._image.src = "/assets/images/wheat.png";
+    this.resourceImage.src = "/assets/images/wheat.png";
+    this.resourceBackgroundImage.src = "/assets/terrain/sand.png";
   }
 }

@@ -10,7 +10,6 @@ export class ResourceFieldRendererService {
 
     ctx.moveTo(x,y)
     ctx.drawImage(image, x - 30, y - 50, 60, 60);
-
   }
 
   renderResourceValue(position: Point, value: number) {

@@ -5,6 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
 import { Player, User } from '../../domain/classes/player';
 import { NgStyle } from '@angular/common';
+import { RoundPlayer } from '../../../round/domain/models/round-player.model';
 
 
 //todo checken ob das überhaupt sinn ergibt, eig. nicht -> ist ja schon als round-player-card implementiert
@@ -26,14 +27,14 @@ export class PlayerCardComponent {
     question: faQuestion
   }
 
-  private readonly _player = signal<Player | null>(null);
+  private readonly _player = signal<RoundPlayer | null>(null);
 
   @Input({required: true})
-  public set player(v: Player) {
+  public set player(v: RoundPlayer) {
     this._player.set(v);
   }
 
-  public get player(): Player | null {
+  public get player(): RoundPlayer | null {
     return this._player();
   }
 

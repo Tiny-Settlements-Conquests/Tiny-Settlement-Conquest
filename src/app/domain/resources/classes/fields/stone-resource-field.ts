@@ -11,7 +11,7 @@ export class StoneResourceField extends Resource implements ResourceField {
     public readonly value: number
     ) { 
     super()
-    this._image.src = "/assets/images/stone.png";
+    this.resourceImage.src = "/assets/images/stone.png";
   }
 
 }

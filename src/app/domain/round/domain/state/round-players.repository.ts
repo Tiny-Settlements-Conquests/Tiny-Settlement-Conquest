@@ -8,7 +8,7 @@ import { Player } from '../../../player/domain/classes/player';
 
 const roundPlayerStore = createStore(
     { name: 'roundPlayers' },
-    withEntities<Player>(),
+    withEntities<RoundPlayer>(),
     withActiveId()
 );
 
@@ -18,7 +18,7 @@ const roundPlayerStore = createStore(
 export class RoundPlayerRepository {
   private readonly _userRepository = inject(UserRepository);
 
-  public setRoundPlayers(roundPlayers: Player[]) {
+  public setRoundPlayers(roundPlayers: RoundPlayer[]) {
     roundPlayerStore.update(setEntities(roundPlayers));
   }
 

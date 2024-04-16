@@ -24,6 +24,8 @@ export class BuildingBuildManager {
             this.buildingCostManager.removeResourcesByBuilding(player, type)
             // ensure that the player can only build ontop of owned nodes
             buildingGraphNode.tryBuild(type);
+            //TODO REFACTOR ME; DO NOT DO THIS HERE
+            player.winningPointsInventory.addToInventory('points', 1)
         } catch(e) { 
             console.log("no", e) 
         }

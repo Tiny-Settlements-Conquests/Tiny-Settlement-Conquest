@@ -1,10 +1,7 @@
 export abstract class Resource {
-    protected _image: HTMLImageElement = new Image();
-    public getImage(): HTMLImageElement {
-        return this._image
-    }
+    public readonly resourceImage: HTMLImageElement = new Image();
+    public readonly resourceValueImage: HTMLImageElement = new Image();
+    public readonly resourceBackgroundImage: HTMLImageElement = new Image();
 
-    public getImageSrc(): string {
-        return this._image.src;
-    }
+
 }

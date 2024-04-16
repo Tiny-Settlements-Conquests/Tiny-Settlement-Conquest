@@ -25,7 +25,6 @@ export class DiceOverlayComponent{
   })
   dices: [number, number] = [1,1]
 
-
   public rollDices() {
     if(this.hasRolled()) return
     this.hasRolled.set(true);

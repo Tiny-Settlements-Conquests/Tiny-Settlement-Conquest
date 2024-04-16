@@ -1,4 +1,4 @@
-import { Observable, Subject, combineLatest, map, merge } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, combineLatestAll, filter, interval, map, merge, mergeAll, share, take, takeUntil, tap, timeout, timeoutWith, timer } from "rxjs";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
 import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
@@ -12,6 +12,9 @@ import { ResourceType } from "../../../resources/models/resource-field.model";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { rollDices } from "../../../dice/domain/functions/roll-dice.function";
+import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
+import { timeMapper } from "../../../countdown/domain/operators/time-mapper.operator";
+import { defaultOrderStrategy } from "../../../round/domain/strategies/default-round-order.strategy";
 
 interface GameConfig {
   resourceMultiplier: number,
@@ -26,7 +29,7 @@ interface GameConfig {
 interface GameDependencies {
   playground: Playground,
   round: Round,
-  bank: Inventory,
+  bank: ResourceInventory,
   roadBuildManager: RoadBuildManager,
   buildingBuildManager: BuildingBuildManager,
   buildCostManager: BuildCostManager
@@ -35,23 +38,25 @@ interface GameDependencies {
 export class Game {
   public readonly playground: Playground;
   private readonly _round: Round;
-  public readonly roadBuildManager: RoadBuildManager;
-  private readonly buildingBuildManager: BuildingBuildManager;
-  private readonly _bank: Inventory;
-  public readonly _costManager: BuildCostManager;
+  private readonly _roadBuildManager: RoadBuildManager;
+  private readonly _buildingBuildManager: BuildingBuildManager;
+  private readonly _bank: ResourceInventory;
+  private readonly _costManager: BuildCostManager;
 
   private _mode: GameMode = 'city';
 
-  private readonly userInventoryUpdate = new Subject<{player: Player, type: ResourceType, amount: number}>();
   private readonly rolledDice = new Subject<[number, number]>();
+  private hasRolledThisRound = false;
+
+  private readonly state = new BehaviorSubject<'roll' | 'round'>('roll');
 
   constructor(
     dependencies: GameDependencies,
     private readonly gameConfig: GameConfig = {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
-      maxRollTimer: 10_000,
-      maxRoundTimer: 100_000,
+      maxRollTimer: 5_000,
+      maxRoundTimer: 10_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
       resourceMultiplier: 1
@@ -60,9 +65,65 @@ export class Game {
     this.playground = dependencies.playground;
     this._round = dependencies.round;
     this._bank = dependencies.bank;
-    this.buildingBuildManager = dependencies.buildingBuildManager;
-    this.roadBuildManager = dependencies.roadBuildManager;
+    this._buildingBuildManager = dependencies.buildingBuildManager;
+    this._roadBuildManager = dependencies.roadBuildManager;
     this._costManager = dependencies.buildCostManager;
+  }
+
+  public get roadBuildManager() {
+    return this._roadBuildManager;
+  }
+
+  public get costManager() {
+    return this._costManager;
+  }
+
+  public startGame() {
+  }
+
+  private startRollTimer() {
+    this.state.next('roll');
+    this.rollDice();
+    // timer(this.gameConfig.maxRollTimer).pipe(
+    //   takeUntil(this.rolledDice)
+    // ).subscribe(() => {
+    //   console.log("IM DONE WITH FUASFG ASFAFSXVCYXVVX")
+    //   // timer abgelaufen starte neue runde
+    //   this.startRoundTimer();
+    // })
+  }
+
+  private startRoundTimer() {
+    this.state.next('round');
+    timer(this.gameConfig.maxRoundTimer).pipe(
+      // takeUntil(this.selectActiveRoundPlayer())
+    ).subscribe(() => {
+      console.log("IM SO DONE WITH YOU")
+      // timer abgelaufen starte neue runde
+      this.nextRound();
+    })
+  }
+
+  public selectActiveRoundPlayer() {
+    return this._round.selectActivePlayer();
+  }
+
+  public selectRound() {
+    return this._round.selectRound()
+  }
+
+  public selectCurrentTimer() {
+    return combineLatest({
+      player: this.selectActiveRoundPlayer(),
+      typ: this.state,
+    }).pipe(
+      map(({ typ }) => {
+        if (typ === 'roll') {
+          return this.gameConfig.maxRollTimer;
+        }
+        return this.gameConfig.maxRoundTimer;
+      })
+    )
   }
 
   public getBuildCosts() {
@@ -77,17 +138,34 @@ export class Game {
     return this._round;
   }
 
+  public selectDice() {
+    return this.rolledDice;
+  }
+
+  public selectPlayers() {
+    return combineLatest(
+      this._round.players.map((p) => p.selectChanges())
+    )
+  }
+
   public selectBankInventory() {
-    return this._bank.selectResources();
+    return this._bank.selectInventory();
   }
 
   public selectBankInventoryUpdate() {
-    return this._bank.selectResourceUpdate();
+    return this._bank.selectInventoryUpdate();
   }
 
   public selectUserInventoryUpdate() {
     return merge(
-      ...this._round.players.map((p) => p.inventory.selectResourceUpdate().pipe(
+      ...this._round.players.map((p) => p.resourceInventory.selectInventoryUpdate().pipe(
+          map((update) => ({...update, player: p }))
+      )))
+  }
+
+  public selectPlayersWinningPoints()  {
+    return merge(
+      ...this._round.players.map((p) => p.winningPointsInventory.selectInventoryUpdate().pipe(
           map((update) => ({...update, player: p }))
       )))
   }
@@ -97,11 +175,17 @@ export class Game {
   }
 
   public nextRound() {
-    this._round.next();
+    const defaultOrder = defaultOrderStrategy(this._round);
+    defaultOrder.nextRound();
+    this.startRollTimer();
+    // this.startRoundTimer()
   }
 
   public rollDice() {
+    if(this.hasRolledThisRound) throw new Error();
+    //Todo auslagern
     const dices = rollDices();
+    this.rolledDice.next(dices);
     const [valueOne, valueTwo] = dices;
     const value = valueOne + valueTwo;
     const foundFields = this.playground.resourceFields.filter(field => field.value === value);
@@ -109,17 +193,17 @@ export class Game {
     foundFields.forEach((field) => {
       field.field.polygon.points.forEach((p) => {
         try {
-          const owner = this.buildingBuildManager.getOwnerOfBuildingByPoint(p);
+          const owner = this._buildingBuildManager.getOwnerOfBuildingByPoint(p);
           
           const amount = 1 * this.gameConfig.resourceMultiplier; // todo hier schauen welcher typ und dann * resourceMultiplier
           if(this._bank.resources[field.typ] > amount) {
-            this.userInventoryUpdate.next({player: owner, type: field.typ, amount: amount * -1});
-            owner.inventory.addResource(field.typ, amount);
-            this._bank.removeResource(field.typ, amount);
+            owner.resourceInventory.addToInventory(field.typ, amount);
+            this._bank.removeFromInventory(field.typ, amount);
           }
         } catch (error) {}
       })
     })
+    //todo ungut, nicht returnen sondern eher als observable selectable machen
     return dices;
   }
 
@@ -134,11 +218,11 @@ export class Game {
     if(!player) return;
 
     if(this._mode === 'road') {
-      this.roadBuildManager.tryBuildRoad(player, node);
+      this._roadBuildManager.tryBuildRoad(player, node);
     } else if(this._mode === 'city') {
-      this.buildingBuildManager.tryBuildBuilding(player, 'city', node);
+      this._buildingBuildManager.tryBuildBuilding(player, 'city', node);
     } else if(this._mode === 'town') {
-      this.buildingBuildManager.tryBuildBuilding(player, 'town', node);
+      this._buildingBuildManager.tryBuildBuilding(player, 'town', node);
     }
   }
 
@@ -147,16 +231,16 @@ export class Game {
     if(!player) return;
 
     if(this._mode === 'city') {
-      this.buildingBuildManager.tryBuildBuilding(player, 'city', node);
+      this._buildingBuildManager.tryBuildBuilding(player, 'city', node);
     } else if(this._mode === 'town') {
-      this.buildingBuildManager.tryBuildBuilding(player, 'town', node);
+      this._buildingBuildManager.tryBuildBuilding(player, 'town', node);
     }
   }
 
   public tryBuildRoadBetweenGraphNodes(nodeA: GraphNode, nodeB: GraphNode) {
     const player = this._round.activePlayer;
     if(!player) return;
-    this.roadBuildManager.tryBuildRoadBetween(player, nodeA, nodeB);
+    this._roadBuildManager.tryBuildRoadBetween(player, nodeA, nodeB);
 
   }
 

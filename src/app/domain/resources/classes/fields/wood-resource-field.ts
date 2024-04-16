@@ -11,6 +11,7 @@ export class WoodResourceField extends Resource implements ResourceField{
     public readonly value: number
   ) {  
     super();
-    this._image.src = "/assets/images/wood.png";
+    this.resourceImage.src = "/assets/images/wood.png";
+    this.resourceBackgroundImage.src = "/assets/terrain/gras.png";
   }
 }

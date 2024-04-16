@@ -7,7 +7,8 @@ export interface ResourceField {
     color: string
     field: Field
     value: number
-    getImage(): HTMLImageElement
-    getImageSrc(): string
+    resourceImage: HTMLImageElement
+    resourceValueImage: HTMLImageElement
+    resourceBackgroundImage: HTMLImageElement
 }
 

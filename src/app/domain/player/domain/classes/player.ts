@@ -1,5 +1,8 @@
+import { BehaviorSubject, combineLatest, map, tap } from "rxjs";
 import { Graph } from "../../../graph/domain/classes/graph";
 import { Inventory } from "../../../inventory/domain/classes/inventory";
+import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
+import { WinningpointsInventory } from "../../../inventory/domain/classes/winningpoints-inventory";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
 export interface User {
@@ -9,11 +12,24 @@ export interface User {
 }
 
 export class Player {
+  private readonly isActive = new BehaviorSubject(true)
   constructor(
     private readonly _roundPlayer: RoundPlayer,
-    private readonly _inventory: Inventory,
+    private readonly _resourceInventory: ResourceInventory,
+    private readonly _winngingPointsInventory: WinningpointsInventory,
     private readonly _buildingGraph: Graph
   ) { }
+
+  public selectChanges() {
+    return combineLatest([
+      this.isActive,
+      this._resourceInventory.selectInventory(),
+      this._winngingPointsInventory.selectInventory()
+    ]).pipe(
+      tap((c) => console.log("JAA",c)),
+      map(() => this)
+    )
+  }
   
   public get id() {
     return this._roundPlayer.id;
@@ -27,8 +43,12 @@ export class Player {
     return this._buildingGraph;
   }
 
-  public get inventory(): Inventory {
-    return this._inventory
+  public get resourceInventory(): ResourceInventory {
+    return this._resourceInventory
+  }
+
+  public get winningPointsInventory(): WinningpointsInventory {
+    return this._winngingPointsInventory;
   }
 
   public get color(): string {
@@ -44,11 +64,15 @@ export class Player {
   }
 
   public get resourceCardCount() {
-    return this._roundPlayer.resourceCardCount;
+    return this._resourceInventory.amount;
   }
   
   public get researchCardCount() {
     return this._roundPlayer.researchCardCount;
+  }
+
+  public get winningPointsAmount() {
+    return this._winngingPointsInventory.points;
   }
 
 }

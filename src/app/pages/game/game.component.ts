@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ViewContainerRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Observable } from 'rxjs';
@@ -37,6 +37,7 @@ import { UserRepository } from '../../domain/user/domain/state/user.repository';
 import { BankRepository } from '../../domain/bank/domain/state/bank.repository';
 import { Playground } from '../../domain/playground/domain/classes/playground';
 import { GameLocalClient } from '../../domain/game/domain/classes/game-local-client';
+import { RoundCountdownComponent } from '../../domain/round/feature/round-countdown/round-countdown.component';
 
 
 
@@ -58,7 +59,8 @@ import { GameLocalClient } from '../../domain/game/domain/classes/game-local-cli
     ChatComponent,
     BankComponent,
     DiceRandomNumberComponent,
-    DiceOverlayComponent
+    DiceOverlayComponent,
+    RoundCountdownComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
@@ -78,6 +80,10 @@ export class GameComponent {
     clock: faClock
   }
 
+  public readonly isMyTurn = toSignal(
+    this._roundPlayerRepository.selectIsMyTurn()
+  )
+
   private readonly _game = signal<Game | undefined>(undefined)
 
   public get game() {
@@ -85,7 +91,6 @@ export class GameComponent {
   }
 
   public ngOnInit() {
-    
     const client = new GameLocalClient(
       this._ref,
       this._bankRepository,
@@ -96,53 +101,6 @@ export class GameComponent {
       this._destroyRef
     );
     this._game.set(client.game)
-    
-    // this._game.set(game);
-
-    // this._gameModeRepository.selectMode().pipe(
-    //   takeUntilDestroyed(this._destroyRef)
-    // ).subscribe((mode) => {
-    //   if(this.game === undefined) return;
-
-    //   this.game.mode = mode;
-    // })
-
-    // this._roundPlayerREpository.selectActiveRoundPlayer().subscribe((roundPlayer) => {
-    //   if(!roundPlayer) return;
-    //   // this.openDiceOverlay();
-    //   this._gameModeRepository.updateMode('spectate');
-    //   console.log("update")
-    //   round.setActivePlayerById(roundPlayer.id);
-    // })
-    
-
-    // const me = this._userRepository.getUser();
-    // if(!me) return;
-    // this.openDiceOverlay().subscribe((result) => {
-    //   console.log("RESULT", result);
-    //   this.game?.rolledDice(result);
-    // })
-    // const roundPlayer = this.game?.round.players.find((u) => u.id === me.id);
-    // if(!roundPlayer) return;
-    // console.log(roundPlayer?.inventory.resources)
-    // roundPlayer.inventory.selectResources().subscribe((resources) => {
-    //   console.log("ja schon aber warum denkst du das denn?")
-    //   this._inventoryRepository.setResources(resources)
-    // })
-
-    // this.game?.bank.selectResources().subscribe((resources) => {
-    //   console.log("RRR",resources);
-    //   this._bankRepository.setInventory(resources)
-    // })
-
-    // this._inventoryRepository.updateResourceAmount()
   }
-
-  
-
-  
-
-  
-
   
 }

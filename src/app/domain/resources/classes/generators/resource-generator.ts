@@ -45,7 +45,7 @@ export class ResourceGenerator {
     return Object.keys(this.resourceRarity)[Math.floor(Math.random() * Object.keys(this.resourceRarity).length)] as ResourceType
   }
 
-  private generateRandomNumber(min: number = 1, max: number = 12): number {
+  private generateRandomNumber(min: number = 2, max: number = 12): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 

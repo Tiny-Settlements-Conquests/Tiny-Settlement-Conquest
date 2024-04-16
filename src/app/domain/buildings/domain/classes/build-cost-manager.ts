@@ -1,14 +1,14 @@
 import { Inventory } from "../../../inventory/domain/models/inventory.model";
-import { Inventory as BankInventory } from "../../../inventory/domain/classes/inventory";
 
 import { Player } from "../../../player/domain/classes/player";
 import { ResourceType } from "../../../resources/models/resource-field.model";
 import { BuildingType } from "../models/building.model";
+import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 
 export class BuildCostManager {
 
   constructor(
-    private bank: BankInventory,
+    private bank: ResourceInventory,
     public readonly buildingCosts = {
       city: {
         stone: 2,
@@ -29,11 +29,9 @@ export class BuildCostManager {
 
   public tryIfBuildingCanBeBuild(player: Player, buildingType: BuildingType | 'road'): boolean {
     try {
-      const inventory = player.inventory.resources;
-      console.log(this.buildingCosts[buildingType])
+      const inventory = player.resourceInventory.resources;
       if(!this.checkIfHasEnoughResources(inventory, this.buildingCosts[buildingType])) throw new Error('has not enought resources');
     } catch(e) {
-      console.log("not enough resources", player);
       throw new Error('Not enough resources');
     }
     return true;
@@ -57,8 +55,8 @@ export class BuildCostManager {
 
   private removeResources(player: Player, resources: Partial<Inventory>) {
     Object.entries(resources).forEach(([key, value]) => {
-      player.inventory.removeResource(key as ResourceType, value);
-      this.bank.addResource(key as ResourceType, value);
+      player.resourceInventory.removeFromInventory(key as ResourceType, value);
+      this.bank.addToInventory(key as ResourceType, value);
     })
   }
 

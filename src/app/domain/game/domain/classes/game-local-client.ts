@@ -1,11 +1,18 @@
+import { DestroyRef, ViewContainerRef } from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { dispatch } from '@ngneat/effects';
 import { Observable, combineLatest, filter, map, switchMap, tap } from "rxjs";
+import { BankRepository } from "../../../bank/domain/state/bank.repository";
+import { MediumBot } from "../../../bot/domain/classes/medium-bot";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
 import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
 import { DiceOverlayComponent } from "../../../dice/ui/dice-overlay/dice-overlay.component";
 import { Graph } from "../../../graph/domain/classes/graph";
-import { Inventory } from "../../../inventory/domain/classes/inventory";
+import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
+import { WinningpointsInventory } from "../../../inventory/domain/classes/winningpoints-inventory";
+import { InventoryRepository } from "../../../inventory/domain/state/inventory.repository";
 import { Player } from "../../../player/domain/classes/player";
 import { Playground } from "../../../playground/domain/classes/playground";
 import { PlaygroundGenerator } from "../../../playground/domain/generators/playground-generator";
@@ -13,16 +20,12 @@ import { PlaygroundGraphGenerator } from "../../../playground/domain/generators/
 import { PlaygroundGridGenerator } from "../../../playground/domain/generators/playground-grid-generator";
 import { ResourceGenerator } from "../../../resources/classes/generators/resource-generator";
 import { Round } from "../../../round/domain/classes/round";
-import { Game } from "./game";
-import { DestroyRef, ViewContainerRef } from "@angular/core";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
-import { BankRepository } from "../../../bank/domain/state/bank.repository";
-import { InventoryRepository } from "../../../inventory/domain/state/inventory.repository";
 import { RoundPlayerRepository } from "../../../round/domain/state/round-players.repository";
 import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameModeRepository } from "../state/game-mode.repository";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { MediumBot } from "../../../bot/domain/classes/medium-bot";
+import { Game } from "./game";
+import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
 
 export class GameLocalClient {
   private _game: Game
@@ -46,32 +49,25 @@ export class GameLocalClient {
   }
 
   private simulateGame() {
-    combineLatest({
-      me: this._userRepository.selectUser(),
-      activePlayer: this.game.round.selectActivePlayer(),
-    }).pipe(
-      tap(({me, activePlayer}) => {
-        const bot = new MediumBot();
-        if(activePlayer) {
-          // bot.makeMove(this.game, activePlayer)
-        }
-        if(me?.id !== activePlayer?.id && activePlayer) {
-          bot.makeMove(this.game, activePlayer)
 
-        }
-      }),
-      filter(({me, activePlayer}) => me?.id === activePlayer?.id),
-    ).subscribe(() => {
-      this.openDiceOverlay(this.game.rollDice()).subscribe();
+    this.game.selectDice().pipe(
+    ).subscribe((dice) => {
+      this.openDiceOverlay(dice).subscribe();
     })
 
-    for(let i = 0; i < 5; i++) {
+    for(let i = 0; i < 1; i++) {
       this.game.nextRound();
     }
-
+    // this.game.startGame();
   }
 
   private syncStates() {
+    this.game.selectCurrentTimer().subscribe((data) => {
+      dispatch(RoundCountdownActions.setRoundCountdown({
+        countdown: data,
+      }))
+      console.log(data);
+    })
     this.game.selectBankInventoryUpdate().subscribe(inventory => {
       this._bankRepository.updateResourceAmount(inventory.type, inventory.amount);
     });
@@ -81,7 +77,7 @@ export class GameLocalClient {
         if(me) {
           const player = this.game.round.getPlayerById(me.id)
           if(player) {
-            this._inventoryRepository.setResources(player.inventory.resources)
+            this._inventoryRepository.setResources(player.resourceInventory.resources)
           }
         }
         return this.game?.round.players.find((u) => u.id === me?.id)
@@ -95,8 +91,19 @@ export class GameLocalClient {
       this._inventoryRepository.updateResourceAmount(type, newAmount);
     })
 
-    this._game.round.selectRoundPlayers().subscribe(roundPlayers => {
-      this._roundPlayerRepository.setRoundPlayers(roundPlayers);
+    this._game.selectPlayers().subscribe(roundPlayers => {
+      //todo build a mapper
+      const roundplayers = roundPlayers.map((p): RoundPlayer => ({
+        color: p.color,
+        id: p.id,
+        isBot: p.roundPlayer.isBot,
+        name: p.name,
+        profileUrl: p.profileUrl,
+        researchCardCount: p.researchCardCount,
+        winningPoints: p.winningPointsAmount,
+        resourceCardCount: p.resourceCardCount
+      }))
+      this._roundPlayerRepository.setRoundPlayers(roundplayers);
     });
 
     this.game.round.selectActivePlayer().subscribe((player) => {
@@ -122,7 +129,7 @@ export class GameLocalClient {
 
     const playground = this.generatePlayground();
     const buildingGraph = playground.buildingGraph;
-    const bankInventory = new Inventory({
+    const bankInventory = new ResourceInventory({
       straw: 50,
       stone: 50,
       wool: 50,
@@ -157,13 +164,16 @@ export class GameLocalClient {
     const players: Player[] = roundPlayers.map((p, i) => {
       return new Player(
         p,
-        new Inventory({
+        new ResourceInventory({
           wood: 10,
           bricks: 10,
           stone: 10,
           straw: 10,
           wool: 10
         }), 
+        new WinningpointsInventory({
+          points: 0
+        }),
         new Graph()
       )
     });
@@ -202,6 +212,7 @@ playground.resourceFields[0].value = 3
   }
 
   private openDiceOverlay(dices: [number, number]): Observable<[number, number]> {
+    console.log("DICES", dices)
     const component = this.gameComponentRef.createComponent(DiceOverlayComponent);
     component.instance.dices = dices;
     return new Observable((subscriber) => {
@@ -237,26 +248,26 @@ playground.resourceFields[0].value = 3
         winningPoints: 3,
         isBot: true,
       },
-      {
-        id: '1412541241',
-        color: '#6B46C1',
-        profileUrl: '/assets/robot.jpg',
-        name: 'Robot',
-        researchCardCount: 6,
-        resourceCardCount: 3,
-        winningPoints: 1,
-        isBot: true,
-      },
-      {
-        id: '646546',
-        color: '#000000',
-        profileUrl: '/assets/robot.jpg',
-        name: 'Robot',
-        researchCardCount: 1,
-        resourceCardCount: 4,
-        winningPoints: 5,
-        isBot: true,
-      }
+      // {
+      //   id: '1412541241',
+      //   color: '#6B46C1',
+      //   profileUrl: '/assets/robot.jpg',
+      //   name: 'Robot',
+      //   researchCardCount: 6,
+      //   resourceCardCount: 3,
+      //   winningPoints: 1,
+      //   isBot: true,
+      // },
+      // {
+      //   id: '646546',
+      //   color: '#000000',
+      //   profileUrl: '/assets/robot.jpg',
+      //   name: 'Robot',
+      //   researchCardCount: 1,
+      //   resourceCardCount: 4,
+      //   winningPoints: 5,
+      //   isBot: true,
+      // }
     ];
   }
 }

@@ -1,3 +1,17 @@
 :host {
   display: block;
 }
+
+// Stile für den Button
+button {
+  background-color: white; // Hintergrundfarbe weiß
+  color: black; // Textfarbe schwarz
+  padding: 5px 10px; // Innenabstand des Buttons
+  border: 2px solid black; // Schwarze Umrandung
+  border-radius: 20px; // Runde Ecken
+  cursor: pointer; // Zeiger-Cursor bei Hover
+
+  &:hover {
+    background-color: #f0f0f0; // Hintergrundfarbe beim Überfahren
+  }
+}

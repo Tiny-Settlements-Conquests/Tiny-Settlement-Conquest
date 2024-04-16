@@ -87,7 +87,6 @@ export class Game {
     // timer(this.gameConfig.maxRollTimer).pipe(
     //   takeUntil(this.rolledDice)
     // ).subscribe(() => {
-    //   console.log("IM DONE WITH FUASFG ASFAFSXVCYXVVX")
     //   // timer abgelaufen starte neue runde
     //   this.startRoundTimer();
     // })
@@ -98,7 +97,6 @@ export class Game {
     timer(this.gameConfig.maxRoundTimer).pipe(
       // takeUntil(this.selectActiveRoundPlayer())
     ).subscribe(() => {
-      console.log("IM SO DONE WITH YOU")
       // timer abgelaufen starte neue runde
       this.nextRound();
     })

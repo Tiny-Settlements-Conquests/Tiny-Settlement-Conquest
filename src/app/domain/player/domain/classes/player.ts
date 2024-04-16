@@ -26,7 +26,6 @@ export class Player {
       this._resourceInventory.selectInventory(),
       this._winngingPointsInventory.selectInventory()
     ]).pipe(
-      tap((c) => console.log("JAA",c)),
       map(() => this)
     )
   }

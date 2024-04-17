@@ -25,9 +25,9 @@ export class DiceOverlayComponent{
   dices: [number, number] = [1,1]
 
   public rollDices() {
-    if(this.hasRolled()) return
+    if(this.hasRolled() || this.diceComponent === undefined) return
     this.hasRolled.set(true);
-    this.diceComponent!.setDices = this.dices;
+    this.diceComponent.setDices = this.dices;
     this.diceComponent?.result.subscribe(() => {
       this.result.next(this.dices);
     })

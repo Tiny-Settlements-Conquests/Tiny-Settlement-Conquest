@@ -60,6 +60,7 @@ export class GameLocalClient {
 
     this.game.selectRolledDice().pipe(
     ).subscribe((dices) => {
+      console.log("SELECECT ROLLED DICE", dices)
       this.rollDice(dices);
     })
 
@@ -231,9 +232,7 @@ playground.resourceFields[0].value = 3
     const diceRef = this._diceRef;
     if(!diceRef) return;
 
-    console.log("YYYY");
-
-    console.log("DICES", dices);
+    console.log("ROLLDICE", dices);
     diceRef.instance.dices = dices;
     diceRef.instance.rollDices()
     diceRef.instance.result.pipe(

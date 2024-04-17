@@ -83,16 +83,11 @@ export class Game {
   public startRoundTimers() {
     this.startRollTimer().pipe(
       takeUntil(this._pauseSignal),
-      takeUntil(this._nextRoundSignal),
-      take(1),
       switchMap(() => {
         console.log('roll timer abgelaufen');
-        this.rollDice();
         return this.startRoundTimer()
       }),
-      take(1),
       takeUntil(this._pauseSignal),
-      takeUntil(this._nextRoundSignal),
     ).subscribe(() => {
       this._nextRoundSignal.next(true);
       console.log("runde zu ende...")
@@ -107,8 +102,13 @@ export class Game {
     return race(
       timer(this.gameConfig.maxRollTimer).pipe(
         takeUntil(this._nextRoundSignal),
+        tap(() => {
+          this.rollDice();
+        })
       ),
       this.rolledDice
+    ).pipe(
+      takeUntil(this._nextRoundSignal)
     )
   }
 
@@ -118,7 +118,8 @@ export class Game {
       timer(this.gameConfig.maxRoundTimer).pipe(
         takeUntil(this._nextRoundSignal),
       ),
-      this._round.selectRoundEnd()
+    ).pipe(
+      takeUntil(this._nextRoundSignal)
     )
   }
 
@@ -199,7 +200,6 @@ export class Game {
   }
 
   public rollDice() {
-    console.log("ROLL DICE");
     if(this.hasRolledThisRound) throw new Error();
     //Todo auslagern
     const dices = rollDices();

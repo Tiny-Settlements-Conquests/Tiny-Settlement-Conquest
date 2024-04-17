@@ -1,21 +1,9 @@
-<app-block class="flex flex-col overflow-y-auto overflow-x-hidden h-[200px]">
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-    <div>Test</div>
-
-
+<app-block class="block ">
+    <app-block class="flex flex-col overflow-y-auto overflow-x-hidden h-[200px]">
+        <div *ngFor="let item of historyArray">{{ item }}</div>
+    </app-block>
+    <div class="p-2 flex gap-2 items-center">
+        <button (click)="handleTestHistoryClick()">Test History</button>
+        <button (click)="handleClearHistoryClick()">Clear History</button>
+    </div>
 </app-block>

@@ -56,7 +56,7 @@ export class LobbyComponent implements OnInit {
         id: '14124',
         profileUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU',
         isHost: true,
-        name: 'Clemens S.',
+        name: 'AA.',
         ready: true
       },
       isOpen: true
@@ -66,7 +66,7 @@ export class LobbyComponent implements OnInit {
         id: '1412523',
         profileUrl: 'https://media.gq-magazine.co.uk/photos/5f0d7b425a8518ef1776783c/master/w_1600%2Cc_limit/20200714-mercedes-05.jpg',
         isHost: false,
-        name: 'Tom S.',
+        name: 'Test.',
         ready: false
       },
       isOpen: true
@@ -77,7 +77,7 @@ export class LobbyComponent implements OnInit {
         id: '1412541241',
         profileUrl: 'https://avatars.githubusercontent.com/u/1330321?v=4',
         isHost: false,
-        name: 'Andreas Dost',
+        name: 't',
         ready: false
       },
       isOpen: true
@@ -87,7 +87,7 @@ export class LobbyComponent implements OnInit {
         id: '646546',
         profileUrl: 'https://avatars.githubusercontent.com/u/1330321?v=4',
         isHost: false,
-        name: 'Christine D.',
+        name: 'Woo',
         ready: true
       },
       isOpen: true

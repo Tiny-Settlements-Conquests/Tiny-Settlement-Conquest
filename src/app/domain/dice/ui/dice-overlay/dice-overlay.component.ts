@@ -18,11 +18,10 @@ export class DiceOverlayComponent{
   @ViewChild(DiceRandomNumberComponent)
   private readonly diceComponent : DiceRandomNumberComponent | undefined;
 
-  public readonly result = output<[number, number]>();
+  public readonly result = new Subject();
 
-  @Input({
-    required: true
-  })
+  public readonly diceRollStart = new Subject();
+
   dices: [number, number] = [1,1]
 
   public rollDices() {
@@ -30,7 +29,7 @@ export class DiceOverlayComponent{
     this.hasRolled.set(true);
     this.diceComponent!.setDices = this.dices;
     this.diceComponent?.result.subscribe(() => {
-      this.result.emit(this.dices);
+      this.result.next(this.dices);
     })
   }
 }

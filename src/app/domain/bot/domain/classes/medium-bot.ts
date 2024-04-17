@@ -1,7 +1,6 @@
-import { rollDices } from "../../../dice/domain/functions/roll-dice.function";
 import { Game } from "../../../game/domain/classes/game";
 import { Player } from "../../../player/domain/classes/player";
-import { Bot, BotPriority } from "../models/bot.model";
+import { Bot } from "../models/bot.model";
 
 export class MediumBot implements Bot {
 

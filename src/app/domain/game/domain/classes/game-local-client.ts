@@ -1,9 +1,8 @@
-import { DestroyRef, ViewContainerRef } from "@angular/core";
+import { ComponentRef, DestroyRef, ViewContainerRef } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { dispatch } from '@ngneat/effects';
-import { Observable, combineLatest, filter, map, switchMap, tap } from "rxjs";
+import { Observable, delay, filter, map, switchMap, take, tap } from "rxjs";
 import { BankRepository } from "../../../bank/domain/state/bank.repository";
-import { MediumBot } from "../../../bot/domain/classes/medium-bot";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
@@ -21,11 +20,11 @@ import { PlaygroundGridGenerator } from "../../../playground/domain/generators/p
 import { ResourceGenerator } from "../../../resources/classes/generators/resource-generator";
 import { Round } from "../../../round/domain/classes/round";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
+import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
 import { RoundPlayerRepository } from "../../../round/domain/state/round-players.repository";
 import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameModeRepository } from "../state/game-mode.repository";
 import { Game } from "./game";
-import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
 
 export class GameLocalClient {
   private _game: Game
@@ -34,8 +33,10 @@ export class GameLocalClient {
     return this._game;
   }
 
+  private _diceRef: undefined | ComponentRef<DiceOverlayComponent> = undefined;
+
   constructor(
-    private gameComponentRef: ViewContainerRef,
+    private _gameComponentRef: ViewContainerRef,
     private _bankRepository: BankRepository,
     private _inventoryRepository: InventoryRepository,
     private _roundPlayerRepository: RoundPlayerRepository,
@@ -50,14 +51,22 @@ export class GameLocalClient {
 
   private simulateGame() {
 
-    this.game.selectDice().pipe(
-    ).subscribe((dice) => {
-      this.openDiceOverlay(dice).subscribe();
+    this.game.selectRound().pipe(
+    ).subscribe((d) => {
+      console.log("LOCK",d)
+      this._diceRef?.destroy();
+      this.openDiceOverlay()
     })
 
-    for(let i = 0; i < 1; i++) {
-      this.game.nextRound();
-    }
+    this.game.selectRolledDice().pipe(
+    ).subscribe((dices) => {
+      this.rollDice(dices);
+    })
+
+
+    // for(let i = 0; i < 1; i++) {
+    //   this.game.nextRound();
+    // }
     // this.game.startGame();
   }
 
@@ -211,19 +220,26 @@ playground.resourceFields[0].value = 3
     return playground
   }
 
-  private openDiceOverlay(dices: [number, number]): Observable<[number, number]> {
-    console.log("DICES", dices)
-    const component = this.gameComponentRef.createComponent(DiceOverlayComponent);
-    component.instance.dices = dices;
-    return new Observable((subscriber) => {
-      component.instance.result.subscribe((result) => {
-        setTimeout(() => {
-          component.destroy();
-        }, 1000)
-        subscriber.next(result);
-        subscriber.complete();
-      })
-    })
+  private openDiceOverlay() {
+    const component = this._gameComponentRef.createComponent(DiceOverlayComponent);
+    this._diceRef = component;
+
+    component.instance.diceRollStart.subscribe(() => this.game.rollDice());
+  }
+
+  private rollDice(dices: [number, number]) {
+    const diceRef = this._diceRef;
+    if(!diceRef) return;
+
+    console.log("YYYY");
+
+    console.log("DICES", dices);
+    diceRef.instance.dices = dices;
+    diceRef.instance.rollDices()
+    diceRef.instance.result.pipe(
+      take(1),
+      delay(1000)
+    ).subscribe(() => diceRef.destroy())
   }
 
   private generatePlayers() {

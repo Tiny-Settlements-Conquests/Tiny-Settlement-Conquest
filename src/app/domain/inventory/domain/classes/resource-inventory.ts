@@ -1,5 +1,3 @@
-import { Subject, BehaviorSubject } from "rxjs";
-import { ResourceType } from "../../../resources/models/resource-field.model";
 import { Inventory } from "./inventory";
 
 type Resources = {

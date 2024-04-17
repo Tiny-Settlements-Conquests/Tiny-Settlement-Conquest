@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, combineLatest } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, map, tap } from "rxjs";
 import { Player } from "../../../player/domain/classes/player";
 
 export class Round {
@@ -6,6 +6,7 @@ export class Round {
 
   private readonly _activePlayer = new BehaviorSubject<Player | null>(null);
   private readonly _roundNumber = new BehaviorSubject(0);
+  private readonly _roundEnd = new Subject();
   private _activePlayerIndex = 0;
 
   public get roundNumber(): Observable<number> {
@@ -54,10 +55,17 @@ export class Round {
   }
 
   public selectRound() {
-    return combineLatest({
-      player: this._activePlayer,
-      iteration: this._roundNumber
-    })
+    return this._roundNumber.pipe(
+      map((iteration) => ({
+        iteration,
+        activePlayer: this.activePlayer
+      }),
+      tap(() => console.log("YYYYYYY")))
+    )
+  }
+
+  public selectRoundEnd() {
+    return this._roundEnd
   }
 
 
@@ -67,5 +75,6 @@ export class Round {
     if(idx === -1) return;
     this._activePlayerIndex = idx;
     this._activePlayer.next(this._players[idx]);
+    this._roundEnd.next(true);
   }
 }

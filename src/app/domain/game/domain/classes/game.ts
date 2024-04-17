@@ -1,39 +1,16 @@
-import { BehaviorSubject, Observable, Subject, combineLatest, combineLatestAll, filter, interval, map, merge, mergeAll, share, take, takeUntil, tap, timeout, timeoutWith, timer } from "rxjs";
+import { BehaviorSubject, Subject, combineLatest, map, merge, race, share, switchMap, take, takeUntil, tap, timer } from "rxjs";
+import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
-import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
-import { Inventory } from "../../../inventory/domain/classes/inventory";
-import { Playground } from "../../../playground/domain/classes/playground";
-import { Point } from "../../../primitives/classes/Point";
-import { Round } from "../../../round/domain/classes/round";
-import { GameMode } from "../models/game-mode.model";
-import { Player } from "../../../player/domain/classes/player";
-import { ResourceType } from "../../../resources/models/resource-field.model";
-import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
-import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { rollDices } from "../../../dice/domain/functions/roll-dice.function";
+import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
-import { timeMapper } from "../../../countdown/domain/operators/time-mapper.operator";
+import { Playground } from "../../../playground/domain/classes/playground";
+import { Round } from "../../../round/domain/classes/round";
 import { defaultOrderStrategy } from "../../../round/domain/strategies/default-round-order.strategy";
+import { GameMode } from "../models/game-mode.model";
+import { GameDependencies, GameConfig } from "../models/game.model";
 
-interface GameConfig {
-  resourceMultiplier: number,
-  maxTownsPerPlayer: number,
-  maxCitiesPerPlayer: number,
-  maxRoadsPerPlayer: number,
-  winPoints: number,
-  maxRoundTimer: number,
-  maxRollTimer: number,
-}
-
-interface GameDependencies {
-  playground: Playground,
-  round: Round,
-  bank: ResourceInventory,
-  roadBuildManager: RoadBuildManager,
-  buildingBuildManager: BuildingBuildManager,
-  buildCostManager: BuildCostManager
-}
 
 export class Game {
   public readonly playground: Playground;
@@ -48,14 +25,17 @@ export class Game {
   private readonly rolledDice = new Subject<[number, number]>();
   private hasRolledThisRound = false;
 
-  private readonly state = new BehaviorSubject<'roll' | 'round'>('roll');
+  private readonly _state = new BehaviorSubject<'roll' | 'round'>('roll');
+  private readonly _nextRoundSignal = new Subject();
+  private readonly _pauseSignal = new Subject();
+  private readonly _endSignal = new Subject();
 
   constructor(
     dependencies: GameDependencies,
     private readonly gameConfig: GameConfig = {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
-      maxRollTimer: 5_000,
+      maxRollTimer: 5000,
       maxRoundTimer: 10_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
@@ -68,6 +48,28 @@ export class Game {
     this._buildingBuildManager = dependencies.buildingBuildManager;
     this._roadBuildManager = dependencies.roadBuildManager;
     this._costManager = dependencies.buildCostManager;
+    this.startGame();
+  }
+
+  private startGame() {
+    this.startRoundTimers();
+    const defaultOrder = defaultOrderStrategy(this._round);
+    
+    this._nextRoundSignal.pipe(
+      takeUntil(this._endSignal)
+    ).subscribe(() => {
+      console.log("NEXT ROUND");
+      defaultOrder.nextRound();
+      this.startRoundTimers();
+    })
+  
+  }
+
+  public pause() {
+    this._pauseSignal.next(true);
+  }
+
+  private resume() {
   }
 
   public get roadBuildManager() {
@@ -78,28 +80,46 @@ export class Game {
     return this._costManager;
   }
 
-  public startGame() {
+  public startRoundTimers() {
+    this.startRollTimer().pipe(
+      takeUntil(this._pauseSignal),
+      takeUntil(this._nextRoundSignal),
+      take(1),
+      switchMap(() => {
+        console.log('roll timer abgelaufen');
+        this.rollDice();
+        return this.startRoundTimer()
+      }),
+      take(1),
+      takeUntil(this._pauseSignal),
+      takeUntil(this._nextRoundSignal),
+    ).subscribe(() => {
+      this._nextRoundSignal.next(true);
+      console.log("runde zu ende...")
+    })
   }
 
+  /**
+   * @returns sobald der timer abgelaufen oder der nutzer die roll funktion ausgeführt hat
+   */
   private startRollTimer() {
-    this.state.next('roll');
-    this.rollDice();
-    // timer(this.gameConfig.maxRollTimer).pipe(
-    //   takeUntil(this.rolledDice)
-    // ).subscribe(() => {
-    //   // timer abgelaufen starte neue runde
-    //   this.startRoundTimer();
-    // })
+    this._state.next('roll');
+    return race(
+      timer(this.gameConfig.maxRollTimer).pipe(
+        takeUntil(this._nextRoundSignal),
+      ),
+      this.rolledDice
+    )
   }
 
   private startRoundTimer() {
-    this.state.next('round');
-    timer(this.gameConfig.maxRoundTimer).pipe(
-      // takeUntil(this.selectActiveRoundPlayer())
-    ).subscribe(() => {
-      // timer abgelaufen starte neue runde
-      this.nextRound();
-    })
+    this._state.next('round');
+    return race(
+      timer(this.gameConfig.maxRoundTimer).pipe(
+        takeUntil(this._nextRoundSignal),
+      ),
+      this._round.selectRoundEnd()
+    )
   }
 
   public selectActiveRoundPlayer() {
@@ -113,7 +133,7 @@ export class Game {
   public selectCurrentTimer() {
     return combineLatest({
       player: this.selectActiveRoundPlayer(),
-      typ: this.state,
+      typ: this._state,
     }).pipe(
       map(({ typ }) => {
         if (typ === 'roll') {
@@ -173,13 +193,13 @@ export class Game {
   }
 
   public nextRound() {
-    const defaultOrder = defaultOrderStrategy(this._round);
-    defaultOrder.nextRound();
-    this.startRollTimer();
-    // this.startRoundTimer()
+    console.log("next ROUND")
+    this._nextRoundSignal.next(true);
+    
   }
 
   public rollDice() {
+    console.log("ROLL DICE");
     if(this.hasRolledThisRound) throw new Error();
     //Todo auslagern
     const dices = rollDices();

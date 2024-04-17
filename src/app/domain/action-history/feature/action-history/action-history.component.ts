@@ -12,4 +12,6 @@ import { BlockComponent } from '../../../layouts/ui/block/block.component';
   styleUrl: './action-history.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ActionHistoryComponent { }
+export class ActionHistoryComponent {
+
+}

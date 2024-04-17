@@ -10,7 +10,6 @@ interface StorageUpdate<T> {
 
 export abstract class Inventory<T extends {[key: string | number]: number}> {
   protected readonly _inventoryUpdate = new Subject<StorageUpdate<keyof T>>();
-
   protected readonly _inventory = new BehaviorSubject<T>({} as T);
 
   constructor(_initData: T) {

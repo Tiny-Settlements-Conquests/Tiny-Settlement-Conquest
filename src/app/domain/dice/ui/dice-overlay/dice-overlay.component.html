@@ -1,5 +1,5 @@
 <div class="absolute h-full w-full bg-slate-800 opacity-60 z-[100]"></div>
 <app-dice-random-number class="text-9xl z-[110]" />
 @if(hasRolled() === false) {
-    <button class="z-[110]" (click)="rollDices()">Roll</button>
+    <button class="z-[110]" (click)="diceRollStart.next(true)">Roll</button>
 }

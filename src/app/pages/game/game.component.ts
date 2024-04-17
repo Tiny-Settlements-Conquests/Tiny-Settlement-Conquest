@@ -1,43 +1,29 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ViewContainerRef, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Observable } from 'rxjs';
 import { ActionHistoryComponent } from '../../domain/action-history/feature/action-history/action-history.component';
+import { BankRepository } from '../../domain/bank/domain/state/bank.repository';
 import { BankComponent } from '../../domain/bank/feature/bank/bank.component';
-import { BuildCostManager } from '../../domain/buildings/domain/classes/build-cost-manager';
-import { BuildingBuildManager } from '../../domain/buildings/domain/classes/building-build-manager';
-import { RoadBuildManager } from '../../domain/buildings/domain/classes/road-build-manager';
-import { GraphBuildingNode } from '../../domain/buildings/domain/graph/graph-building-node';
 import { BuildingsSelectionComponent } from '../../domain/buildings/feature/buildings-selection/buildings-selection.component';
 import { ChatComponent } from '../../domain/chat/feature/chat/chat.component';
 import { DiceOverlayComponent } from '../../domain/dice/ui/dice-overlay/dice-overlay.component';
 import { DiceRandomNumberComponent } from '../../domain/dice/ui/dice-random-number/dice-random-number.component';
 import { Game } from '../../domain/game/domain/classes/game';
+import { GameLocalClient } from '../../domain/game/domain/classes/game-local-client';
 import { GameModeRepository } from '../../domain/game/domain/state/game-mode.repository';
 import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
-import { Graph } from '../../domain/graph/domain/classes/graph';
-import { Inventory } from '../../domain/inventory/domain/classes/inventory';
 import { InventoryRepository } from '../../domain/inventory/domain/state/inventory.repository';
 import { ResourceInventoryComponent } from '../../domain/inventory/feature/resource-inventory/resource-inventory.component';
 import { BlockComponent } from '../../domain/layouts/ui/block/block.component';
 import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
-import { Player } from '../../domain/player/domain/classes/player';
 import { PlayerCardComponent } from '../../domain/player/feature/players-card/player-card.component';
-import { PlaygroundGenerator } from '../../domain/playground/domain/generators/playground-generator';
-import { PlaygroundGraphGenerator } from '../../domain/playground/domain/generators/playground-graph-generator';
-import { PlaygroundGridGenerator } from '../../domain/playground/domain/generators/playground-grid-generator';
-import { ResourceGenerator } from '../../domain/resources/classes/generators/resource-generator';
-import { Round } from '../../domain/round/domain/classes/round';
 import { RoundPlayerRepository } from '../../domain/round/domain/state/round-players.repository';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
+import { RoundCountdownComponent } from '../../domain/round/feature/round-countdown/round-countdown.component';
 import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-player-cards/round-player-cards.component';
 import { TradeCardComponent } from '../../domain/trade/feature/trade-card/trade-card.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
-import { BankRepository } from '../../domain/bank/domain/state/bank.repository';
-import { Playground } from '../../domain/playground/domain/classes/playground';
-import { GameLocalClient } from '../../domain/game/domain/classes/game-local-client';
-import { RoundCountdownComponent } from '../../domain/round/feature/round-countdown/round-countdown.component';
 
 
 

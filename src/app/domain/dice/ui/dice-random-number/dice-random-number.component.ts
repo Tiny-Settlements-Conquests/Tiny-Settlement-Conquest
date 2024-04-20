@@ -4,6 +4,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faDiceFive, faDiceFour, faDiceOne, faDiceSix, faDiceThree, faDiceTwo } from '@fortawesome/free-solid-svg-icons';
 import { finalize, interval, take } from 'rxjs';
 import { rollDice, rollDices } from '../../domain/functions/roll-dice.function';
+import { Dices } from '../../domain/models/dice.model';
 
 @Component({
   selector: 'app-dice-random-number',
@@ -42,7 +43,7 @@ export class DiceRandomNumberComponent {
     return this.icons[this.diceTwoValue()] as IconDefinition;
   });
 
-  public readonly result = output<[number, number]>();
+  public readonly result = output<Dices>();
 
   public readonly icons: { [key: number]: IconDefinition } = {
     0: faDiceOne,
@@ -54,7 +55,7 @@ export class DiceRandomNumberComponent {
   };
 
   @Input()
-  public set dices(dices: [number, number]) {
+  public set dices(dices: Dices) {
     interval(90).pipe(
       take(20),
       finalize(() => {

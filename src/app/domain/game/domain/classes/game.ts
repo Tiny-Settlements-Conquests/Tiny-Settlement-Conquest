@@ -35,7 +35,7 @@ export class Game {
     private readonly gameConfig: GameConfig = {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
-      maxRollTimer: 5000,
+      maxRollTimer: 5_000,
       maxRoundTimer: 10_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,

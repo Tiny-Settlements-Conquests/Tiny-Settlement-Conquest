@@ -25,6 +25,7 @@ import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-play
 import { TradeCardComponent } from '../../domain/trade/feature/trade-card/trade-card.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
 import { AppComponent } from '../../app.component';
+import { DiceRepository } from '../../domain/dice/domain/state/dice.repository';
 
 
 
@@ -60,7 +61,8 @@ export class GameComponent {
   private readonly _destroyRef = inject(DestroyRef);
   private readonly _app = inject(AppComponent);
   private readonly _inventoryRepository = inject(InventoryRepository);
-  private readonly _bankRepository = inject(BankRepository)
+  private readonly _bankRepository = inject(BankRepository);
+  private readonly _diceRepository = inject(DiceRepository)
 
   //todo das overlay nochmal umbauen, sodass es einfach nur über dem canvas liegt
   public icons = {
@@ -85,6 +87,7 @@ export class GameComponent {
       this._roundPlayerRepository,
       this._userRepository,
       this._gameModeRepository,
+      this._diceRepository,
       this._destroyRef
     );
     this._game.set(client.game)

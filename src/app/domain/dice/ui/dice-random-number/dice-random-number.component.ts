@@ -53,20 +53,8 @@ export class DiceRandomNumberComponent {
     5: faDiceSix
   };
 
-  public roll() {
-    interval(90).pipe(
-      take(20),
-      finalize(() => {
-        this.result.emit(rollDices());
-      })
-    ).subscribe(() => {
-      this.diceOneValue.set(rollDice() - 1 );
-      this.diceTwoValue.set(rollDice() - 1 );
-    })
-  }
-
   @Input()
-  public set setDices(dices: [number, number]) {
+  public set dices(dices: [number, number]) {
     interval(90).pipe(
       take(20),
       finalize(() => {

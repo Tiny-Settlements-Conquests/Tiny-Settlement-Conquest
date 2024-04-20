@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { Component, ViewContainerRef, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
@@ -12,4 +11,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
+  public readonly _ref = inject(ViewContainerRef)
 }

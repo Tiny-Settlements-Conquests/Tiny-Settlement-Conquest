@@ -24,6 +24,7 @@ import { RoundCountdownComponent } from '../../domain/round/feature/round-countd
 import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-player-cards/round-player-cards.component';
 import { TradeCardComponent } from '../../domain/trade/feature/trade-card/trade-card.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
+import { AppComponent } from '../../app.component';
 
 
 
@@ -57,7 +58,7 @@ export class GameComponent {
   private readonly _userRepository = inject(UserRepository);
   private readonly _roundPlayerRepository = inject(RoundPlayerRepository);
   private readonly _destroyRef = inject(DestroyRef);
-  private readonly _ref = inject(ViewContainerRef);
+  private readonly _app = inject(AppComponent);
   private readonly _inventoryRepository = inject(InventoryRepository);
   private readonly _bankRepository = inject(BankRepository)
 
@@ -78,7 +79,7 @@ export class GameComponent {
 
   public ngOnInit() {
     const client = new GameLocalClient(
-      this._ref,
+      this._app._ref,
       this._bankRepository,
       this._inventoryRepository,
       this._roundPlayerRepository,

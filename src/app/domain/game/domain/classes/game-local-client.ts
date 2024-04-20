@@ -1,7 +1,7 @@
 import { ComponentRef, DestroyRef, ViewContainerRef } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { dispatch } from '@ngneat/effects';
-import { Observable, delay, filter, map, switchMap, take, tap } from "rxjs";
+import { Subject, delay, filter, map, switchMap, take, takeUntil } from "rxjs";
 import { BankRepository } from "../../../bank/domain/state/bank.repository";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
@@ -34,6 +34,7 @@ export class GameLocalClient {
   }
 
   private _diceRef: undefined | ComponentRef<DiceOverlayComponent> = undefined;
+  private _diceOverlayOpen = new Subject();
 
   constructor(
     private _gameComponentRef: ViewContainerRef,
@@ -53,7 +54,6 @@ export class GameLocalClient {
 
     this.game.selectRound().pipe(
     ).subscribe((d) => {
-      console.log("LOCK",d)
       this._diceRef?.destroy();
       this.openDiceOverlay()
     })
@@ -222,10 +222,14 @@ playground.resourceFields[0].value = 3
   }
 
   private openDiceOverlay() {
+    this._diceOverlayOpen.next(true);
+    
     const component = this._gameComponentRef.createComponent(DiceOverlayComponent);
     this._diceRef = component;
-
-    component.instance.diceRollStart.subscribe(() => this.game.rollDice());
+    component.instance.diceRollStart.pipe(
+      take(1),
+      takeUntil(this._diceOverlayOpen)
+    ).subscribe(() => this.game.rollDice());
   }
 
   private rollDice(dices: [number, number]) {

@@ -1,27 +1,39 @@
-# Catan
+# Tiny Settlement Conquests
+Tiny Settlement Conquests is an exciting project that brings the beloved world of Catan to life in a new dimension. As a clone of the classic game Catan, we aim to provide a unique gaming experience that captures the charm and challenges of the original while also creating new opportunities for players.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.5.
+![alt text](image.png)
+
+
+
+### Disclaimer:
+ Please note that the project is still in an early phase of development and some bugs may occour
+
+## Project Overview
+Our goal is to develop a complete Catan clone, which will initially be available as a single-player game. The current version already includes some core features, including random map generation, building roads, villages, and cities, as well as a basic bot for solo players.
+
+## Current State Overview
+- Randomly generated map: Each game starts on a unique map, ensuring a varied player experience.
+- Building roads, villages, cities: Players can expand their settlements and territory on the map.
+- Basic bot: A simple computer-controlled opponent allows single players to compete against a virtual opponent.
+
+## Missing Features
+While our current version already offers some basic features, there are still some key elements missing to complete the player experience:
+
+- Trade: The ability to trade resources with other players or the bot to develop strategies and overcome resource shortages.
+- Development cards: A variety of cards that grant players various advantages or influence the course of the game.
+- Map editor: A tool that allows players to create and share their own maps to create customized game worlds.
+- Event history: A record of past events and moves to make the game progress understandable and support strategic decisions.
+
+## Future Outlook
+We have big plans for the future of Tiny Settlement Conquests. We plan to introduce a multiplayer version that allows players to test their skills and strategies in real-time against other players around the world.
+
+## Become a Contributor!
+If you're interested in being part of this exciting project and helping us further develop Tiny Settlement Conquests, we'd love to hear from you! Whether you're a programmer, graphic designer, tester, or just an enthusiastic Catan fan, there are many ways you can contribute to advancing this project. Get in touch and become part of our team!
 
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.

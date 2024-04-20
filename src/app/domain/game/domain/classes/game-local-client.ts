@@ -25,6 +25,7 @@ import { RoundPlayerRepository } from "../../../round/domain/state/round-players
 import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameModeRepository } from "../state/game-mode.repository";
 import { Game } from "./game";
+import { DiceRepository } from "../../../dice/domain/state/dice.repository";
 
 export class GameLocalClient {
   private _game: Game
@@ -43,6 +44,7 @@ export class GameLocalClient {
     private _roundPlayerRepository: RoundPlayerRepository,
     private _userRepository: UserRepository,
     private _gameModeRepository: GameModeRepository,
+    private _diceRepository: DiceRepository,
     private _destroyRef: DestroyRef
   ) { 
     this._game = this.generateGame();
@@ -54,6 +56,7 @@ export class GameLocalClient {
 
     this.game.selectRound().pipe(
     ).subscribe((d) => {
+      this._diceRepository.resetDices();
       this._diceRef?.destroy();
       this.openDiceOverlay()
     })
@@ -61,6 +64,7 @@ export class GameLocalClient {
     this.game.selectRolledDice().pipe(
     ).subscribe((dices) => {
       console.log("SELECECT ROLLED DICE", dices)
+      this._diceRepository.setDices(dices);
       this.rollDice(dices);
     })
 

@@ -1,16 +1,10 @@
 import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
 import { Graph } from "../../../graph/domain/classes/graph";
-import { GraphConnection } from "../../../graph/domain/classes/graph-connection";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Point } from "../../../primitives/classes/Point";
 import { distance } from "../../../primitives/functions/util";
-import { PointRendererService } from "../../../primitives/renderer/point-renderer.service";
-import { ResourceGenerator } from "../../../resources/classes/generators/resource-generator";
-import { ResourceField } from "../../../resources/models/resource-field.model";
-import { PlaygroundGraphGenerator } from "../generators/playground-graph-generator";
-import { PlaygroundGridGenerator } from "../generators/playground-grid-generator";
+import { ResourceField } from "../../../resources/domain/models/resource-field.model";
 import { PlaygroundDimensions } from "../models/playground.model";
-import { PlaygroundGraphRenderer } from "../renderer/playground-graph-renderer";
 import { Field } from "./field";
 
 export interface PlaygroundRenderer {

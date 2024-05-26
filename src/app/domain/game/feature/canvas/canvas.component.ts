@@ -6,9 +6,9 @@ import { FieldRenderService } from '../../../playground/domain/renderer/field-re
 import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
 import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
-import { ResourceFieldRendererService } from '../../../resources/classes/renderer/resource-field.renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
 import { Game } from '../../domain/classes/game';
+import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 
 @Component({
   selector: 'app-canvas',
@@ -87,7 +87,7 @@ export class CanvasComponent implements AfterViewInit {
       const point = this.viewport.getMouse(event);
       const nearbyGraphNode = this.game.playground.getNearestGraphNode(point)
       if(nearbyGraphNode) {
-        this.game!.tryBuildOnGraphNode(nearbyGraphNode)
+        this.game!.tryBuildBuildingOnGraphNode(nearbyGraphNode)
       } else {
         this.game.roadBuildManager.resetSelectedGraphNode();
       }

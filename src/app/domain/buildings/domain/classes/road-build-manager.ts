@@ -2,6 +2,7 @@ import { Graph } from "../../../graph/domain/classes/graph";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Player } from "../../../player/domain/classes/player";
 import { GraphBuildingNode } from "../graph/graph-building-node";
+import { PathType } from "../models/building.model";
 import { BuildCostManager } from "./build-cost-manager";
 
 export class RoadBuildManager {
@@ -18,27 +19,33 @@ export class RoadBuildManager {
 
   public tryBuildRoadBetween(player: Player, graphNodeA: GraphNode, graphNodeB: GraphNode) {
     try {
-      this.buildingCostManager.tryIfBuildingCanBeBuild(player, 'road');
+      this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
       this.checkNodesValidForRoad(player, graphNodeA, graphNodeB);
   
       this.buildRoadBetweenNodes(player, graphNodeA, graphNodeB);
-      this.buildingCostManager.removeResourcesByBuilding(player, 'road')
+      this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
   } catch(e) {
     this.resetSelectedGraphNode();
   }
   }
 
+  /**
+   * @deprecated use tryBuildRoadBetween instead
+   * @param player 
+   * @param graphNode 
+   * @returns 
+   */
   public tryBuildRoad(player: Player, graphNode: GraphNode) {
     try {
         if(!this._sourceGraphNode) {
           this._sourceGraphNode = graphNode;
           return;
         }
-        this.buildingCostManager.tryIfBuildingCanBeBuild(player, 'road');
+        this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
         this.checkNodesValidForRoad(player, graphNode, this._sourceGraphNode);
     
         this.buildRoadBetweenNodes(player, graphNode, this._sourceGraphNode);
-        this.buildingCostManager.removeResourcesByBuilding(player, 'road')
+        this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
     } catch(e) {
       this.resetSelectedGraphNode();
     }

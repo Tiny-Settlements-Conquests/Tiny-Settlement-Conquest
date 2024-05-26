@@ -1,12 +1,15 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ViewContainerRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { AppComponent } from '../../app.component';
+import { ActionHistoryRepository } from '../../domain/action-history/domain/state/action-history.repository';
 import { ActionHistoryComponent } from '../../domain/action-history/feature/action-history/action-history.component';
 import { BankRepository } from '../../domain/bank/domain/state/bank.repository';
 import { BankComponent } from '../../domain/bank/feature/bank/bank.component';
 import { BuildingsSelectionComponent } from '../../domain/buildings/feature/buildings-selection/buildings-selection.component';
 import { ChatComponent } from '../../domain/chat/feature/chat/chat.component';
+import { DiceRepository } from '../../domain/dice/domain/state/dice.repository';
 import { DiceOverlayComponent } from '../../domain/dice/ui/dice-overlay/dice-overlay.component';
 import { DiceRandomNumberComponent } from '../../domain/dice/ui/dice-random-number/dice-random-number.component';
 import { Game } from '../../domain/game/domain/classes/game';
@@ -24,8 +27,6 @@ import { RoundCountdownComponent } from '../../domain/round/feature/round-countd
 import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-player-cards/round-player-cards.component';
 import { TradeCardComponent } from '../../domain/trade/feature/trade-card/trade-card.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
-import { AppComponent } from '../../app.component';
-import { DiceRepository } from '../../domain/dice/domain/state/dice.repository';
 
 
 
@@ -62,7 +63,8 @@ export class GameComponent {
   private readonly _app = inject(AppComponent);
   private readonly _inventoryRepository = inject(InventoryRepository);
   private readonly _bankRepository = inject(BankRepository);
-  private readonly _diceRepository = inject(DiceRepository)
+  private readonly _diceRepository = inject(DiceRepository);
+  private readonly _actionHistoryRepository = inject(ActionHistoryRepository);
 
   //todo das overlay nochmal umbauen, sodass es einfach nur über dem canvas liegt
   public icons = {
@@ -88,6 +90,7 @@ export class GameComponent {
       this._userRepository,
       this._gameModeRepository,
       this._diceRepository,
+      this._actionHistoryRepository,
       this._destroyRef
     );
     this._game.set(client.game)

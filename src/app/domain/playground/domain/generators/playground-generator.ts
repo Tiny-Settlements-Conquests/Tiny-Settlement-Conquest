@@ -1,6 +1,6 @@
 import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
 import { Graph } from "../../../graph/domain/classes/graph";
-import { ResourceGenerator } from "../../../resources/classes/generators/resource-generator";
+import { ResourceGenerator } from "../../../resources/domain/classes/generators/resource-generator";
 import { Playground } from "../classes/playground";
 import { PlaygroundDimensions } from "../models/playground.model";
 import { PlaygroundGraphGenerator } from "./playground-graph-generator";

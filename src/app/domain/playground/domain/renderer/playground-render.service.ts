@@ -1,5 +1,5 @@
-import { ResourceFieldRendererService } from "../../../resources/classes/renderer/resource-field.renderer.service";
-import { ResourceField } from "../../../resources/models/resource-field.model";
+import { ResourceFieldRendererService } from "../../../resources/domain/classes/renderer/resource-field.renderer.service";
+import { ResourceField } from "../../../resources/domain/models/resource-field.model";
 import { Field } from "../classes/field";
 import { Playground } from "../classes/playground";
 import { FieldRenderService } from "./field-render.service.ts";

@@ -4,7 +4,7 @@ import { Dices } from "../models/dice.model";
 
 
 const diceStore = createStore(
-    { name: 'bank' },
+    { name: 'dice' },
     withProps<Dices | undefined>([
         1, 1
     ])

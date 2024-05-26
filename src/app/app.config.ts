@@ -6,6 +6,7 @@ import { Actions, provideEffects, provideEffectsManager } from '@ngneat/effects-
 import { devTools } from '@ngneat/elf-devtools';
 import { routes } from './app.routes';
 import { RoundCountdownEffects } from './domain/round/domain/state/countdown/round-countdown.effects';
+import { ActionHistoryEffects } from './domain/action-history/domain/state/action-history.effects';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -32,7 +33,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideElfDevTools(),
     provideEffectsManager(),
-    provideEffects(RoundCountdownEffects),
+    provideEffects(
+      RoundCountdownEffects, 
+      ActionHistoryEffects
+    ),
     provideAnimations(),
   ]
 };

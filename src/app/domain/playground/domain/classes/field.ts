@@ -1,6 +1,5 @@
 import { Point } from "../../../primitives/classes/Point";
 import { Polygon } from "../../../primitives/classes/Polygon";
-import { add, subtract } from "../../../primitives/functions/util";
 
 export class Field {
 

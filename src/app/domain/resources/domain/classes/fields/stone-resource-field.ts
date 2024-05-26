@@ -1,4 +1,4 @@
-import { Field } from "../../../playground/domain/classes/field";
+import { Field } from "../../../../playground/domain/classes/field";
 import { ResourceField } from "../../models/resource-field.model";
 import { Resource } from "./resource-field";
 

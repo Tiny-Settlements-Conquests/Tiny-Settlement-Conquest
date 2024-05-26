@@ -1,7 +1,7 @@
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Player } from "../../../player/domain/classes/player";
 import { Point } from "../../../primitives/classes/Point";
-import { Building, BuildingType } from "../models/building.model";
+import { Building, BuildingTyp } from "../models/building.model";
 
 export class GraphBuildingNode extends GraphNode {
   public constructor(
@@ -16,18 +16,18 @@ export class GraphBuildingNode extends GraphNode {
     return this._player
   }
 
-  private _buildingType: BuildingType | null = null;
+  private _building: Building | null = null;
 
   public hasBuilding(): boolean {
-    return this._buildingType !== null;
+    return this._building !== null;
   }
 
-  public get buildingType(): BuildingType | null {
-    return this._buildingType;
+  public get building(): Building | null {
+    return this._building;
   }
 
-  public tryBuild(building: BuildingType) {
-    if(this.buildingType) throw new Error('already has a building');
-    this._buildingType = building;
+  public tryBuild(building: Building) {
+    if(this._building) throw new Error('already has a building');
+    this._building = building;
   }
 }

@@ -1,8 +1,8 @@
 import { Inventory } from "../../../inventory/domain/models/inventory.model";
 
 import { Player } from "../../../player/domain/classes/player";
-import { ResourceType } from "../../../resources/models/resource-field.model";
-import { BuildingType } from "../models/building.model";
+import { ResourceType } from "../../../resources/domain/models/resource-field.model";
+import { Buildable, BuildingTyp, BuildingType, PathType, PlaceableType } from "../models/building.model";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 
 export class BuildCostManager {
@@ -23,23 +23,17 @@ export class BuildCostManager {
       road: {
         wood: 1,
         bricks: 1
+      },
+      seaPath: {
+        wood: 1,
+        bricks: 1
       }
     }
   ) { }
 
-  public tryIfBuildingCanBeBuild(player: Player, buildingType: BuildingType | 'road'): boolean {
-    try {
-      const inventory = player.resourceInventory.resources;
-      if(!this.checkIfHasEnoughResources(inventory, this.buildingCosts[buildingType])) throw new Error('has not enought resources');
-    } catch(e) {
-      throw new Error('Not enough resources');
-    }
-    return true;
-  }
-
-  public removeResourcesByBuilding(player: Player, buildingType: BuildingType | 'road') {
-    this.tryIfBuildingCanBeBuild(player, buildingType);
-    this.removeResources(player, this.buildingCosts[buildingType])
+  public hasPlayerEnoughtResources(player: Player, type: PlaceableType): boolean {
+    const inventory = player.resourceInventory.resources;
+    return this.checkIfHasEnoughResources(inventory, this.buildingCosts[type]);
   }
 
   private checkIfHasEnoughResources(inventory: Inventory, resources: Partial<Inventory>): boolean {
@@ -52,6 +46,10 @@ export class BuildCostManager {
     return hasEnough;
   }
 
+  public removeResourcesByBuilding(player: Player, type: PlaceableType) {
+    if(!this.hasPlayerEnoughtResources(player, type)) throw new Error('not enough resources');
+    this.removeResources(player, this.buildingCosts[type])
+  } 
 
   private removeResources(player: Player, resources: Partial<Inventory>) {
     Object.entries(resources).forEach(([key, value]) => {

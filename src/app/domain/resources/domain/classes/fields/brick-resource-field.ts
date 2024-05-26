@@ -1,10 +1,10 @@
-import { Field } from "../../../playground/domain/classes/field";
+import { Field } from "../../../../playground/domain/classes/field";
 import { ResourceField } from "../../models/resource-field.model";
 import { Resource } from "./resource-field";
 
 export class BrickResourceField extends Resource implements ResourceField {
   public readonly typ ='bricks';
-  public readonly color = '#f97316';
+  public readonly color = '#e46c2c';
 
   constructor(
     public readonly field: Field,

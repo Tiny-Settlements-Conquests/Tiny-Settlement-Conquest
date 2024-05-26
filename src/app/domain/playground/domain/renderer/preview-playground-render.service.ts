@@ -1,4 +1,4 @@
-import { ResourceField } from "../../../resources/models/resource-field.model";
+import { ResourceField } from "../../../resources/domain/models/resource-field.model";
 import { PlaygroundRenderService } from "./playground-render.service";
 
 export class PreviewPlaygroundRenderService extends PlaygroundRenderService {

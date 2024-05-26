@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createStore, withProps } from '@ngneat/elf';
 import { map } from 'rxjs';
-import { ResourceType } from '../../../resources/models/resource-field.model';
+import { ResourceType } from '../../../resources/domain/models/resource-field.model';
 import { Inventory } from '../models/inventory.model';
 
 const inventoryStore = createStore(

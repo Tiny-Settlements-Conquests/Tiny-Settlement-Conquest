@@ -1,5 +1,5 @@
 import { BehaviorSubject, Subject } from "rxjs";
-import { ResourceType } from "../../../resources/models/resource-field.model";
+import { ResourceType } from "../../../resources/domain/models/resource-field.model";
 
 interface StorageUpdate<T> {
   type: T;

@@ -1,4 +1,4 @@
-import { Field } from "../../playground/domain/classes/field";
+import { Field } from "../../../playground/domain/classes/field";
 
 export type ResourceType = 'stone' | 'wool' | 'bricks' | 'wood' | 'straw';
 
@@ -12,3 +12,7 @@ export interface ResourceField {
     resourceBackgroundImage: HTMLImageElement
 }
 
+export type ResourceCard = {
+    typ: ResourceType,
+    imageUrl: string
+}

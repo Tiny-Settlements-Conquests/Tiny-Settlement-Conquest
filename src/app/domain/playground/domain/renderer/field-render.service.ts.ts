@@ -1,7 +1,5 @@
 import { Point } from "../../../primitives/classes/Point";
-import { Polygon } from "../../../primitives/classes/Polygon";
-import { add, scale, subtract } from "../../../primitives/functions/util";
-import { PolygonRendererService } from "../../../primitives/renderer/polygon-renderer.service";
+import { add } from "../../../primitives/functions/util";
 import { Field } from "../classes/field";
 
 export class FieldRenderService {
@@ -12,7 +10,7 @@ export class FieldRenderService {
 
    }
 
-  render(field: Field,  {fillStyle = 'blue', backgroundImage = new Image(), strokeStyle = '#fcd34d', lineWidth = 12} = {}) {
+  render(field: Field,  {fillStyle = 'blue', backgroundImage = new Image(), strokeStyle = '#e9d6a5', lineWidth = 12} = {}) {
     const ctx = this.ctx;
     const polygon = field.polygon;
     ctx.save();

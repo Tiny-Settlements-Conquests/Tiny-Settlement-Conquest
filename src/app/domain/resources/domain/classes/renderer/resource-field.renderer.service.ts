@@ -1,4 +1,4 @@
-import { Point } from "../../../primitives/classes/Point";
+import { Point } from "../../../../primitives/classes/Point";
 
 export class ResourceFieldRendererService {
 

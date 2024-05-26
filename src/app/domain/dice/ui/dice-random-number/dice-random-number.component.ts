@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, Component, Input, computed, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input, computed, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faDiceFive, faDiceFour, faDiceOne, faDiceSix, faDiceThree, faDiceTwo } from '@fortawesome/free-solid-svg-icons';
 import { finalize, interval, take } from 'rxjs';
@@ -53,6 +53,21 @@ export class DiceRandomNumberComponent {
     4: faDiceFive,
     5: faDiceSix
   };
+
+  @HostBinding('style.color') get valid() { return this._contrast ? 'rgb(30 41 59) !important': ''; }
+
+  private _contrast: boolean = false;
+
+  @Input()
+  public set contrast(v: boolean) {
+    this._contrast = v;
+  }
+
+  @Input()
+  public set staticDice(dices: Dices) {
+    this.diceOneValue.set(dices[0] - 1);
+    this.diceTwoValue.set(dices[1] - 1);
+  }
 
   @Input()
   public set dices(dices: Dices) {

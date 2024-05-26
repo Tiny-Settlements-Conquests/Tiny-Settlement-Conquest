@@ -1,28 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { GraphBuildingNode } from '../../../buildings/domain/graph/graph-building-node';
+import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
+import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
+import { Graph } from '../../../graph/domain/classes/graph';
+import { Playground } from '../../../playground/domain/classes/playground';
+import { PlaygroundGenerator } from '../../../playground/domain/generators/playground-generator';
+import { PlaygroundGraphGenerator } from '../../../playground/domain/generators/playground-graph-generator';
+import { PlaygroundGridGenerator } from '../../../playground/domain/generators/playground-grid-generator';
+import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
+import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
+import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
+import { Point } from '../../../primitives/classes/Point';
+import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
 import { Game } from '../../domain/classes/game';
-import { Playground } from '../../../playground/domain/classes/playground';
-import { PlaygroundGridGenerator } from '../../../playground/domain/generators/playground-grid-generator';
-import { ResourceGenerator } from '../../../resources/classes/generators/resource-generator';
-import { Point } from '../../../primitives/classes/Point';
-import { PreviewPlaygroundRenderService } from '../../../playground/domain/renderer/preview-playground-render.service';
-import { PointRendererService } from '../../../primitives/renderer/point-renderer.service';
-import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
-import { ResourceFieldRendererService } from '../../../resources/classes/renderer/resource-field.renderer.service';
-import { PlaygroundGraphGenerator } from '../../../playground/domain/generators/playground-graph-generator';
-import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
-import { Player } from '../../../player/domain/classes/player';
-import { Inventory } from '../../../inventory/domain/classes/inventory';
-import { Graph } from '../../../graph/domain/classes/graph';
-import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
-import { RoadBuildManager } from '../../../buildings/domain/classes/road-build-manager';
-import { BuildingBuildManager } from '../../../buildings/domain/classes/building-build-manager';
-import { GraphBuildingNode } from '../../../buildings/domain/graph/graph-building-node';
-import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
-import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
-import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
-import { PlaygroundGenerator } from '../../../playground/domain/generators/playground-generator';
+import { ResourceGenerator } from '../../../resources/domain/classes/generators/resource-generator';
+import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 
 @Component({
   selector: 'app-map-preview',

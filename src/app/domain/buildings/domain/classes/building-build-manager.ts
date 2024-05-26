@@ -2,6 +2,7 @@ import { Graph } from "../../../graph/domain/classes/graph";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Player } from "../../../player/domain/classes/player";
 import { Point } from "../../../primitives/classes/Point";
+import { BuildingFactory } from "../factories/building.factory";
 import { GraphBuildingNode } from "../graph/graph-building-node";
 import { BuildingType } from "../models/building.model";
 import { BuildCostManager } from "./build-cost-manager";
@@ -11,24 +12,23 @@ export class BuildingBuildManager {
         private readonly buildingGraph: Graph<GraphBuildingNode>,
         private readonly playgroundGraph: Graph,
         private readonly buildingCostManager: BuildCostManager,
+        private readonly buildingFactory: BuildingFactory
     ) {}
 
-    public tryBuildBuilding(player: Player, type: BuildingType, graphNode: GraphNode) {
-        try {
-            const buildingGraphNode = this.buildingGraph.getNodeById(graphNode.id)
-            //ensure that the node exists
-            if (!buildingGraphNode)  return;
-            this.buildingCostManager.tryIfBuildingCanBeBuild(player, type);
-            this.checkIfBuildingIsOfSamePlayer(player, buildingGraphNode);
-            this.checkBuildingPosition(buildingGraphNode);
-            this.buildingCostManager.removeResourcesByBuilding(player, type)
-            // ensure that the player can only build ontop of owned nodes
-            buildingGraphNode.tryBuild(type);
-            //TODO REFACTOR ME; DO NOT DO THIS HERE
-            player.winningPointsInventory.addToInventory('points', 1)
-        } catch(e) { 
-            console.log("no", e) 
-        }
+    public buildBuilding(player: Player, type: BuildingType, graphNode: GraphNode) {
+        const buildingGraphNode = this.buildingGraph.getNodeById(graphNode.id)
+        //ensure that the node exists
+        if (!buildingGraphNode)  throw new Error("Building node does not exist");
+
+        if(!this.buildingCostManager.hasPlayerEnoughtResources(player, type)) throw new Error('not enough resources');
+
+        this.checkIfBuildingIsOfSamePlayer(player, buildingGraphNode);
+        this.checkBuildingPosition(buildingGraphNode);
+        this.buildingCostManager.removeResourcesByBuilding(player, type)
+        // ensure that the player can only build ontop of owned nodes
+        const building = this.buildingFactory.constructBuilding(type, player, graphNode);
+        buildingGraphNode.tryBuild(building);
+
     }   
 
     private checkIfBuildingIsOfSamePlayer(player: Player, buildingGraphNode: GraphBuildingNode) {

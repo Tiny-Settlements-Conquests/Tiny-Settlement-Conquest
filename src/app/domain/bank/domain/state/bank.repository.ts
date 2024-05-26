@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createStore, withProps } from '@ngneat/elf';
-import { ResourceType } from '../../../resources/models/resource-field.model';
+import { ResourceType } from '../../../resources/domain/models/resource-field.model';
 import { Inventory } from '../../../inventory/domain/models/inventory.model';
 
 const bankStore = createStore(

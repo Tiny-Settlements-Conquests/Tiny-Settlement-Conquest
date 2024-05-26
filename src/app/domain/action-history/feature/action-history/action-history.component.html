@@ -1,9 +1,42 @@
 <app-block class="block ">
-    <app-block class="flex flex-col overflow-y-auto overflow-x-hidden h-[200px]">
-        <div *ngFor="let item of historyArray">{{ item }}</div>
-    </app-block>
-    <div class="p-2 flex gap-2 items-center">
-        <button (click)="handleTestHistoryClick()">Test History</button>
-        <button (click)="handleClearHistoryClick()">Clear History</button>
+    <div class="flex flex-col gap-2 overflow-y-auto overflow-x-hidden h-[200px]" #scrollContainer>
+        @for (action of actions() ?? []; track $index) {
+            <div class="flex gap-2 items-center">
+            @if (action.typ === 'resource'){
+                <!-- todo als eigene komponente -->
+                <img 
+                    class="rounded-full w-8 h-8 border-1" 
+                        
+                    [src]="action.player.profileUrl" 
+                />
+                    <span [ngStyle]="{'color': action.player.color}">
+                        {{action.player.name}} 
+                    </span>
+                        got
+                    @for (card of action.receivedResources; track $index) {
+                        <img class="w-6 h-6"  [src]="card.imageUrl" />
+                    }
+            }
+            @if (action.typ === 'dice'){
+                <img 
+                    class="rounded-full w-8 h-8 border-1" 
+                    [src]="action.player.profileUrl" 
+                />
+                <span [ngStyle]="{'color': action.player.color}">
+                    {{action.player.name}} 
+                </span>
+                rolled: 
+                <app-dice-random-number [contrast]="true" [staticDice]="action.dice" />
+            }
+            @if (action.typ === 'build'){
+                <img 
+                    class="rounded-full w-8 h-8 border-1" 
+                    [src]="action.player.profileUrl" 
+                />
+                <span>Has placed:</span>
+                <img class="ml-auto w-12" src='assets/buildings/{{action.building}}.png' />
+            }
+            </div>
+        }
     </div>
 </app-block>

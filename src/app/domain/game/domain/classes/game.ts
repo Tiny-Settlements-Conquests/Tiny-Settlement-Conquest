@@ -10,6 +10,7 @@ import { Round } from "../../../round/domain/classes/round";
 import { defaultOrderStrategy } from "../../../round/domain/strategies/default-round-order.strategy";
 import { GameMode } from "../models/game-mode.model";
 import { GameDependencies, GameConfig } from "../models/game.model";
+import { Building, BuildingType, PathBuilding, PathType } from "../../../buildings/domain/models/building.model";
 
 
 export class Game {
@@ -24,6 +25,8 @@ export class Game {
 
   private readonly rolledDice = new Subject<[number, number]>();
   private hasRolledThisRound = false;
+  
+  private readonly _buildingSignal = new Subject<PathBuilding | Building>();
 
   private readonly _state = new BehaviorSubject<'roll' | 'round'>('roll');
   private readonly _nextRoundSignal = new Subject();
@@ -175,6 +178,10 @@ export class Game {
     return this._bank.selectInventoryUpdate();
   }
 
+  public selectBuildingUpdate() {
+    return this._buildingSignal;
+  }
+
   public selectUserInventoryUpdate() {
     return merge(
       ...this._round.players.map((p) => p.resourceInventory.selectInventoryUpdate().pipe(
@@ -190,7 +197,9 @@ export class Game {
   }
 
   public selectRolledDice() {
-    return this.rolledDice;
+    return this.rolledDice.pipe(
+      map((dices) => ({dices, player: this._round.activePlayer}))
+    );
   }
 
   public nextRound() {
@@ -225,33 +234,39 @@ export class Game {
     return dices;
   }
 
-  /**
-   * @deprecated
-   * @param node 
-   * @returns 
-   */
-  public tryBuildOnGraphNode(node: GraphNode) {
+  public tryBuildBuildingOnGraphNode(node: GraphNode) {
     if(this._mode === 'spectate') return;
     const player = this._round.activePlayer;
     if(!player) return;
 
-    if(this._mode === 'road') {
-      this._roadBuildManager.tryBuildRoad(player, node);
-    } else if(this._mode === 'city') {
-      this._buildingBuildManager.tryBuildBuilding(player, 'city', node);
-    } else if(this._mode === 'town') {
-      this._buildingBuildManager.tryBuildBuilding(player, 'town', node);
-    }
-  }
+    try {
+      if(this._mode === 'road') {
+        this._roadBuildManager.tryBuildRoad(player, node);
 
-  public tryBuildBuildingOnGraphNode(node: GraphNode) {
-    const player = this._round.activePlayer;
-    if(!player) return;
+      } else if(this._mode === 'city') {
+        this._buildingBuildManager.buildBuilding(player, BuildingType.CITY, node);
+        player.winningPointsInventory.addToInventory('points', 1)
+        this._buildingSignal.next({
+          type: BuildingType.CITY,
+          graphNode: node,
+          owner: player,
+          winningPoints: 2
+        })
+      } else if(this._mode === 'town') {
+        this._buildingBuildManager.buildBuilding(player, BuildingType.TOWN, node);
+        player.winningPointsInventory.addToInventory('points', 1)
+        this._buildingSignal.next({
+          type: BuildingType.TOWN,
+          graphNode: node,
+          owner: player,
+          winningPoints: 1
+        })
+        
+      }
+      console.log("YYYYY");
 
-    if(this._mode === 'city') {
-      this._buildingBuildManager.tryBuildBuilding(player, 'city', node);
-    } else if(this._mode === 'town') {
-      this._buildingBuildManager.tryBuildBuilding(player, 'town', node);
+    } catch(e) {
+      console.log("ERROR",e)
     }
   }
 
@@ -259,6 +274,12 @@ export class Game {
     const player = this._round.activePlayer;
     if(!player) return;
     this._roadBuildManager.tryBuildRoadBetween(player, nodeA, nodeB);
+    this._buildingSignal.next({
+      type: PathType.ROAD,
+      graphNodeA: nodeA,
+      graphNodeB: nodeB,
+      owner: player
+    })
 
   }
 

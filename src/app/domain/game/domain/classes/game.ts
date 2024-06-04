@@ -11,6 +11,8 @@ import { defaultOrderStrategy } from "../../../round/domain/strategies/default-r
 import { GameMode } from "../models/game-mode.model";
 import { GameDependencies, GameConfig } from "../models/game.model";
 import { Building, BuildingType, PathBuilding, PathType } from "../../../buildings/domain/models/building.model";
+import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
+import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 
 
 export class Game {
@@ -20,11 +22,10 @@ export class Game {
   private readonly _buildingBuildManager: BuildingBuildManager;
   private readonly _bank: ResourceInventory;
   private readonly _costManager: BuildCostManager;
+  private readonly _diceRoller: DiceRoller;
+  private readonly _resourceDistributor: ResourceDistributor;
 
   private _mode: GameMode = 'city';
-
-  private readonly rolledDice = new Subject<[number, number]>();
-  private hasRolledThisRound = false;
   
   private readonly _buildingSignal = new Subject<PathBuilding | Building>();
 
@@ -51,6 +52,8 @@ export class Game {
     this._buildingBuildManager = dependencies.buildingBuildManager;
     this._roadBuildManager = dependencies.roadBuildManager;
     this._costManager = dependencies.buildCostManager;
+    this._diceRoller = dependencies.diceRoller;
+    this._resourceDistributor = dependencies.resourceDistributor;
     this.startGame();
   }
 
@@ -83,7 +86,7 @@ export class Game {
     return this._costManager;
   }
 
-  public startRoundTimers() {
+  private startRoundTimers() {
     this.startRollTimer().pipe(
       takeUntil(this._pauseSignal),
       switchMap(() => {
@@ -109,7 +112,7 @@ export class Game {
           this.rollDice();
         })
       ),
-      this.rolledDice
+      this._diceRoller.selectRolledDice()
     ).pipe(
       takeUntil(this._nextRoundSignal)
     )
@@ -160,10 +163,6 @@ export class Game {
     return this._round;
   }
 
-  public selectDice() {
-    return this.rolledDice;
-  }
-
   public selectPlayers() {
     return combineLatest(
       this._round.players.map((p) => p.selectChanges())
@@ -197,7 +196,7 @@ export class Game {
   }
 
   public selectRolledDice() {
-    return this.rolledDice.pipe(
+    return this._diceRoller.selectRolledDice().pipe(
       map((dices) => ({dices, player: this._round.activePlayer}))
     );
   }
@@ -209,29 +208,9 @@ export class Game {
   }
 
   public rollDice() {
-    if(this.hasRolledThisRound) throw new Error();
-    //Todo auslagern
-    const dices = rollDices();
-    this.rolledDice.next(dices);
-    const [valueOne, valueTwo] = dices;
-    const value = valueOne + valueTwo;
-    const foundFields = this.playground.resourceFields.filter(field => field.value === value);
-
-    foundFields.forEach((field) => {
-      field.field.polygon.points.forEach((p) => {
-        try {
-          const owner = this._buildingBuildManager.getOwnerOfBuildingByPoint(p);
-          
-          const amount = 1 * this.gameConfig.resourceMultiplier; // todo hier schauen welcher typ und dann * resourceMultiplier
-          if(this._bank.resources[field.typ] > amount) {
-            owner.resourceInventory.addToInventory(field.typ, amount);
-            this._bank.removeFromInventory(field.typ, amount);
-          }
-        } catch (error) {}
-      })
-    })
-    //todo ungut, nicht returnen sondern eher als observable selectable machen
-    return dices;
+    if(this._diceRoller.hasRolledThisRound) throw new Error();
+    const rolledDices = this._diceRoller.rollDices();
+    this._resourceDistributor.distributeResources(rolledDices.sum);
   }
 
   public tryBuildBuildingOnGraphNode(node: GraphNode) {

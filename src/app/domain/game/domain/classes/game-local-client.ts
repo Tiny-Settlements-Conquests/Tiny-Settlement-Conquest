@@ -31,6 +31,8 @@ import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameModeRepository } from "../state/game-mode.repository";
 import { Game } from "./game";
 import { BuildingFactory } from "../../../buildings/domain/factories/building.factory";
+import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
+import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 
 export class GameLocalClient {
   private _game: Game
@@ -198,22 +200,27 @@ export class GameLocalClient {
     const buildCostManager = new BuildCostManager(bankInventory);
     this.mockBuildings(round.players, playground);
     const buildingFactory = new BuildingFactory();
+    const diceRoller = new DiceRoller();
+    const buildingBuildManager = new BuildingBuildManager(
+      buildingGraph,
+      playground.graph,
+      buildCostManager,
+      buildingFactory
+    );
+    const resourceDistributor = new ResourceDistributor(playground, buildingBuildManager, bankInventory);
     const game = new Game(
       {
         bank: bankInventory,
-        buildingBuildManager: new BuildingBuildManager(
-          buildingGraph,
-          playground.graph,
-          buildCostManager,
-          buildingFactory
-        ),
+        buildingBuildManager,
         roadBuildManager: new RoadBuildManager(
           buildingGraph,
           buildCostManager,
         ),
         playground,
         round,
-        buildCostManager
+        buildCostManager,
+        diceRoller,
+        resourceDistributor
       }
     );
 

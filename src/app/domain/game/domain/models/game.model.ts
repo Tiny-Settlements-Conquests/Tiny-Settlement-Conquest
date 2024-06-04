@@ -1,8 +1,10 @@
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
+import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { Playground } from "../../../playground/domain/classes/playground";
+import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 import { Round } from "../../../round/domain/classes/round";
 
 export interface GameConfig {
@@ -21,5 +23,7 @@ export interface GameDependencies {
     bank: ResourceInventory,
     roadBuildManager: RoadBuildManager,
     buildingBuildManager: BuildingBuildManager,
-    buildCostManager: BuildCostManager
+    buildCostManager: BuildCostManager,
+    diceRoller: DiceRoller,
+    resourceDistributor: ResourceDistributor,
   }

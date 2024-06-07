@@ -9,12 +9,13 @@ Tiny Settlement Conquests is an exciting project that brings the beloved world o
  Please note that the project is still in an early phase of development and some bugs may occour
 
 ## Project Overview
-Our goal is to develop a complete Catan clone, which will initially be available as a single-player game. The current version already includes some core features, including random map generation, building roads, villages, and cities, as well as a basic bot for solo players.
+Our goal is to develop a complete Catan clone, which will initially be available as a single-player game. The current version already includes some core features, including random map generation, building roads, villages and cities, as well as a basic bot for solo players.
 
 ## Current State Overview
-- Randomly generated map: Each game starts on a unique map, ensuring a varied player experience.
+- Randomly generated map: Each game starts on an unique map, ensuring a varied player experience.
 - Building roads, villages, cities: Players can expand their settlements and territory on the map.
 - Basic bot: A simple computer-controlled opponent allows single players to compete against a virtual opponent.
+- Event history: A record of past events and moves to make the game progress understandable and support strategic decisions.
 
 ## Missing Features
 While our current version already offers some basic features, there are still some key elements missing to complete the player experience:
@@ -22,7 +23,7 @@ While our current version already offers some basic features, there are still so
 - Trade: The ability to trade resources with other players or the bot to develop strategies and overcome resource shortages.
 - Development cards: A variety of cards that grant players various advantages or influence the course of the game.
 - Map editor: A tool that allows players to create and share their own maps to create customized game worlds.
-- Event history: A record of past events and moves to make the game progress understandable and support strategic decisions.
+- Robber
 
 ## Future Outlook
 We have big plans for the future of Tiny Settlement Conquests. We plan to introduce a multiplayer version that allows players to test their skills and strategies in real-time against other players around the world.

@@ -35,6 +35,7 @@ import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
 import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { TradeManager } from "../../../trade/domain/classes/trade-manager";
+import { TradeRepository } from "../../../trade/domain/state/trade.repository";
 
 export class GameLocalClient {
   private _game: Game
@@ -46,6 +47,7 @@ export class GameLocalClient {
   private _diceRef: undefined | ComponentRef<DiceOverlayComponent> = undefined;
   private _diceOverlayOpen = new Subject();
 
+  //todo define an interface instead
   constructor(
     private _gameComponentRef: ViewContainerRef,
     private _bankRepository: BankRepository,
@@ -55,9 +57,38 @@ export class GameLocalClient {
     private _gameModeRepository: GameModeRepository,
     private _diceRepository: DiceRepository,
     private _actionHistoryRepository: ActionHistoryRepository,
+    private _tradeRepository: TradeRepository,
     private _destroyRef: DestroyRef,
   ) { 
+    
+    
     this._game = this.generateGame();
+//!!remove me later
+this._game.selectPlayers().subscribe(roundPlayers => {
+  //todo build a mapper
+  const roundplayers = roundPlayers.map((p): RoundPlayer => ({
+    color: p.color,
+    id: p.id,
+    isBot: p.roundPlayer.isBot,
+    name: p.name,
+    profileUrl: p.profileUrl,
+    researchCardCount: p.researchCardCount,
+    winningPoints: p.winningPointsAmount,
+    resourceCardCount: p.resourceCardCount
+  }))
+  this._roundPlayerRepository.setRoundPlayers(roundplayers);
+});
+
+this._tradeRepository.selectAllTrades().subscribe(trades => {
+  //todo fix me later 
+  const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
+  if(!player) return;
+  this.game.tradeTest().startTrade({
+    ...trades[0],
+    player,
+  })
+})
+//!!
     // this.syncStates();
     // this.simulateGame();
     this._userRepository.selectUser().pipe(

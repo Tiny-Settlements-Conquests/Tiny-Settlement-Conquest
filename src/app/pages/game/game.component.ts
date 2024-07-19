@@ -28,6 +28,7 @@ import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-play
 import { TradeCardComponent } from '../../domain/trade/feature/trade-card/trade-card.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
 import { TradeMenuComponent } from '../../domain/trade/feature/trade-menu/trade-menu.component';
+import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
 
 
 
@@ -67,6 +68,7 @@ export class GameComponent {
   private readonly _bankRepository = inject(BankRepository);
   private readonly _diceRepository = inject(DiceRepository);
   private readonly _actionHistoryRepository = inject(ActionHistoryRepository);
+  private readonly _tradeRepository = inject(TradeRepository);
 
   //todo das overlay nochmal umbauen, sodass es einfach nur über dem canvas liegt
   public icons = {
@@ -93,6 +95,7 @@ export class GameComponent {
       this._gameModeRepository,
       this._diceRepository,
       this._actionHistoryRepository,
+      this._tradeRepository,
       this._destroyRef
     );
     this._game.set(client.game)

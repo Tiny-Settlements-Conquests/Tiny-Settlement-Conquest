@@ -19,6 +19,7 @@ export class TradeManager {
   private openTrades: { [key: string]: OpenTradeOffer } = {}
 
 
+  //todo make timeout interval when created trade configurable via constructor
   constructor(private bank: ResourceInventory, private round: Round) {}
 
   public get selectTradeOfferStarted(): Observable<TradeOffer> {
@@ -50,7 +51,7 @@ export class TradeManager {
     this.tradeOfferStarted.next(offer);
     this.startTradeTimer(offer);
     this.openTrades[offer.id] = {
-      offer,
+      ...offer,
       playerResponses: {}
     }
   }
@@ -100,7 +101,7 @@ export class TradeManager {
     // one player has accepted
     const hasOnePlayerAccepted = Object.values(openTrade.playerResponses).find((accepted) => accepted === true)
     if(hasOnePlayerAccepted) {
-      this.completeTrade(openTrade.offer, response.respondedPlayer)
+      this.completeTrade(openTrade, response.respondedPlayer)
     } else {
       // no player accepted cancel trade
       this.cancelTrade(response.tradeId)

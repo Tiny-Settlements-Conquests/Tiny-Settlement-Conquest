@@ -1,24 +1,14 @@
-<app-block class="flex h-32 flex-col">
-    <div class="text-2xl w-full text-nowrap text-ellipsis overflow-hidden ...">{{player?.name ?? ''}}</div>
-    <div class="flex items-center">
-        <div class="flex flex-col flex items-center">
-            <img class="rounded-full w-16 h-16 mx-8 border-4" [ngStyle]="{'borderColor': player?.color}" [src]="player?.profileUrl ?? ''" />
-            <div class="absolute bottom-0 rounded bottom-2">
-                <div class="flag" [ngStyle]="{'border-color': player?.color}"></div>
-                <div class="w-10 h-5 relative z-10 flex items-center justify-center text-white" [ngStyle]="{'background': player?.color}">{{player?.winningPoints}}</div>
-                <div class="flag-rev" [ngStyle]="{'border-color': player?.color}"></div>
-
-            </div>
-
-        </div>
-        <div class="flex gap-3">
-            <app-action-card [count]="player?.resourceCardCount ?? 0">
-                <fa-icon class="text-3xl" [icon]="icons.question" />
-            </app-action-card>
-        
-            <app-action-card mode="purple" [count]="player?.researchCardCount ?? 0">
-                <fa-icon class="text-3xl" [icon]="icons.question" />
-            </app-action-card>
-        </div>
-    </div>
-</app-block>
+<div class="text-xl text-nowrap text-ellipsis overflow-hidden ...">{{player?.name ?? ''}}</div>
+<div class="flex flex-row gap-4">
+    <app-player-winning-points>
+        <img class="rounded-full w-14 h-14 border-4" [ngStyle]="{'borderColor': player?.color}" [src]="player?.profileUrl ?? ''" />
+    </app-player-winning-points>
+    
+    <app-action-card [count]="player?.resourceCardCount ?? 0">
+        <fa-icon class="text-2xl" [icon]="icons.question" />
+    </app-action-card>
+    
+    <app-action-card mode="purple" [count]="player?.researchCardCount ?? 0">
+        <fa-icon class="text-2xl" [icon]="icons.question" />
+    </app-action-card>
+</div>

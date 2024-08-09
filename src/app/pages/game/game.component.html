@@ -1,11 +1,12 @@
+<app-game-information-bar />
 @if(game !== undefined) {
-    <app-canvas [game]="game" />
+    <app-canvas class="m-3" [game]="game" />
 }
 <div class="absolute flex flex-col right-4 flex gap-2 w-[400px]">
-    <app-action-history />
-    <app-chat />
+    <!-- <app-action-history />
+    <app-chat /> -->
     <app-bank />
-    <app-round-player-cards />
+    <!-- <app-round-player-cards /> -->
 
 </div>
 <div class="absolute bottom-4 flex left-4 flex gap-4">
@@ -17,5 +18,5 @@
         }
         <app-next-move-button class="h-full" />
     </div>
-    <app-trade-menu/>
+    <!-- <app-trade-menu/> -->
 </div>

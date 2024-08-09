@@ -29,6 +29,8 @@ import { TradeCardComponent } from '../../domain/trade/feature/trade-card/trade-
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
 import { TradeMenuComponent } from '../../domain/trade/feature/trade-menu/trade-menu.component';
 import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
+import { ResponseQueueRepository } from '../../domain/response-queue/domain/state/response-queue.repository';
+import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
 
 
 
@@ -52,7 +54,8 @@ import { TradeRepository } from '../../domain/trade/domain/state/trade.repositor
     DiceRandomNumberComponent,
     DiceOverlayComponent,
     RoundCountdownComponent,
-    TradeMenuComponent
+    TradeMenuComponent,
+    GameInformationBarComponent
   ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
@@ -69,6 +72,7 @@ export class GameComponent {
   private readonly _diceRepository = inject(DiceRepository);
   private readonly _actionHistoryRepository = inject(ActionHistoryRepository);
   private readonly _tradeRepository = inject(TradeRepository);
+  private readonly _responseQueueRepository = inject(ResponseQueueRepository);
 
   //todo das overlay nochmal umbauen, sodass es einfach nur über dem canvas liegt
   public icons = {
@@ -96,6 +100,7 @@ export class GameComponent {
       this._diceRepository,
       this._actionHistoryRepository,
       this._tradeRepository,
+      this._responseQueueRepository,
       this._destroyRef
     );
     this._game.set(client.game)

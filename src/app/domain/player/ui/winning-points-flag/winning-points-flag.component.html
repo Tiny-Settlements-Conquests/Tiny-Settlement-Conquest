@@ -1,0 +1,7 @@
+<div class="bottom-0 rounded bottom-2">
+    <div class="flag" [ngStyle]="{'border-color': color()}"></div>
+    <div class="w-10 h-5 relative z-10 flex items-center justify-center text-white" [ngStyle]="{'background': color()}">
+        <ng-content />
+    </div>
+    <div class="flag-rev" [ngStyle]="{'border-color': color()}"></div>
+</div>

@@ -36,6 +36,7 @@ import { ResourceDistributor } from "../../../resources/domain/classes/resources
 import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { TradeRepository } from "../../../trade/domain/state/trade.repository";
+import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
 
 export class GameLocalClient {
   private _game: Game
@@ -58,9 +59,14 @@ export class GameLocalClient {
     private _diceRepository: DiceRepository,
     private _actionHistoryRepository: ActionHistoryRepository,
     private _tradeRepository: TradeRepository,
+    private _responseQueueRepository: ResponseQueueRepository,
     private _destroyRef: DestroyRef,
   ) { 
-    
+    this._responseQueueRepository.selectAllResponses().subscribe((t) => {
+      if(t[0].type == 'trade-offer-open') {
+        this.game.tradeTest().startTrade(t[0].data);
+      }
+    })
     
     this._game = this.generateGame();
 //!!remove me later
@@ -435,7 +441,7 @@ playground.resourceFields[0].value = 3
       {
         id: '1412523',
         color: '#22c55e',
-        profileUrl: '/assets/robot.jpg',
+        profileUrl: '/assets/robot.png',
         name: 'Robot',
         researchCardCount: 4,
         resourceCardCount: 2,

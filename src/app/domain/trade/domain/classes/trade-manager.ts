@@ -48,6 +48,7 @@ export class TradeManager {
   }
 
   public startTrade(offer: TradeOffer): void {
+    console.log("TRADE OPENED", offer)
     this.tradeOfferStarted.next(offer);
     this.startTradeTimer(offer);
     this.openTrades[offer.id] = {

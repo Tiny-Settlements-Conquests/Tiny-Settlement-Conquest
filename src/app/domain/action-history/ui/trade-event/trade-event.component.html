@@ -1,0 +1,14 @@
+<span>gave:</span>
+        
+@for (card of action().givenResources; track $index) {
+    <img class="w-6 h-6"  [src]="card.imageUrl" />
+}
+<span>and</span>
+<img 
+    class="rounded-full w-8 h-8 border-1" 
+    [src]="action().playerB.profileUrl" 
+/>
+<span>received</span>
+@for (card of action().receivedResources; track $index) {
+    <img class="w-6 h-6"  [src]="card.imageUrl" />
+}

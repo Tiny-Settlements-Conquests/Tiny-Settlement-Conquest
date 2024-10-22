@@ -4,6 +4,7 @@ import { Player } from '../../../player/domain/classes/player';
 import { Round } from '../../../round/domain/classes/round';
 import { OpenTradeOffer, TradeCancel, TradeComplete, TradeOffer, TradeResponse } from '../models/trade.model';
 import { Resources } from '../../../resources/domain/models/resources.model';
+import { RoundPlayer } from '../../../round/domain/models/round-player.model';
 
 
 
@@ -20,7 +21,10 @@ export class TradeManager {
 
 
   //todo make timeout interval when created trade configurable via constructor
-  constructor(private bank: ResourceInventory, private round: Round) {}
+  constructor(
+    private bank: ResourceInventory, 
+    private round: Round
+  ) {}
 
   public get selectTradeOfferStarted(): Observable<TradeOffer> {
     return this.tradeOfferStarted.asObservable();
@@ -50,10 +54,15 @@ export class TradeManager {
   public startTrade(offer: TradeOffer): void {
     console.log("TRADE OPENED", offer)
     this.tradeOfferStarted.next(offer);
-    this.startTradeTimer(offer);
-    this.openTrades[offer.id] = {
-      ...offer,
-      playerResponses: {}
+    if(offer.typ === 'player') {
+      this.startTradeTimer(offer);
+      this.openTrades[offer.id] = {
+        ...offer,
+        playerResponses: {}
+      }
+    } else {
+      console.error("to be implemented")
+      //is bank trade to be implemented
     }
   }
 
@@ -85,11 +94,17 @@ export class TradeManager {
     const {tradeId, respondedPlayer, accepted} = response;
     this.tradeResponses.next({tradeId, respondedPlayer, accepted });
     const openTrade = this.getOpenTrade(tradeId);
-    openTrade.playerResponses[respondedPlayer.id] = accepted;
+    openTrade.playerResponses[respondedPlayer.id] = {
+      accepted,
+      respondedPlayer,
+      tradeId
+    };
     this.checkTradeStatus(response)
   }
 
   private getOpenTrade(tradeId: string) {
+    console.log(this.openTrades);
+    console.log(tradeId);
     const openTrade = this.openTrades[tradeId]
     if(!openTrade) throw new Error("Trade not found");
     return openTrade
@@ -100,7 +115,7 @@ export class TradeManager {
     // has enought responses
     if(Object.keys(openTrade.playerResponses).length < this.round.players.length - 1) return;
     // one player has accepted
-    const hasOnePlayerAccepted = Object.values(openTrade.playerResponses).find((accepted) => accepted === true)
+    const hasOnePlayerAccepted = Object.values(openTrade.playerResponses).find(({accepted}) => accepted === true)
     if(hasOnePlayerAccepted) {
       this.completeTrade(openTrade, response.respondedPlayer)
     } else {
@@ -109,20 +124,25 @@ export class TradeManager {
     }
   }
 
-  private completeTrade(offer: TradeOffer, acceptedPlayer: Player): void {
-    // todo Transfer resources between players and bank
+  private completeTrade(offer: OpenTradeOffer, acceptedRoundPlayer: RoundPlayer): void {
+    const offerPlayer = this.round.getPlayerById(offer.player.id);
+    const acceptedPlayer = this.round.getPlayerById(acceptedRoundPlayer.id);
+    if(!offerPlayer || !acceptedPlayer) throw new Error('offerPlayer or Accepted Player is null')
+    if(!offerPlayer.resourceInventory.hasEnoughtResources(offer.offeredResources)) throw new Error('1cnot enought resources')
+    if(!acceptedPlayer.resourceInventory.hasEnoughtResources(offer.requestedResources)) throw new Error('not enought resources')
+
     Object.entries(offer.requestedResources).forEach(([key, value]) => {
-      offer.player.resourceInventory.addToInventory(key as keyof Resources, value);
       acceptedPlayer.resourceInventory.removeFromInventory(key as keyof Resources, value);
+      offerPlayer.resourceInventory.addToInventory(key as keyof Resources, value);
 
     })
     Object.entries(offer.offeredResources).forEach(([key, value]) => {
+      offerPlayer.resourceInventory.removeFromInventory(key as keyof Resources, value);
       acceptedPlayer.resourceInventory.addToInventory(key as keyof Resources, value);
-      offer.player.resourceInventory.removeFromInventory(key as keyof Resources, value);
     })
 
     this.tradeCompleted.next({
-      acceptedPlayer: offer.player,
+      acceptedPlayer: acceptedRoundPlayer,
       trade: offer
     });
   }

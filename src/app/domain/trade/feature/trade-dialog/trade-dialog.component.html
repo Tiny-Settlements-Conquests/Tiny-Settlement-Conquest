@@ -1,0 +1,32 @@
+<h2 mat-dialog-title class="text-slate-200">Trade Menu</h2>
+<mat-dialog-content>
+    <h3 class="py-4">Select trade method</h3>
+    <div class="flex gap-2">
+        <div 
+            [ngClass]="{'!bg-slate-400': !isPlayerTrade()}"
+            (click)="_tradeOfferService.setIsPlayerTrade(false)"
+            class="cursor-pointer hover:bg-slate-400 bg-slate-500 flex flex-row gap-4 rounded items-center w-fit px-4 py-2 text-slate-200 transition-colors"
+        >
+            <img class="w-10 h-10" src="assets/buildings/bank.png" />
+            <span>Bank</span>
+        </div>
+        <div 
+            [ngClass]="{'!bg-slate-400': isPlayerTrade()}"
+            (click)="_tradeOfferService.setIsPlayerTrade(true)"
+            class="cursor-pointer hover:bg-slate-400 bg-slate-500  flex flex-row gap-4 rounded items-center w-fit px-4 py-2 text-slate-200 transition-colors"
+        >
+            <img class="w-10 h-10" src="assets/robot.png" />
+            <span>Player</span>
+        </div>
+
+    </div>
+    <app-trade-menu class="my-4" />
+</mat-dialog-content>
+<mat-dialog-actions class="gap-4">
+    <button (click)="startTrade()" [disabled]="!isFormValid()" class="disabled:opacity-80 disabled:pointer-events-none bg-green-500 text-slate-200 rounded px-8 py-1 hover:bg-green-400 transition-colors">
+        <fa-icon class="mt-auto text-2xl cursor-pointer" [icon]="icons.user" />
+    </button>
+    <button class="bg-red-500 text-slate-200 rounded px-8 py-1 hover:bg-red-400 transition-colors" mat-dialog-close>
+        <fa-icon class="text-2xl cursor-pointer" [icon]="icons.close" />
+    </button>
+</mat-dialog-actions>

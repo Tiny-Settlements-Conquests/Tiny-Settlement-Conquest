@@ -16,8 +16,13 @@ export class TradeEffects {
         actions.pipe(
             ofType(TradeActions.addTrade),
             tap((trade) => {
-                this._gateway.publish('trade-offer', trade);
-                // this._tradeRepository.addTrade(trade);
+                console.log("publish")
+                this._gateway.publish('trade-offer-open', trade);
+                this._tradeRepository.addTrade({
+                    ...trade,
+                    typ: 'player',
+                    playerResponses: {}
+                });
             })
         )
     )
@@ -27,6 +32,26 @@ export class TradeEffects {
             ofType(TradeActions.removeTrade),
             tap(({id}) => {
                 this._tradeRepository.removeTrade(id);
+            })
+        )
+    )
+
+    public acceptTrade = createEffect((actions) =>
+        actions.pipe(
+            ofType(TradeActions.acceptTrade),
+            tap((trade) => {
+                this._gateway.publish('trade-offer-accept', trade)
+                this._tradeRepository.addPlayerResponse(trade)
+            })
+        )
+    )
+
+    public denyTrade = createEffect((actions) =>
+        actions.pipe(
+            ofType(TradeActions.denyTrade),
+            tap((trade) => {
+                this._gateway.publish('trade-offer-deny', trade)
+                this._tradeRepository.addPlayerResponse(trade)
             })
         )
     )

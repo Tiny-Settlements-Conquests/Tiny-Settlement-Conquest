@@ -1,6 +1,6 @@
 <div class="text-xl text-nowrap text-ellipsis overflow-hidden ...">{{player?.name ?? ''}}</div>
 <div class="flex flex-row gap-4">
-    <app-player-winning-points>
+    <app-player-winning-points [activeSegments]="player?.winningPoints ?? 1" [totalSegments]="5">
         <img class="rounded-full w-14 h-14 border-4" [ngStyle]="{'borderColor': player?.color}" [src]="player?.profileUrl ?? ''" />
     </app-player-winning-points>
     

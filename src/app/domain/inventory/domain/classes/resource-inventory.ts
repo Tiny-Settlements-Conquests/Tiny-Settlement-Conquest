@@ -1,3 +1,4 @@
+import { Resource } from "../../../resources/domain/classes/fields/resource-field";
 import { Resources } from "../../../resources/domain/models/resources.model";
 import { Inventory } from "./inventory";
 
@@ -19,6 +20,27 @@ export class ResourceInventory extends Inventory<Resources>{
 
   public get amount() {
     return Object.values(this._inventory.value).reduce((a, b) => a + b, 0);
+  }
+
+  public getNotEmptyResources(): Resources {
+    const resources = this._inventory.value;
+    return Object.keys(resources).reduce((result, key) => {
+      if (resources[key as keyof Resources] > 0) {
+        return {
+          ...result,
+          [key]: resources[key as keyof Resources],
+        };
+      }
+      return result;
+    }, {} as Resources);
+  }
+
+  public hasEnoughtResources(resources: Partial<Resources>): boolean {
+    return Object.keys(resources).reduce((p, key) => {
+      const resource = resources[key as keyof Resources] ?? 0;
+      const inventoryResource = this._inventory.value[key as keyof Resources];
+      return inventoryResource >= resource && p}, true
+    )
   }
 
 }

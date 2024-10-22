@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { createStore, withProps } from '@ngneat/elf';
 import { map } from 'rxjs';
 import { ResourceType, Resources } from '../../../resources/domain/models/resources.model';
+import { getAllEntities } from '@ngneat/elf-entities';
 
 const inventoryStore = createStore(
     { name: 'inventory' },
@@ -25,6 +26,10 @@ export class InventoryRepository {
 
   public setResources(resources: Resources) {
     inventoryStore.update(state => ({...state,...resources }));
+  }
+
+  public getResources(): Resources {
+    return inventoryStore.value;
   }
 
   public selectInventory() {

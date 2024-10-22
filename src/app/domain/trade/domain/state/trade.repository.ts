@@ -1,22 +1,22 @@
 import { createStore } from "@ngneat/elf";
 import { deleteEntities, selectAllEntities, setEntities, updateEntities, upsertEntities, withEntities } from "@ngneat/elf-entities";
-import { OpenTradeOffer, OpenTradeOfferLocal, TradeOffer } from "../models/trade.model";
+import { OpenTradeOffer, TradeOffer, TradeResponse } from "../models/trade.model";
 import { Injectable } from "@angular/core";
 
 const tradeStore = createStore(
     { name: 'trades' },
-    withEntities<OpenTradeOfferLocal>()
+    withEntities<OpenTradeOffer>()
 );
 
 @Injectable(
     { providedIn: 'root' }
   )
 export class TradeRepository {
-    public addTrade(trade: OpenTradeOfferLocal) {
+    public addTrade(trade: OpenTradeOffer) {
         tradeStore.update(setEntities([trade]));
     }
 
-    public removeTrade(tradeId: OpenTradeOfferLocal['id']) {
+    public removeTrade(tradeId: OpenTradeOffer['id']) {
         tradeStore.update(deleteEntities([tradeId]));
     }
 
@@ -30,7 +30,23 @@ export class TradeRepository {
         )
     }
 
-    public updateTrade(trade: OpenTradeOfferLocal) {
+    public updateTrade(trade: OpenTradeOffer) {
         tradeStore.update(upsertEntities([trade]));
+    }
+
+    public addPlayerResponse(trade: TradeResponse) {
+        tradeStore.update(
+            updateEntities( trade.tradeId, ((e) => {
+                const response = e.playerResponses;
+                if(!response[trade.respondedPlayer.id]) {
+                    // dont allow updates
+                    response[trade.respondedPlayer.id] = trade
+                }
+                return {
+                    ...e,
+                    playerResponses: response
+                };
+            }))
+        )
     }
 }

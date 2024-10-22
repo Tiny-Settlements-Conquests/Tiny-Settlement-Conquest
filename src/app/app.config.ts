@@ -9,6 +9,7 @@ import { RoundCountdownEffects } from './domain/round/domain/state/countdown/rou
 import { ActionHistoryEffects } from './domain/action-history/domain/state/action-history.effects';
 import { TradeEffects } from './domain/trade/domain/state/trade.effects';
 import { provideGateway } from './domain/gateway/domain/providers/gateway.provider';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -41,6 +42,6 @@ export const appConfig: ApplicationConfig = {
       TradeEffects
     ),
     provideAnimations(),
-    provideGateway()
+    provideGateway(), provideAnimationsAsync()
   ]
 };

@@ -55,12 +55,13 @@ export class BuildingsSelectionComponent {
   })
 
   public readonly activateCity = computed(() => {
-    const inventory = this.inventory();
-    if(!inventory) {
-      return false;
-    }
+    return true;
+    // const inventory = this.inventory();
+    // if(!inventory) {
+    //   return false;
+    // }
 
-    return inventory.stone > 2 && inventory.straw > 1 && this.isMyTurn();
+    // return inventory.stone > 2 && inventory.straw > 1 && this.isMyTurn();
   })
 
   public updateGameMode(gameMode: GameMode): void {

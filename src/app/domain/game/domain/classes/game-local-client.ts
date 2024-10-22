@@ -22,7 +22,7 @@ import { PlaygroundGenerator } from "../../../playground/domain/generators/playg
 import { PlaygroundGraphGenerator } from "../../../playground/domain/generators/playground-graph-generator";
 import { PlaygroundGridGenerator } from "../../../playground/domain/generators/playground-grid-generator";
 import { ResourceGenerator } from "../../../resources/domain/classes/generators/resource-generator";
-import { resourceTypeToResourceCard } from "../../../resources/function/resource-type.function";
+import { resourceTypeToResourceCard, resourcesToResourceCards } from "../../../resources/domain/function/resource-type.function";
 import { Round } from "../../../round/domain/classes/round";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
@@ -33,6 +33,11 @@ import { Game } from "./game";
 import { BuildingFactory } from "../../../buildings/domain/factories/building.factory";
 import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
 import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
+import { RobberManager } from "../../../robber/domain/classes/robber-manager";
+import { TradeManager } from "../../../trade/domain/classes/trade-manager";
+import { TradeRepository } from "../../../trade/domain/state/trade.repository";
+import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
+import { TradeActions } from "../../../trade/domain/state/trade.actions";
 
 export class GameLocalClient {
   private _game: Game
@@ -44,6 +49,7 @@ export class GameLocalClient {
   private _diceRef: undefined | ComponentRef<DiceOverlayComponent> = undefined;
   private _diceOverlayOpen = new Subject();
 
+  //todo define an interface instead
   constructor(
     private _gameComponentRef: ViewContainerRef,
     private _bankRepository: BankRepository,
@@ -53,11 +59,80 @@ export class GameLocalClient {
     private _gameModeRepository: GameModeRepository,
     private _diceRepository: DiceRepository,
     private _actionHistoryRepository: ActionHistoryRepository,
+    private _tradeRepository: TradeRepository,
+    private _responseQueueRepository: ResponseQueueRepository,
     private _destroyRef: DestroyRef,
   ) { 
+    this._responseQueueRepository.selectLatestResponse().subscribe((t) => {
+      console.log("TTT", t)
+      if(t && t.type == 'trade-offer-open') {
+        this.game.tradeTest().startTrade(t.data);
+      } else if(t?.type === 'trade-offer-accept') {
+        this.game.tradeTest().respondToTrade(t.data)
+      }
+    })
+    
     this._game = this.generateGame();
-    this.syncStates();
-    this.simulateGame();
+//!!remove me later
+this._game.selectPlayers().subscribe(roundPlayers => {
+  console.log("TTT", roundPlayers)
+  //todo build a mapper
+  const roundplayers = roundPlayers.map((p): RoundPlayer => ({
+    color: p.color,
+    id: p.id,
+    isBot: p.roundPlayer.isBot,
+    name: p.name,
+    profileUrl: p.profileUrl,
+    researchCardCount: p.researchCardCount,
+    winningPoints: p.winningPointsAmount,
+    resourceCardCount: p.resourceCardCount
+  }))
+  this._roundPlayerRepository.setRoundPlayers(roundplayers);
+});
+
+dispatch(
+  TradeActions.addTrade({
+    id: '2352',
+    offeredResources: {
+      bricks: 6
+    },
+    player: this._roundPlayerRepository.getRoundPlayers()[1],
+    requestedResources: {
+      wood: 1
+    },
+    typ: 'player'
+  })
+)
+this._tradeRepository.selectAllTrades().subscribe(trades => {
+  //todo fix me later 
+  // const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
+  // if(!player) return;
+  // this.game.tradeTest().startTrade({
+  //   ...trades[0],
+  //   player,
+  // })
+})
+//!!
+    // this.syncStates();
+    // this.simulateGame();
+    this._userRepository.selectUser().pipe(
+      map((me) => {
+        if(me) {
+          const player = this.game.round.getPlayerById(me.id)
+          if(player) {
+            this._inventoryRepository.setResources(player.resourceInventory.resources)
+          }
+        }
+        return this.game?.round.players.find((u) => u.id === me?.id)
+      }),
+      switchMap((me) => {
+        return this.game.selectUserInventoryUpdate().pipe(
+          filter(({player}) => player.id === me?.id)
+        );
+      })
+    ).subscribe(({newAmount, type}) => {
+      this._inventoryRepository.updateResourceAmount(type, newAmount);
+    })
   }
 
   private simulateGame() {
@@ -74,12 +149,12 @@ export class GameLocalClient {
     ).subscribe(({dices, player}) => {
       if(!player) return;
       dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'dice',
-          id: Math.random().toString(),
-          player,
-          dice: dices
-        })
+        // ActionHistoryActions.addAction({
+        //   typ: 'dice',
+        //   id: Math.random().toString(),
+        //   player,
+        //   dice: dices
+        // })
       )
       this._diceRepository.setDices(dices);
       this.rollDice(dices);
@@ -90,14 +165,14 @@ export class GameLocalClient {
       console.log(inventory)
       //todo replace by ngneat action
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
-        dispatch(
-          ActionHistoryActions.addAction({
-            typ: 'resource',
-            id: Math.random().toString(),
-            player: inventory.player,
-            receivedResources: [resourceTypeToResourceCard(inventory.type)],
-          })
-        )
+        // dispatch(
+        //   ActionHistoryActions.addAction({
+        //     typ: 'resource',
+        //     id: Math.random().toString(),
+        //     player: inventory.player,
+        //     receivedResources: [resourceTypeToResourceCard(inventory.type)],
+        //   })
+        // )
       }
     })
 
@@ -119,14 +194,14 @@ export class GameLocalClient {
 
     this.game.selectBuildingUpdate().subscribe((data) => {
       console.log("YOW")
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'build',
-          id: Math.random().toString(),
-          player: data.owner,
-          building: data.type,
-        })
-      )
+      // dispatch(
+      //   ActionHistoryActions.addAction({
+      //     typ: 'build',
+      //     id: Math.random().toString(),
+      //     player: data.owner,
+      //     building: data.type,
+      //   })
+      // )
     })
 
     this.game.selectBankInventoryUpdate().subscribe(inventory => {
@@ -151,21 +226,6 @@ export class GameLocalClient {
     ).subscribe(({newAmount, type}) => {
       this._inventoryRepository.updateResourceAmount(type, newAmount);
     })
-
-    this._game.selectPlayers().subscribe(roundPlayers => {
-      //todo build a mapper
-      const roundplayers = roundPlayers.map((p): RoundPlayer => ({
-        color: p.color,
-        id: p.id,
-        isBot: p.roundPlayer.isBot,
-        name: p.name,
-        profileUrl: p.profileUrl,
-        researchCardCount: p.researchCardCount,
-        winningPoints: p.winningPointsAmount,
-        resourceCardCount: p.resourceCardCount
-      }))
-      this._roundPlayerRepository.setRoundPlayers(roundplayers);
-    });
 
     this.game.round.selectActivePlayer().subscribe((player) => {
       this._gameModeRepository.updateMode('spectate');
@@ -220,11 +280,55 @@ export class GameLocalClient {
         round,
         buildCostManager,
         diceRoller,
-        resourceDistributor
+        resourceDistributor,
+        robberManager: new RobberManager(playground),
+        tradeManager: new TradeManager(bankInventory, round)
       }
     );
 
-	return game;
+    //TODO FIX ROBTEST
+    // const field = game.playground.gridField.find((f) => (f.polygon.points.find((p) => game.playground.buildingGraph.getNodeByPoint(p))? f : false))
+    // console.log("FIELD", field);
+    // if(field) {
+    //   game.robTest(round.players[0], field)
+    // } 
+    const trade = game.tradeTest();
+    trade.selectTradeOfferStarted.subscribe((data) => {
+      console.log("TRADE STARTED", data);
+    })
+    trade.selectTradeCancel.subscribe((data)=> {
+      console.log("TRADE CANCELED!!!", data)
+      dispatch(
+        TradeActions.removeTrade({
+          id: data.tradeId
+        })
+      )
+      console.log(trade);
+    })
+
+    trade.selectTradeResponse.subscribe((data) => console.log("JAJAJAAJJAJA" , data))
+
+    trade.selectTradeCompleted.subscribe((data)=> {
+      console.log("ALLES FERDDISCCHHH", data)
+      console.log("TESTTTTTTTTTTTTTTT");
+      dispatch(
+        ActionHistoryActions.addAction({
+          typ: 'trade',
+          id: Math.random().toString(),
+          playerB: data.acceptedPlayer,
+          player: data.trade.player,
+          givenResources: resourcesToResourceCards(data.trade.offeredResources),
+          receivedResources: resourcesToResourceCards(data.trade.requestedResources),
+        })
+      )
+    })
+
+    // setTimeout(() => {
+    //   trade.cancelTrade("1")
+    // }, 3000)
+
+    
+	  return game;
   }
 
   private generateRound(roundPlayers: RoundPlayer[]) {
@@ -260,6 +364,12 @@ export class GameLocalClient {
         buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, activePlayer, buildingNode))
       } catch(e) {}
     }
+    const loc = playground.graph.nodes[32]
+    playground.buildingGraph.tryAddNode(new GraphBuildingNode("32",loc.position , players[1]));
+    const buildingNode = playground.buildingGraph.getNodeById("32");
+    buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, players[1], buildingNode))
+    console.log("LOC", loc);
+    console.log("BUILDINGNODEH", buildingNode);
 
   }
 
@@ -320,7 +430,7 @@ playground.resourceFields[0].value = 3
       {
         id: '1412523',
         color: '#22c55e',
-        profileUrl: '/assets/robot.jpg',
+        profileUrl: '/assets/robot.png',
         name: 'Robot',
         researchCardCount: 4,
         resourceCardCount: 2,
@@ -330,7 +440,7 @@ playground.resourceFields[0].value = 3
       // {
       //   id: '1412541241',
       //   color: '#6B46C1',
-      //   profileUrl: '/assets/robot.jpg',
+      //   profileUrl: '/assets/robot.png',
       //   name: 'Robot',
       //   researchCardCount: 6,
       //   resourceCardCount: 3,

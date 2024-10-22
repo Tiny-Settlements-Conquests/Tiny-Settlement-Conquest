@@ -1,5 +1,5 @@
 import { createStore, withProps, select } from '@ngneat/elf';
-import { map, of, switchMap } from 'rxjs';
+import { filter, map, of, switchMap } from 'rxjs';
 import { getActiveEntity, getAllEntities, getEntity, selectActiveEntity, selectAllEntities, setActiveId, setEntities, withActiveId, withEntities } from '@ngneat/elf-entities';
 import { Injectable, inject } from '@angular/core';
 import { RoundPlayer } from '../models/round-player.model';
@@ -19,6 +19,7 @@ export class RoundPlayerRepository {
   private readonly _userRepository = inject(UserRepository);
 
   public setRoundPlayers(roundPlayers: RoundPlayer[]) {
+    console.log("TESST", roundPlayers)
     roundPlayerStore.update(setEntities(roundPlayers));
   }
 
@@ -40,6 +41,12 @@ export class RoundPlayerRepository {
 
   public getActiveRoundPlayer() {
     return roundPlayerStore.query(getActiveEntity());
+  }
+
+  public getMe() {
+    const players = this.getRoundPlayers();
+    const me = this._userRepository.getUser()
+    return players.find(x => x.id === me?.id);
   }
 
   public selectMe() {
@@ -65,6 +72,16 @@ export class RoundPlayerRepository {
           })
         )
       })
+    )
+  }
+
+  public selectRoundPlayersExceptMe() {
+    return roundPlayerStore.pipe(
+      selectAllEntities(),
+      switchMap((players) => this.selectMe().pipe(
+        filter((me) => me !== undefined),
+        map((me) => players.filter((p) => p.id !== me.id))
+      ))
     )
   }
 

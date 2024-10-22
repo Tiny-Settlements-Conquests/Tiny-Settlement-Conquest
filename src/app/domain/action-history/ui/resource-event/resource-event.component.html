@@ -1,0 +1,4 @@
+<span>got</span>
+@for (card of action().receivedResources; track $index) {
+    <img class="w-6 h-6"  [src]="card.imageUrl" />
+}

@@ -15,13 +15,14 @@ const actionHistoryStore = createStore(
 })
 export class ActionHistoryRepository {
 
-    public selectActions() {
+    public selectAllActions() {
         return actionHistoryStore.pipe(
             selectAllEntities()
         )
     }
 
     public addAction(action: HistoryAction) {
+        console.log("TYPE", action.typ);
         actionHistoryStore.update(addEntitiesFifo(action, { limit: 20 }));
     }
 

@@ -1,0 +1,42 @@
+<div class="grow-1 flex gap-2 items-center">
+    @if(isPlayerTrade()) {
+        <img class="w-12 h-12 mx-3" src="/assets/robot.png" />
+    } @else {
+        <img class="w-12 h-12 mx-3" src="/assets/buildings/bank.png" />
+    }
+    @for (resourceType of resourceTypes; track $index) {
+        <app-resource-card class="cursor-pointer" [resourceType]='resourceType' (click)="_tradeOfferService.addResource(resourceType)" />
+    }
+</div>
+<div class="grow-1 flex flex-row ">
+    <div class="flex flex-col justify-between grow gap-2">
+        <div class="flex gap-4 items-center h-[88px] bg-slate-500 rounded px-2 pt-3">
+            <fa-icon [icon]="icons.down" class="text-green-400 text-4xl" />
+            <div class="flex flex-row">
+                @for (item of requestedResources(); track $index) {
+                    <app-action-card-stack class="cursor-pointer" [mode]="item.mode" [count]="item.amount" (click)="_tradeOfferService.removeResource(item.card.typ)">
+                        <img [src]="item.card.imageUrl" class="absolute w-10 h-8" />
+                    </app-action-card-stack>
+                }
+            </div>
+        </div>
+        <div class="flex gap-4 items-center h-[88px] bg-slate-500 rounded px-2 pt-3">
+            <fa-icon [icon]="icons.up" class="text-red-400 text-4xl" />
+            <div class="flex flex-row">
+                @for (item of offeredResources(); track $index) {
+                    <app-action-card-stack class="cursor-pointer" [mode]="item.mode" [count]="item.amount" (click)="_tradeOfferService.removeOfferedResource(item.card.typ)">
+                        <img [src]="item.card.imageUrl" class="absolute w-10 h-8" />
+                    </app-action-card-stack>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex items-center">
+    <img class="rounded-full mx-4 w-12 h-12 border-1" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU" />
+    @for (item of resources(); track $index) {
+        <app-action-card-stack class="cursor-pointer" [mode]="item.mode" [count]="item.amount" (click)="_tradeOfferService.addOfferedResource(item.card.typ)">
+            <img [src]="item.card.imageUrl" class="absolute w-10 h-8" />
+        </app-action-card-stack>
+    }
+</div>

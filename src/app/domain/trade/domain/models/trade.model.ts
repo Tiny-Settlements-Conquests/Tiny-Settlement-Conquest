@@ -4,39 +4,40 @@ import { Resources } from "../../../resources/domain/models/resources.model";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
 
-export interface TradeOffer {
+interface TradeInformation {
   id: string;
+  player: RoundPlayer;
   offeredResources: Partial<Resources>;
   requestedResources: Partial<Resources>;
-  player: Player;
 }
 
 
 export interface TradeResponse {
   tradeId: string;
-  respondedPlayer: Player;
+  respondedPlayer: RoundPlayer;
   accepted: boolean;
 }
 
 export interface TradeComplete {
-  trade: TradeOffer;
-  acceptedPlayer: Player;
+  trade: TradeInformation;
+  acceptedPlayer: RoundPlayer;
 }
 
 export interface TradeCancel {
   tradeId: string;
 }
 
-export interface OpenTradeOffer extends TradeOffer{
-  playerResponses: { [playerId: string]: boolean };
+export interface OpenTradeOffer extends PlayerTrade {
+  playerResponses: { [playerId: string]: TradeResponse };
 }
 
+export type TradeOffer = BankTrade | PlayerTrade;
 
-//todo find a better name, but Player cannot be used here because class player is only available in backend code
-export interface OpenTradeOfferLocal {
-  id: string;
-  offeredResources: Partial<Resources>;
-  requestedResources: Partial<Resources>;
-  player: RoundPlayer;
-  playerResponses: { [playerId: string]: boolean };
+export interface BankTrade extends TradeInformation {
+  typ: 'bank',
+}
+
+export interface PlayerTrade extends TradeInformation {
+  typ: 'player',
+
 }

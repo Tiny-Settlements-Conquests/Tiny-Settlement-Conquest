@@ -37,6 +37,7 @@ import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { TradeRepository } from "../../../trade/domain/state/trade.repository";
 import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
+import { TradeActions } from "../../../trade/domain/state/trade.actions";
 
 export class GameLocalClient {
   private _game: Game
@@ -62,15 +63,19 @@ export class GameLocalClient {
     private _responseQueueRepository: ResponseQueueRepository,
     private _destroyRef: DestroyRef,
   ) { 
-    this._responseQueueRepository.selectAllResponses().subscribe((t) => {
-      if(t[0].type == 'trade-offer-open') {
-        this.game.tradeTest().startTrade(t[0].data);
+    this._responseQueueRepository.selectLatestResponse().subscribe((t) => {
+      console.log("TTT", t)
+      if(t && t.type == 'trade-offer-open') {
+        this.game.tradeTest().startTrade(t.data);
+      } else if(t?.type === 'trade-offer-accept') {
+        this.game.tradeTest().respondToTrade(t.data)
       }
     })
     
     this._game = this.generateGame();
 //!!remove me later
 this._game.selectPlayers().subscribe(roundPlayers => {
+  console.log("TTT", roundPlayers)
   //todo build a mapper
   const roundplayers = roundPlayers.map((p): RoundPlayer => ({
     color: p.color,
@@ -85,14 +90,27 @@ this._game.selectPlayers().subscribe(roundPlayers => {
   this._roundPlayerRepository.setRoundPlayers(roundplayers);
 });
 
+dispatch(
+  TradeActions.addTrade({
+    id: '2352',
+    offeredResources: {
+      bricks: 6
+    },
+    player: this._roundPlayerRepository.getRoundPlayers()[1],
+    requestedResources: {
+      wood: 1
+    },
+    typ: 'player'
+  })
+)
 this._tradeRepository.selectAllTrades().subscribe(trades => {
   //todo fix me later 
-  const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
-  if(!player) return;
-  this.game.tradeTest().startTrade({
-    ...trades[0],
-    player,
-  })
+  // const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
+  // if(!player) return;
+  // this.game.tradeTest().startTrade({
+  //   ...trades[0],
+  //   player,
+  // })
 })
 //!!
     // this.syncStates();
@@ -131,12 +149,12 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     ).subscribe(({dices, player}) => {
       if(!player) return;
       dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'dice',
-          id: Math.random().toString(),
-          player,
-          dice: dices
-        })
+        // ActionHistoryActions.addAction({
+        //   typ: 'dice',
+        //   id: Math.random().toString(),
+        //   player,
+        //   dice: dices
+        // })
       )
       this._diceRepository.setDices(dices);
       this.rollDice(dices);
@@ -147,14 +165,14 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       console.log(inventory)
       //todo replace by ngneat action
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
-        dispatch(
-          ActionHistoryActions.addAction({
-            typ: 'resource',
-            id: Math.random().toString(),
-            player: inventory.player,
-            receivedResources: [resourceTypeToResourceCard(inventory.type)],
-          })
-        )
+        // dispatch(
+        //   ActionHistoryActions.addAction({
+        //     typ: 'resource',
+        //     id: Math.random().toString(),
+        //     player: inventory.player,
+        //     receivedResources: [resourceTypeToResourceCard(inventory.type)],
+        //   })
+        // )
       }
     })
 
@@ -176,14 +194,14 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 
     this.game.selectBuildingUpdate().subscribe((data) => {
       console.log("YOW")
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'build',
-          id: Math.random().toString(),
-          player: data.owner,
-          building: data.type,
-        })
-      )
+      // dispatch(
+      //   ActionHistoryActions.addAction({
+      //     typ: 'build',
+      //     id: Math.random().toString(),
+      //     player: data.owner,
+      //     building: data.type,
+      //   })
+      // )
     })
 
     this.game.selectBankInventoryUpdate().subscribe(inventory => {
@@ -208,21 +226,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     ).subscribe(({newAmount, type}) => {
       this._inventoryRepository.updateResourceAmount(type, newAmount);
     })
-
-    this._game.selectPlayers().subscribe(roundPlayers => {
-      //todo build a mapper
-      const roundplayers = roundPlayers.map((p): RoundPlayer => ({
-        color: p.color,
-        id: p.id,
-        isBot: p.roundPlayer.isBot,
-        name: p.name,
-        profileUrl: p.profileUrl,
-        researchCardCount: p.researchCardCount,
-        winningPoints: p.winningPointsAmount,
-        resourceCardCount: p.resourceCardCount
-      }))
-      this._roundPlayerRepository.setRoundPlayers(roundplayers);
-    });
 
     this.game.round.selectActivePlayer().subscribe((player) => {
       this._gameModeRepository.updateMode('spectate');
@@ -295,6 +298,11 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     })
     trade.selectTradeCancel.subscribe((data)=> {
       console.log("TRADE CANCELED!!!", data)
+      dispatch(
+        TradeActions.removeTrade({
+          id: data.tradeId
+        })
+      )
       console.log(trade);
     })
 
@@ -307,32 +315,13 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
         ActionHistoryActions.addAction({
           typ: 'trade',
           id: Math.random().toString(),
-          playerA: data.trade.player,
           playerB: data.acceptedPlayer,
+          player: data.trade.player,
           givenResources: resourcesToResourceCards(data.trade.offeredResources),
           receivedResources: resourcesToResourceCards(data.trade.requestedResources),
         })
       )
     })
-
-    trade.startTrade({
-      id: "1",
-      offeredResources: {
-        wood: 1
-      },
-      player: round.players[0],
-      requestedResources: {
-        wood: 7
-      }
-    })
-
-    setTimeout(() => {
-      trade.respondToTrade({
-        tradeId: "1",
-        respondedPlayer: round.players[1],
-        accepted: true
-      })
-    }, 2000)
 
     // setTimeout(() => {
     //   trade.cancelTrade("1")
@@ -451,7 +440,7 @@ playground.resourceFields[0].value = 3
       // {
       //   id: '1412541241',
       //   color: '#6B46C1',
-      //   profileUrl: '/assets/robot.jpg',
+      //   profileUrl: '/assets/robot.png',
       //   name: 'Robot',
       //   researchCardCount: 6,
       //   resourceCardCount: 3,

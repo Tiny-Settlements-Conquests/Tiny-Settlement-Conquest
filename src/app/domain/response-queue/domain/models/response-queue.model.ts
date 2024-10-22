@@ -1,7 +1,8 @@
-export type ResponseType = 'trade-offer-open' | 'trade-accept' | 'trade-reject';
+import { GatewayEvents } from "../../../gateway/domain/models/gateway.model";
+
 
 export interface ResponseQueueItem {
     id: string;
-    type: ResponseType;
+    type: GatewayEvents;
     data: any;
 }

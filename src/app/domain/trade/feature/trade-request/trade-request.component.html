@@ -1,0 +1,26 @@
+@let offer = tradeOffer();
+<img [src]="offer.player.profileUrl" class="w-12 h-12 rounded-full" />
+
+<div class="flex gap-2">
+    @for (player of roundPlayersWithoutHost(); track $index) {
+        <div class="relative w-fit">
+            <img [src]="player.profileUrl" class="w-12 h-12 rounded-full" />
+            <fa-icon class="text-slate-200 absolute bottom-0 right-0 bg-green-600 rounded-full p-1 text-xs" [icon]="getStatusIcon(player)" />
+        </div>
+    }
+</div>
+
+<button 
+    class="flex items-center justify-center h-8 w-8 bg-green-500 p-2 rounded text-slate-200 transition-colors hover:bg-green-400"
+    (click)="acceptTrade()"
+>
+    <fa-icon 
+        [icon]="icons.add" 
+    />
+</button>
+<button
+    class="flex items-center justify-center h-8 w-8 bg-red-500 p-2 rounded text-slate-200 transition-colors hover:bg-red-400"
+    (click)="denyTrade()"
+>
+    <fa-icon [icon]="icons.close" />
+</button>

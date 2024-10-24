@@ -33,7 +33,7 @@ export class RoundPlayerCardsComponent {
   );
 
   public readonly me = toSignal(
-    this._userRepository.selectUser()
+    this._roundPlayerRepository.selectMe()
   )
 
   public readonly dices = toSignal(

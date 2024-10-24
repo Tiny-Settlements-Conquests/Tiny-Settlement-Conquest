@@ -39,7 +39,6 @@ export class BuildingBuildManager {
         const graphNode = this.playgroundGraph.getNodeById(buildingGraphNode.id);
         if(!graphNode) throw new Error('Requested node does not exist');
 
-        console.log(graphNode);
         this.checkIfBuildingIsBuild(graphNode)
         
         graphNode.connectedPoints.forEach(node => {

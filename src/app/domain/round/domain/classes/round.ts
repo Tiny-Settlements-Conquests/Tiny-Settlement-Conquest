@@ -60,7 +60,7 @@ export class Round {
         iteration,
         activePlayer: this.activePlayer
       }),
-      tap(() => console.log("YYYYYYY")))
+      tap((d) => console.log("YYYYYYY", d)))
     )
   }
 
@@ -70,11 +70,11 @@ export class Round {
 
 
   public setNewRound(playerId: string) {
-    this._roundNumber.next(this._roundNumber.value + 1);
     const idx = this._players.findIndex(({id})=> id === playerId);
     if(idx === -1) return;
     this._activePlayerIndex = idx;
     this._activePlayer.next(this._players[idx]);
+    this._roundNumber.next(this._roundNumber.value + 1);
     this._roundEnd.next(true);
   }
 }

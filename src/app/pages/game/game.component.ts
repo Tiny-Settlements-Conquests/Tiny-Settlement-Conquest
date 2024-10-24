@@ -29,7 +29,6 @@ import { PlayerCardComponent } from '../../domain/player/feature/players-card/pl
 import { ResponseQueueRepository } from '../../domain/response-queue/domain/state/response-queue.repository';
 import { RoundPlayerRepository } from '../../domain/round/domain/state/round-players.repository';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
-import { RoundCountdownComponent } from '../../domain/round/feature/round-countdown/round-countdown.component';
 import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-player-cards/round-player-cards.component';
 import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
 import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/trade-button.component';
@@ -37,6 +36,7 @@ import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/tr
 import { TradeMenuComponent } from '../../domain/trade/feature/trade-menu/trade-menu.component';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
+import { tap } from 'rxjs';
 
 
 @Component({
@@ -57,7 +57,6 @@ import { UserRepository } from '../../domain/user/domain/state/user.repository';
     BankComponent,
     DiceRandomNumberComponent,
     DiceOverlayComponent,
-    RoundCountdownComponent,
     TradeMenuComponent,
     GameInformationBarComponent,
     BuildingOptionsInventoryComponent,
@@ -101,7 +100,9 @@ export class GameComponent {
   )
 
   public readonly selectTradeRequests = toSignal(
-    this._tradeRepository.selectAllTrades()
+    this._tradeRepository.selectAllTrades().pipe(
+      tap((d) => console.log("ALL TRAAAAADES", d))
+    )
   );
   public readonly roundPlayers = toSignal(
     this._roundPlayerRepository.selectRoundPlayers()

@@ -101,7 +101,6 @@ export class MapPreviewComponent implements AfterViewInit {
 
 
   private determineCanvasSize(canvasWrapper: HTMLDivElement, canvas: HTMLCanvasElement): void {
-    console.log(canvasWrapper.clientHeight)
     canvas.width = canvasWrapper.clientWidth - 50;
     canvas.height = canvasWrapper.clientHeight - 50;
   }

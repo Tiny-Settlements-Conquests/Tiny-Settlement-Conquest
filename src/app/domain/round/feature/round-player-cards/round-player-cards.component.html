@@ -3,6 +3,7 @@
         @if(player.id === activePlayer()?.id && player.id !== me()?.id && dices() !== undefined) {
             <app-dice-random-number class="text-3xl" [dices]="dices() ?? [1,1]" />
         }
-        <app-player-card [isMe]="me()?.id === player.id" [player]="player" [ngClass]="{'brightness-510': player.id !== activePlayer()?.id}"  />
+        <app-player-card [isMe]="me()?.id === player.id" [player]="player" [ngClass]="{'brightness-50': player.id !== activePlayer()?.id}"  />
     </div>
 }
+{{activePlayer()?.name}}

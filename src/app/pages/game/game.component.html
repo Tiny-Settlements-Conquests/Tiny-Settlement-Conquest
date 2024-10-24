@@ -10,13 +10,10 @@
     
 </div>
 <div class="absolute bottom-4 flex flex-row right-4 gap-4">
-    <div >
-        @if (isMyTurn()) {
-            <app-round-countdown class="absolute -top-10" />
-        }
-    </div>
-    <app-trade-button (click)="openDialog()" class="h-full" />
-    <app-next-move-button class="h-full" />
+    @if (isMyTurn()) {
+        <app-trade-button (click)="openDialog()" class="h-full" />
+        <app-next-move-button class="h-full" />
+    }
 </div>
 <div class="absolute top-[200px] left-4">
     @if(mySelf){

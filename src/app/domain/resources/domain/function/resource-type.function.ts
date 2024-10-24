@@ -6,35 +6,37 @@ export function resourceTypeToResourceCard(resourceType: ResourceType): Resource
     if(resourceType === 'wood') {
         return {
             typ: 'wood',
-            imageUrl: '/assets/images/wood.png'
+            imageUrl: '/assets/resources/wood.png'
         }
     }
     if(resourceType ==='stone') {
         return {
             typ:'stone',
-            imageUrl:'/assets/images/stone.png'
+            imageUrl:'/assets/resources/stone.png'
         }
     }
     if(resourceType === 'wool') {
         return {
             typ: 'wool',
-            imageUrl: '/assets/images/sheep.png'
+            imageUrl: '/assets/resources/sheep.png'
         }
     }
     if(resourceType ==='straw') {
         return {
             typ:'straw',
-            imageUrl:'/assets/images/wheat.png'
+            imageUrl:'/assets/resources/wheat.png'
         }
     }
     return {
         typ: 'bricks',
-        imageUrl: '/assets/images/brick.png'
+        imageUrl: '/assets/resources/brick.png'
     }
 }
 
 export function resourcesToResourceCards(resources: Partial<Resources>): ResourceCard[] {
-    return Object.keys(resources).map((key) => resourceTypeToResourceCard(key as ResourceType))
+    return Object.keys(resources)
+        .filter((key) => resources[key as keyof Resources] ?? 0 > 0)
+        .map((key) => resourceTypeToResourceCard(key as ResourceType))
 }
 
 export function resourceTypeToActionCardMode(resourceType: ResourceType): ActionCardMode {

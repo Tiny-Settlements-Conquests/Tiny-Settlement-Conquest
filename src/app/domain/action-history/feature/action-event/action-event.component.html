@@ -1,8 +1,8 @@
 @let action = historyAction();
-<div class="flex items-center justify-center w-10 h-full">
+<div class="flex items-center justify-center min-w-[34px] h-full">
     @if (!isFollowUp()) {
         <img 
-            class="rounded-full w-8 h-8 border-1 border-2 border-solid border-slate-200" 
+            class="block rounded-full w-8 h-8 border-1 border-2 border-solid border-slate-200" 
             [src]="action.player.profileUrl" 
         />
     } @else {

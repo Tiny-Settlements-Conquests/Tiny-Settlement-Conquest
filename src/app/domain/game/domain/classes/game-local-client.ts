@@ -1,5 +1,5 @@
 import { ComponentRef, DestroyRef, ViewContainerRef } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { dispatch } from '@ngneat/effects';
 import { Subject, delay, filter, map, switchMap, take, takeUntil } from "rxjs";
 import { ActionHistoryActions } from "../../../action-history/domain/state/action-history.actions";
@@ -64,7 +64,6 @@ export class GameLocalClient {
     private _destroyRef: DestroyRef,
   ) { 
     this._responseQueueRepository.selectLatestResponse().subscribe((t) => {
-      console.log("TTT", t)
       if(t && t.type == 'trade-offer-open') {
         this.game.tradeTest().startTrade(t.data);
       } else if(t?.type === 'trade-offer-accept') {
@@ -75,7 +74,6 @@ export class GameLocalClient {
     this._game = this.generateGame();
 //!!remove me later
 this._game.selectPlayers().subscribe(roundPlayers => {
-  console.log("TTT", roundPlayers)
   //todo build a mapper
   const roundplayers = roundPlayers.map((p): RoundPlayer => ({
     color: p.color,
@@ -139,22 +137,26 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 
     this.game.selectRound().pipe(
     ).subscribe((d) => {
-      console.log("ROUND UPDATE");
+      console.log("ROUND UPDATE", d);
+      console.log("THIS IS ME", this._roundPlayerRepository.getMe()?.name);
+      console.log("THIS SHOULD BE ALSO ME?", d.activePlayer?.roundPlayer.name)
       this._diceRepository.resetDices();
       this._diceRef?.destroy();
-      this.openDiceOverlay()
+      if(this._roundPlayerRepository.getMe() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerRepository.getMe()?.id) {
+        this.openDiceOverlay()
+      }
     })
 
     this.game.selectRolledDice().pipe(
     ).subscribe(({dices, player}) => {
       if(!player) return;
       dispatch(
-        // ActionHistoryActions.addAction({
-        //   typ: 'dice',
-        //   id: Math.random().toString(),
-        //   player,
-        //   dice: dices
-        // })
+        ActionHistoryActions.addAction({
+          typ: 'dice',
+          id: Math.random().toString(),
+          player: player.roundPlayer,
+          dice: dices
+        })
       )
       this._diceRepository.setDices(dices);
       this.rollDice(dices);
@@ -162,17 +164,16 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 
     this.game.selectUserInventoryUpdate().pipe(
     ).subscribe((inventory) => {
-      console.log(inventory)
       //todo replace by ngneat action
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
-        // dispatch(
-        //   ActionHistoryActions.addAction({
-        //     typ: 'resource',
-        //     id: Math.random().toString(),
-        //     player: inventory.player,
-        //     receivedResources: [resourceTypeToResourceCard(inventory.type)],
-        //   })
-        // )
+        dispatch(
+          ActionHistoryActions.addAction({
+            typ: 'resource',
+            id: Math.random().toString(),
+            player: inventory.player.roundPlayer,
+            receivedResources: [resourceTypeToResourceCard(inventory.type)],
+          })
+        )
       }
     })
 
@@ -189,19 +190,17 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       dispatch(RoundCountdownActions.setRoundCountdown({
         countdown: data,
       }))
-      console.log(data);
     })
 
     this.game.selectBuildingUpdate().subscribe((data) => {
-      console.log("YOW")
-      // dispatch(
-      //   ActionHistoryActions.addAction({
-      //     typ: 'build',
-      //     id: Math.random().toString(),
-      //     player: data.owner,
-      //     building: data.type,
-      //   })
-      // )
+      dispatch(
+        ActionHistoryActions.addAction({
+          typ: 'build',
+          id: Math.random().toString(),
+          player: data.owner.roundPlayer,
+          building: data.type,
+        })
+      )
     })
 
     this.game.selectBankInventoryUpdate().subscribe(inventory => {
@@ -228,9 +227,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     })
 
     this.game.round.selectActivePlayer().subscribe((player) => {
+      console.log("NEW ACTIVE PLAYER", player?.name)
       this._gameModeRepository.updateMode('spectate');
       if(player) {
-        this._roundPlayerRepository.updateActiveRoundPlayer(player.id)
+        this._roundPlayerRepository.updateActiveRoundPlayer(player.roundPlayer.id)
       }
     })
 
@@ -294,10 +294,8 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     // } 
     const trade = game.tradeTest();
     trade.selectTradeOfferStarted.subscribe((data) => {
-      console.log("TRADE STARTED", data);
     })
     trade.selectTradeCancel.subscribe((data)=> {
-      console.log("TRADE CANCELED!!!", data)
       dispatch(
         TradeActions.removeTrade({
           id: data.tradeId
@@ -309,8 +307,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     trade.selectTradeResponse.subscribe((data) => console.log("JAJAJAAJJAJA" , data))
 
     trade.selectTradeCompleted.subscribe((data)=> {
-      console.log("ALLES FERDDISCCHHH", data)
-      console.log("TESTTTTTTTTTTTTTTT");
       dispatch(
         ActionHistoryActions.addAction({
           typ: 'trade',
@@ -368,8 +364,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     playground.buildingGraph.tryAddNode(new GraphBuildingNode("32",loc.position , players[1]));
     const buildingNode = playground.buildingGraph.getNodeById("32");
     buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, players[1], buildingNode))
-    console.log("LOC", loc);
-    console.log("BUILDINGNODEH", buildingNode);
 
   }
 
@@ -420,8 +414,9 @@ playground.resourceFields[0].value = 3
       {
         id: '14124',
         color: '#CD5C5C',
-        profileUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU',
+        // profileUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU',
         name: 'Admin',
+        profileUrl: '/assets/robot_2.png',
         researchCardCount: 5,
         resourceCardCount: 5,
         winningPoints: 1,

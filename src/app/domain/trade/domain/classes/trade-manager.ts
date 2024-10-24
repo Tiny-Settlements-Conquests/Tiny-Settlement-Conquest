@@ -141,6 +141,7 @@ export class TradeManager {
       acceptedPlayer.resourceInventory.addToInventory(key as keyof Resources, value);
     })
 
+    console.log("OPER", offer);
     this.tradeCompleted.next({
       acceptedPlayer: acceptedRoundPlayer,
       trade: offer

@@ -1,10 +1,18 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
+    {
+        pathMatch: 'full',
+        path: '',
+        redirectTo: 'home'
+    },
+    {
+        path: 'home',
+        loadComponent : () => import('./pages/home/').then(m => m.HomeComponent)
+    },
     { 
         path: '',  loadComponent : () => import('./domain/layouts/ui/default-layout/').then(m => m.DefaultLayoutComponent),
         children: [
-            { path: '', loadComponent : () => import('./pages/home/').then(m => m.HomeComponent)},
             { path: 'servers', loadComponent : () => import('./pages/server-list/').then(m => m.ServerListComponent)},
             { path: 'lobby/:gameId', loadComponent : () => import('./pages/lobby/').then(m => m.LobbyComponent)},
         ]
@@ -15,4 +23,5 @@ export const routes: Routes = [
             { path: '', loadComponent : () => import('./pages/game/').then(m => m.GameComponent)},
         ]
     },
+    
 ];

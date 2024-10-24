@@ -10,9 +10,9 @@
         </app-block>
         @for (slot of slots(); track $index) {
             @if(slot.player !== null) {
-                <app-block class="flex gap-2 items-center">
+                <app-block class="flex gap-4 items-center">
                     @if(slot.player.isHost) {
-                        <div class="bg-yellow-500 rounded-full w-16 h-16 flex items-center justify-center">
+                        <div class="bg-yellow-400 rounded-full w-16 h-16 flex items-center justify-center">
                             <img 
                                 class="rounded-full w-14 h-14" 
                                 src="{{slot.player.profileUrl}}" 
@@ -29,15 +29,15 @@
                         <app-title>
                             {{slot.player.name}}
                             @if(slot.player.isHost) {
-                                <fa-icon class="border-solid border-black text-yellow-500" [icon]="icons.crown" />
+                                <fa-icon class="border-solid border-black text-yellow-400" [icon]="icons.crown" />
                             }
                         </app-title>
                         
-                        <div class="text-zinc-500">{{slot.player.ready ? 'is Ready' : 'is not ready'}}</div>
+                        <div class="text-slate-400">{{slot.player.ready ? 'is Ready' : 'is not ready'}}</div>
                     </div>
-                    <div class="ml-auto w-20 text-red-600">
+                    <button class="ml-auto py-2 px-4 rounded bg-red-600 text-slate-200 hover:bg-red-500 transition-colors">
                         kick
-                    </div>
+                    </button>
                     @if(slot.player.ready) {
                         <fa-icon class="flex-0 text-2xl text-green-500" [icon]="icons.checkmark"/>
                     } @else {
@@ -52,7 +52,7 @@
                     <button 
                         (click)="toggleIsOpen($index)"
                         
-                        class="ml-auto p-2 w-28 text-red-600">
+                        class="ml-auto px-4 py-2 bg-red-600 text-slate-200 hover:bg-red-500 transition-colors rounded">
                         {{
                             slot.isOpen ? 'Close' : 'Open'
                         }}
@@ -71,11 +71,11 @@
             <app-map-preview #mapPreview class="h-full w-full"/>
         </div>
         <div class="flex gap-2">
-            <button (click)="mapPreview.regen()" class="ml-auto p-2 shadow-md bg-zinc-800 w-28 text-zinc-200 rounded flex items-center justify-center gap-2">
+            <button (click)="mapPreview.regen()" class="ml-auto p-2 hover:bg-slate-600 bg-slate-700 w-28 text-slate-200 rounded flex items-center justify-center gap-2">
                 <fa-icon [icon]="icons.dice" class="text-2xl " />
                 Random
             </button>
-            <button (click)="mapPreview.restore()" class="p-2 shadow-md bg-zinc-800 w-28 text-zinc-200 rounded flex items-center justify-center gap-2">
+            <button (click)="mapPreview.restore()" class="p-2 hover:bg-slate-600 bg-slate-700 w-28 text-slate-200 rounded flex items-center justify-center gap-2">
                 <fa-icon [icon]="icons.file" class="text-2xl " />
                 Load
             </button>
@@ -84,7 +84,7 @@
 </div>
 <div class="flex">
     <button 
-        class="p-2 shadow-md bg-red-700 w-28 text-zinc-200 rounded flex items-center justify-center gap-2"
+        class="p-2 bg-red-600 hover:bg-red-500 w-28 text-slate-200 rounded flex items-center justify-center gap-2"
         [routerLink]="['/servers']"
     >
         <fa-icon [icon]="icons.bracketArrow" class="text-2xl " />

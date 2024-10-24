@@ -1,19 +1,19 @@
 <div 
     (click)="updateGameMode('road')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
+    [ngClass]="{ ' !bg-slate-400': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
     class="cursor-pointer bg-slate-500 rounded hover:bg-slate-400 transition-colors">
     <img src="assets/buildings/road.png" class="w-20 h-20 block" />
 </div>
 <div 
     (click)="updateGameMode('town')"
-    [ngClass]="{' border-cyan-400': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
+    [ngClass]="{' !bg-slate-400': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
     class="cursor-pointer bg-slate-500 rounded hover:bg-slate-400 transition-colors"
     >
     <img src="assets/buildings/town.png" class="w-20 h-20block" />
 </div>
 <div 
     (click)="updateGameMode('city')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
+    [ngClass]="{ ' !bg-slate-400': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
     class="cursor-pointer bg-slate-500 rounded hover:bg-slate-400 transition-colors">
     <img src="assets/buildings/city.png" class="w-20 h-20 block" />
 </div>

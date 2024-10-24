@@ -19,7 +19,6 @@ export class RoundPlayerRepository {
   private readonly _userRepository = inject(UserRepository);
 
   public setRoundPlayers(roundPlayers: RoundPlayer[]) {
-    console.log("TESST", roundPlayers)
     roundPlayerStore.update(setEntities(roundPlayers));
   }
 

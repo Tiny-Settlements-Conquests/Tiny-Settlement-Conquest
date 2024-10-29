@@ -7,11 +7,36 @@ body {
     margin: 0;
 }
 
-.gradient-background-blue {
-    @apply border-4 border-solid border-cyan-100 flex items-center justify-center rounded w-24 text-white;
-    background: rgb(156,246,255);
-    background: linear-gradient(180deg, rgba(156,246,255,1) 23%, rgba(67,142,230,1) 95%);
-}
-
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+$primary-yellow: #FFE5A9;
+$secondary-yellow: #ecc568;
+$tertiary-yellow: #a77e20;
+
+.bg-secondary-yellow {
+    background-color: $secondary-yellow;
+}
+
+.text-primary-yellow {
+  color: $primary-yellow;
+}
+
+.text-tertiary-yellow {
+  color: $tertiary-yellow;
+}
+
+.bg-primary-yellow {
+  background-color: $primary-yellow;
+}
+
+.bg-tertiary-yellow {
+  background-color: $tertiary-yellow;
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-gutter: stable both-edges;
+  
+}

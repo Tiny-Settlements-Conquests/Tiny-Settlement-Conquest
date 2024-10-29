@@ -4,9 +4,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
 import { BlockComponent } from '../../../layouts/ui/block/block.component';
-import { RoundPlayer } from '../../../round/domain/models/round-player.model';
+import { RoundPlayer } from '../../domain/models/round-player.model';
 import { PlayerWinningPointsComponent } from '../player-winning-points/player-winning-points.component';
-import { WinningPointsFlagComponent } from '../../ui/winning-points-flag/winning-points-flag.component';
+import { WinningPointsFlagComponent } from '../../../player/ui/winning-points-flag/winning-points-flag.component';
 
 
 //todo checken ob das überhaupt sinn ergibt, eig. nicht -> ist ja schon als round-player-card implementiert

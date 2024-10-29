@@ -1,0 +1,18 @@
+$primary-yellow: #FFE5A9;
+$secondary-yellow: #ecc568;
+$tertiary-yellow: #a77e20;
+// todo import from color map
+
+.host {
+  @apply p-3 gap-8 rounded flex flex-col h-[720px];
+  background-color: $primary-yellow;
+  color: $tertiary-yellow;
+}
+button {
+  background-color: $secondary-yellow;
+  color: $tertiary-yellow;
+  @apply p-2 rounded transition-colors;
+  &:hover {
+    background-color: #ffd36d;
+  }
+}

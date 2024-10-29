@@ -8,6 +8,8 @@ import { InventoryRepository } from '../../../inventory/domain/state/inventory.r
 import { dispatch } from '@ngneat/effects';
 import { TradeActions } from '../state/trade.actions';
 import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
+import { checkIsAValidBankTrade } from '../utils/bank.utils';
+import { isAValidTrade } from '../utils/trade.utils';
 
 @Injectable({
   providedIn: 'any'
@@ -29,16 +31,23 @@ export class TradeOfferService {
     filter((form): form is { 
       offerInventory: NonNullable<ResourceInventory>,
       requestInventory: NonNullable<ResourceInventory>,
+      isPlayerTrade: boolean
     } => form.offerInventory !== null && form.offerInventory !== undefined && form.requestInventory !== null && form.requestInventory !== undefined),
-    switchMap(({offerInventory, requestInventory}) => {
+    switchMap(({offerInventory, requestInventory, isPlayerTrade}) => {
       return combineLatest({
         offerInventory: offerInventory.selectInventory(),
         requestInventory: requestInventory.selectInventory(),
       }).pipe(
         map(() => {
-          if(offerInventory.amount === 0) return false;
           if(!requestInventory || requestInventory.amount === 0) return false;
-          return !Object.keys(offerInventory.getNotEmptyResources()).find((key) => requestInventory.getNotEmptyResources()[key as keyof Resources])
+          const offerInventoryResources = offerInventory.getNotEmptyResources();
+          const requestInventoryResources = requestInventory.getNotEmptyResources()
+
+          if(!isPlayerTrade) {
+            if(!isAValidTrade(offerInventoryResources, requestInventoryResources)) return false;
+            return checkIsAValidBankTrade(offerInventoryResources, requestInventoryResources)
+          } 
+          return isAValidTrade(offerInventoryResources, requestInventoryResources)
         })
       )
     })
@@ -144,7 +153,7 @@ export class TradeOfferService {
     const requestedResources = this.offerForm.controls.requestInventory.value;
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
-    if(!me || !offeredResources || !requestedResources || !isPlayerTrade) return;
+    if(!me || !offeredResources || !requestedResources) return;
     dispatch(
       TradeActions.addTrade({
         typ: isPlayerTrade ? 'player' : 'bank',

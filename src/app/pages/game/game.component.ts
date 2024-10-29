@@ -25,7 +25,7 @@ import { InventoryRepository } from '../../domain/inventory/domain/state/invento
 import { ResourceInventoryComponent } from '../../domain/inventory/feature/resource-inventory/resource-inventory.component';
 import { BlockComponent } from '../../domain/layouts/ui/block/block.component';
 import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
-import { PlayerCardComponent } from '../../domain/player/feature/players-card/player-card.component';
+import { PlayerCardComponent } from '../../domain/round/ui/player-card/player-card.component';
 import { ResponseQueueRepository } from '../../domain/response-queue/domain/state/response-queue.repository';
 import { RoundPlayerRepository } from '../../domain/round/domain/state/round-players.repository';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';

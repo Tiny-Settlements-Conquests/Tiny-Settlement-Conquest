@@ -1,0 +1,18 @@
+<app-player-winning-points [activeSegments]="3" [totalSegments]="5">
+    <img class="relative left-[1px] top-[1px] rounded-full w-12 h-12 border-[3px]" [ngStyle]="{'borderColor': player?.color}" [src]="player?.profileUrl ?? ''" />
+</app-player-winning-points>
+<div class="flex flex-col gap-2">
+    <div class="text-xl text-slate-700 text-nowrap text-ellipsis overflow-hidden ...">{{player?.name ?? ''}}</div>
+    <div class="flex gap-2">
+        <app-action-card class="!w-10 !h-10">
+            {{player?.resourceCardCount ?? 0}}
+        </app-action-card>
+        
+        <app-action-card mode="purple" class="!w-10 !h-10">
+            {{player?.researchCardCount ?? 0}}
+    
+        </app-action-card>
+    </div>
+</div>
+    
+

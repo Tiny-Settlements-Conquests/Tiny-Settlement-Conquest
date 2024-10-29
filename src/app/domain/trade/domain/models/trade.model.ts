@@ -1,8 +1,11 @@
-import { ResourceInventory,  } from "../../../inventory/domain/classes/resource-inventory";
-import { Player } from "../../../player/domain/classes/player";
 import { Resources } from "../../../resources/domain/models/resources.model";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
+export enum TradeState {
+  Open,
+  Accepted,
+  Declined,
+}
 
 interface TradeInformation {
   id: string;
@@ -19,11 +22,14 @@ export interface TradeResponse {
 }
 
 export interface TradeComplete {
+  tradeId: string;
   trade: TradeInformation;
+  state: TradeState,
   acceptedPlayer: RoundPlayer;
 }
 
 export interface TradeCancel {
+  state: TradeState,
   tradeId: string;
 }
 

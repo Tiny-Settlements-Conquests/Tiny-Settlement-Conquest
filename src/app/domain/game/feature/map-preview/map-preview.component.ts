@@ -35,9 +35,21 @@ export class MapPreviewComponent implements AfterViewInit {
     static: true,
   })
   canvas: ElementRef<HTMLCanvasElement> | undefined ;
+  private renderer !: PlaygroundRenderService;
+  private generator !: PlaygroundGenerator;
   
-  private game !: Game;
   private viewport !: Viewport;
+
+  private generateGameMap() {
+    const playground = this.generator.generate({
+      fieldHeight: 9,
+      fieldWidth: 9
+    }, new Graph<GraphBuildingNode>())
+
+    this.centerViewPort(playground);
+    this.viewport.reset();
+    this.renderer.render(playground);
+  }
 
   public ngAfterViewInit(): void {
     const canvas = this.canvas?.nativeElement;
@@ -46,7 +58,7 @@ export class MapPreviewComponent implements AfterViewInit {
     this.determineCanvasSize(canvasWrapper, canvas);
     this.viewport = new Viewport(canvas);
     const ctx = canvas.getContext('2d')!;
-    const playgroundGenerator = new PlaygroundGenerator(
+    this.generator = new PlaygroundGenerator(
       new PlaygroundGridGenerator(),
       new ResourceGenerator(),
       new PlaygroundGraphGenerator()
@@ -55,10 +67,7 @@ export class MapPreviewComponent implements AfterViewInit {
       new PolygonRendererService(ctx),
       this.viewport
     );
-    const playground = playgroundGenerator.generate({
-      fieldHeight: 9,
-      fieldWidth: 9
-    }, new Graph<GraphBuildingNode>())
+
 
     const playgroundRenderer = new PlaygroundRenderService(
       new ResourceFieldRendererService(ctx),
@@ -72,14 +81,12 @@ export class MapPreviewComponent implements AfterViewInit {
         )
       )
     );
-    this.centerViewPort(playground);
-    this.viewport.reset();
-    playgroundRenderer.render(playground);
-
-    console.log(this.canvas);
+    this.renderer = playgroundRenderer;
+    this.generateGameMap();
   }
 
   public regen() {
+    this.generateGameMap();
   }
 
   public save() {

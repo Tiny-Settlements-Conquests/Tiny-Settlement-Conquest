@@ -1,10 +1,14 @@
-import { BehaviorSubject, Observable, Subject, map, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subject, filter, map, tap } from "rxjs";
 import { Player } from "../../../player/domain/classes/player";
+import { RoundInformation } from "../models/round.model";
 
 export class Round {
   private readonly _playersUpdate = new BehaviorSubject<Player[]>([]);
 
-  private readonly _activePlayer = new BehaviorSubject<Player | null>(null);
+  private readonly _round = new BehaviorSubject<RoundInformation | null>(null);
+  private readonly _roundUpdate = this._round.pipe(
+    filter((r) => r !== null)
+  );
   private readonly _roundNumber = new BehaviorSubject(0);
   private readonly _roundEnd = new Subject();
   private _activePlayerIndex = 0;
@@ -13,24 +17,22 @@ export class Round {
     return this._roundNumber;
   }
 
-  public get activePlayer(): Player | null {
-    return this._activePlayer.value;
-  }
-
   public get players(): Player[] {
     return this._players;
   }
 
   public selectActivePlayer(){
-    return this._activePlayer;
+    return this._roundUpdate.pipe(
+      map(({activePlayer}) => activePlayer)
+    );
   }
 
   public selectRoundPlayers() {
     return this._playersUpdate;
   }
 
-  public getActivePlayer() {
-    return this._activePlayer;
+  public getActivePlayer(): Player | null {
+    return this._round.value?.activePlayer ?? null;
   }
 
   public getPlayerById(id: string): Player | null {
@@ -50,18 +52,20 @@ export class Round {
   constructor(
     private readonly _players: Player[], 
   ) {
-    this._activePlayer.next(this.players[1])
     this._playersUpdate.next(this.players);
+    this._round.next({
+      activePlayer: this._players[0],
+      roundNumber: 0
+    })
   }
 
   public selectRound() {
-    return this._roundNumber.pipe(
-      map((iteration) => ({
-        iteration,
-        activePlayer: this.activePlayer
+    return this._roundUpdate.pipe(
+      map(({activePlayer, roundNumber}) => ({
+        iteration: roundNumber,
+        activePlayer
       }),
-      tap((d) => console.log("YYYYYYY", d)))
-    )
+    ))
   }
 
   public selectRoundEnd() {
@@ -73,8 +77,10 @@ export class Round {
     const idx = this._players.findIndex(({id})=> id === playerId);
     if(idx === -1) return;
     this._activePlayerIndex = idx;
-    this._activePlayer.next(this._players[idx]);
-    this._roundNumber.next(this._roundNumber.value + 1);
+    this._round.next({
+      activePlayer: this._players[idx],
+      roundNumber: this._roundNumber.value + 1
+    })
     this._roundEnd.next(true);
   }
 }

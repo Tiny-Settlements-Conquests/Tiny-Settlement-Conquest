@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DiceRepository } from '../../../dice/domain/state/dice.repository';
 import { DiceRandomNumberComponent } from '../../../dice/ui/dice-random-number/dice-random-number.component';
-import { PlayerCardComponent } from '../../../player/feature/players-card/player-card.component';
+import { PlayerCardComponent } from '../../ui/player-card/player-card.component';
 import { UserRepository } from '../../../user/domain/state/user.repository';
 import { RoundPlayerRepository } from '../../domain/state/round-players.repository';
 

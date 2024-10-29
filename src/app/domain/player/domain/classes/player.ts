@@ -5,11 +5,6 @@ import { ResourceInventory } from "../../../inventory/domain/classes/resource-in
 import { WinningpointsInventory } from "../../../inventory/domain/classes/winningpoints-inventory";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
-export interface User {
-  id: string;
-  name: string;
-  profileUrl: string;
-}
 
 export class Player {
   private readonly isActive = new BehaviorSubject(true)

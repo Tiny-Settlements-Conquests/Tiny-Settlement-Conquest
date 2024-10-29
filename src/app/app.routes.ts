@@ -13,12 +13,18 @@ export const routes: Routes = [
     { 
         path: '',  loadComponent : () => import('./domain/layouts/ui/default-layout/').then(m => m.DefaultLayoutComponent),
         children: [
-            { path: 'servers', loadComponent : () => import('./pages/server-list/').then(m => m.ServerListComponent)},
-            { path: 'lobby/:gameId', loadComponent : () => import('./pages/lobby/').then(m => m.LobbyComponent)},
+            { 
+                path: 'lobby', 
+                loadComponent : () => import('./pages/lobby/').then(m => m.LobbyComponent),
+            },
+            {
+                path: 'map-selection', 
+                loadComponent : () => import('./pages/map-selection/').then(m => m.MapSelectionComponent)
+            }
         ]
     },
     { 
-        path: 'game/:gameId',  loadComponent : () => import('./domain/layouts/ui/game-layout/').then(m => m.GameLayoutComponent),
+        path: 'game',  loadComponent : () => import('./domain/layouts/ui/game-layout/').then(m => m.GameLayoutComponent),
         children: [
             { path: '', loadComponent : () => import('./pages/game/').then(m => m.GameComponent)},
         ]

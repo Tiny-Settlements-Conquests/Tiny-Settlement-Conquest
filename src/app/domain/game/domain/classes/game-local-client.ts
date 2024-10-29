@@ -1,7 +1,7 @@
 import { ComponentRef, DestroyRef, ViewContainerRef } from "@angular/core";
 import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
 import { dispatch } from '@ngneat/effects';
-import { Subject, delay, filter, map, switchMap, take, takeUntil } from "rxjs";
+import { Subject, delay, filter, forkJoin, map, merge, switchMap, take, takeUntil } from "rxjs";
 import { ActionHistoryActions } from "../../../action-history/domain/state/action-history.actions";
 import { ActionHistoryRepository } from "../../../action-history/domain/state/action-history.repository";
 import { BankRepository } from "../../../bank/domain/state/bank.repository";
@@ -38,6 +38,7 @@ import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { TradeRepository } from "../../../trade/domain/state/trade.repository";
 import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
 import { TradeActions } from "../../../trade/domain/state/trade.actions";
+import { TradeState } from "../../../trade/domain/models/trade.model";
 
 export class GameLocalClient {
   private _game: Game
@@ -65,9 +66,11 @@ export class GameLocalClient {
   ) { 
     this._responseQueueRepository.selectLatestResponse().subscribe((t) => {
       if(t && t.type == 'trade-offer-open') {
-        this.game.tradeTest().startTrade(t.data);
+        this.game.getTradeManager().startTrade(t.data);
       } else if(t?.type === 'trade-offer-accept') {
-        this.game.tradeTest().respondToTrade(t.data)
+        this.game.getTradeManager().respondToTrade(t.data)
+      } else if(t?.type === 'trade-offer-deny') {
+        this.game.getTradeManager().respondToTrade(t.data)
       }
     })
     
@@ -111,8 +114,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
   // })
 })
 //!!
-    // this.syncStates();
+    this.syncStates();
     // this.simulateGame();
+    this.syncTrades();
+    // this.syncDices();
     this._userRepository.selectUser().pipe(
       map((me) => {
         if(me) {
@@ -133,13 +138,38 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     })
   }
 
-  private simulateGame() {
+  private syncTrades() {
+    const trade = this.game.getTradeManager();
 
+    trade.selectTradeResponse.subscribe((data) => console.log("JAJAJAAJJAJA" , data))
+    const tradeEvent = merge(
+      trade.selectTradeCompleted,
+      trade.selectTradeCancel
+    )
+    tradeEvent.pipe(
+      delay(3000)
+    ).subscribe((data) =>{
+      this._tradeRepository.removeTrade(data.tradeId)
+    })
+
+
+    trade.selectTradeCompleted.subscribe((data)=> {
+      dispatch(
+        ActionHistoryActions.addAction({
+          typ: 'trade',
+          id: Math.random().toString(),
+          player: data.acceptedPlayer,
+          playerB: data.trade.player,
+          givenResources: resourcesToResourceCards(data.trade.requestedResources),
+          receivedResources: resourcesToResourceCards(data.trade.offeredResources),
+        })
+      )
+    })
+  }
+
+  private syncDices() {
     this.game.selectRound().pipe(
     ).subscribe((d) => {
-      console.log("ROUND UPDATE", d);
-      console.log("THIS IS ME", this._roundPlayerRepository.getMe()?.name);
-      console.log("THIS SHOULD BE ALSO ME?", d.activePlayer?.roundPlayer.name)
       this._diceRepository.resetDices();
       this._diceRef?.destroy();
       if(this._roundPlayerRepository.getMe() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerRepository.getMe()?.id) {
@@ -161,6 +191,16 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       this._diceRepository.setDices(dices);
       this.rollDice(dices);
     })
+  }
+
+  private syncRobber() {
+    const robber = this.game.getRobberManager();
+    // robber.playerRobsAtPosition
+  }
+
+  private simulateGame() {
+
+    
 
     this.game.selectUserInventoryUpdate().pipe(
     ).subscribe((inventory) => {
@@ -292,32 +332,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     // if(field) {
     //   game.robTest(round.players[0], field)
     // } 
-    const trade = game.tradeTest();
-    trade.selectTradeOfferStarted.subscribe((data) => {
-    })
-    trade.selectTradeCancel.subscribe((data)=> {
-      dispatch(
-        TradeActions.removeTrade({
-          id: data.tradeId
-        })
-      )
-      console.log(trade);
-    })
-
-    trade.selectTradeResponse.subscribe((data) => console.log("JAJAJAAJJAJA" , data))
-
-    trade.selectTradeCompleted.subscribe((data)=> {
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'trade',
-          id: Math.random().toString(),
-          playerB: data.acceptedPlayer,
-          player: data.trade.player,
-          givenResources: resourcesToResourceCards(data.trade.offeredResources),
-          receivedResources: resourcesToResourceCards(data.trade.requestedResources),
-        })
-      )
-    })
 
     // setTimeout(() => {
     //   trade.cancelTrade("1")

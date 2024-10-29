@@ -1,4 +1,4 @@
-import { User } from "../../../player/domain/classes/player";
+import { User } from "../../../user/domain/models/user.model";
 
 export interface RoundPlayer extends User {
     color: string;

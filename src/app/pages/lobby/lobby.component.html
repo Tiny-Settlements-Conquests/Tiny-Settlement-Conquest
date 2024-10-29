@@ -1,100 +1,53 @@
-<app-block>
-    <app-title>Custom Match</app-title>
-</app-block>
-<div class="flex flex-row gap-4">
-    <div class="flex flex-col gap-2 flex-1" >
-        <app-block>
-            <app-title>
-                Players: {{playerCount()}} / {{maxPlayers()}}
-            </app-title>
-        </app-block>
-        @for (slot of slots(); track $index) {
-            @if(slot.player !== null) {
-                <app-block class="flex gap-4 items-center">
-                    @if(slot.player.isHost) {
-                        <div class="bg-yellow-400 rounded-full w-16 h-16 flex items-center justify-center">
-                            <img 
-                                class="rounded-full w-14 h-14" 
-                                src="{{slot.player.profileUrl}}" 
-                            />
-                        </div>
-                    } @else {
-                        <img 
-                            class="rounded-full w-14 h-14" 
-                            src="{{slot.player.profileUrl}}" 
-                        />
-                    }
-                    <div class="flex flex-col gap-2 ">
-                        
-                        <app-title>
-                            {{slot.player.name}}
-                            @if(slot.player.isHost) {
-                                <fa-icon class="border-solid border-black text-yellow-400" [icon]="icons.crown" />
-                            }
-                        </app-title>
-                        
-                        <div class="text-slate-400">{{slot.player.ready ? 'is Ready' : 'is not ready'}}</div>
-                    </div>
-                    <button class="ml-auto py-2 px-4 rounded bg-red-600 text-slate-200 hover:bg-red-500 transition-colors">
-                        kick
-                    </button>
-                    @if(slot.player.ready) {
-                        <fa-icon class="flex-0 text-2xl text-green-500" [icon]="icons.checkmark"/>
-                    } @else {
-                        <fa-icon class="flex-0 text-2xl text-red-600" [icon]="icons.cross"/>
-                    }
-                </app-block>
-            } @else {
-                <app-block class="flex p-2 gap-2 items-center" [ngClass]="!slot.isOpen ? 'opacity-90' : ''">
-                    <app-title>
-                        {{slot.isOpen ? 'Empty' : 'Closed'}}
-                    </app-title>
-                    <button 
-                        (click)="toggleIsOpen($index)"
-                        
-                        class="ml-auto px-4 py-2 bg-red-600 text-slate-200 hover:bg-red-500 transition-colors rounded">
-                        {{
-                            slot.isOpen ? 'Close' : 'Open'
-                        }}
-                    </button>
-                </app-block>
-            }
-        }
+
+<img class="w-24 h-24 -left-[100px] -top-8 floatResource" src="assets/resources/wheat.png" />
+<img class="w-32 h-32 -right-[200px] -top-[150px] floatResource" style="--initial-rotation: 75deg;" src="assets/resources/wheat.png" />
+<img class="w-16 h-16 -right-[100px] bottom-[150px] floatResource" style="--initial-rotation: 45deg;" src="assets/resources/wheat.png" />
+
+<div class="host">
+    <div class="flex gap-4 items-center">
+        <app-back-arrow routerLink="/home" class="bg-secondary-yellow" />
+        <app-title class=" !text-4xl">
+            Start a new game
+        </app-title>
     </div>
-    <div class="w-96 flex flex-col gap-2">
-        <app-block class="flex p-2 gap-2 items-center">
-            <app-title>
+    <div class="flex flex-row gap-4">
+        <div class="flex flex-row gap-2 flex-1" >
+            <app-lobby-player-cards />
+        </div>
+        <div class="w-96 flex flex-col gap-2">
+            <app-title class="bg-secondary-yellow rounded">
                 Map: Starter Map (5x5)
             </app-title>
-        </app-block>
-        <div class="w-96 h-96 bg-gray-200 rounded">
-            <app-map-preview #mapPreview class="h-full w-full"/>
-        </div>
-        <div class="flex gap-2">
-            <button (click)="mapPreview.regen()" class="ml-auto p-2 hover:bg-slate-600 bg-slate-700 w-28 text-slate-200 rounded flex items-center justify-center gap-2">
-                <fa-icon [icon]="icons.dice" class="text-2xl " />
-                Random
-            </button>
-            <button (click)="mapPreview.restore()" class="p-2 hover:bg-slate-600 bg-slate-700 w-28 text-slate-200 rounded flex items-center justify-center gap-2">
-                <fa-icon [icon]="icons.file" class="text-2xl " />
-                Load
-            </button>
+            <div class="w-96 h-96 bg-gray-200 rounded">
+                <app-map-preview #mapPreview class="h-full w-full"/>
+            </div>
+            <div class="flex gap-2">
+                <button 
+                    (click)="mapPreview.regen()" 
+                    class="ml-auto flex items-center justify-center gap-4 w-full"
+                >
+                    <fa-icon [icon]="icons.dice" class="text-2xl " />
+                    Random
+                </button>
+                <button 
+                    (click)="mapPreview.restore()" 
+                    class="flex items-center justify-center gap-4 w-full"
+                    [routerLink]="['/map-selection']"
+                >
+                    <fa-icon [icon]="icons.map" class="text-2xl " />
+                    Maps
+                </button>
+            </div>
         </div>
     </div>
-</div>
-<div class="flex">
-    <button 
-        class="p-2 bg-red-600 hover:bg-red-500 w-28 text-slate-200 rounded flex items-center justify-center gap-2"
-        [routerLink]="['/servers']"
-    >
-        <fa-icon [icon]="icons.bracketArrow" class="text-2xl " />
-        Leave
-    </button>
-    <button
-        [ngClass]="!canStart() ? 'pointer-events-none opacity-50' : 'cursor-pointer' "
-        class="ml-auto p-2 shadow-md bg-blue-600 w-28 text-zinc-200 rounded flex items-center justify-center gap-2">
-        <fa-icon [icon]="icons.play" class="text-2xl " />
-        Start
-    </button>
-    
+    <div class="flex h-full">
+        <button
+            [ngClass]="!canStart() ? 'pointer-events-none opacity-50' : 'cursor-pointer' "
+            class="mt-auto ml-auto p-2 bg-blue-600 w-28 text-zinc-200 rounded flex items-center justify-center gap-2"
+            [routerLink]="['/game']"
+        >
+            <fa-icon [icon]="icons.play" class="text-2xl " />
+            Start
+        </button>
+    </div>
 </div>

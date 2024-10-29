@@ -1,0 +1,14 @@
+:host {
+  @apply h-fit rounded;
+}
+
+fa-icon {
+  color:inherit;
+  @apply text-2xl;
+}
+
+button {
+  &:hover {
+    background-color: #ffd36d;
+  }
+}

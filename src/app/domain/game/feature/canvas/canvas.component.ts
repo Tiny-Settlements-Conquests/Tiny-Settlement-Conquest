@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
 import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
@@ -9,6 +9,9 @@ import { PolygonRendererService } from '../../../primitives/renderer/polygon-ren
 import { Viewport } from '../../../viewport/classes/viewport';
 import { Game } from '../../domain/classes/game';
 import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
+import { GameModeRepository } from '../../domain/state/game-mode.repository';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Point } from '../../../primitives/classes/Point';
 
 @Component({
   selector: 'app-canvas',
@@ -21,6 +24,11 @@ import { ResourceFieldRendererService } from '../../../resources/domain/classes/
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CanvasComponent implements AfterViewInit {
+  private readonly _gameModeRepository = inject(GameModeRepository)
+
+  private readonly _gameMode = toSignal(
+    this._gameModeRepository.selectMode()
+  )
 
   @ViewChild('canvas', {
     static: true,
@@ -39,6 +47,8 @@ export class CanvasComponent implements AfterViewInit {
 
   public viewport !: Viewport;
   private renderer !: PlaygroundRenderService;
+
+  private lastClickedElement: Point | null = null
 
 
   public ngAfterViewInit(): void {
@@ -81,19 +91,35 @@ export class CanvasComponent implements AfterViewInit {
 
   @HostListener('mousedown', ['$event'])
   public mouseDown(event: MouseEvent) {
-    if(event.button === 0 || event.button === 1) {
-      const rect = this.canvas?.nativeElement.getBoundingClientRect()
-      if(!rect) return;
-      const point = this.viewport.getMouse(event);
-      const nearbyGraphNode = this.game.playground.getNearestGraphNode(point)
-      if(nearbyGraphNode) {
-        this.game!.tryBuildBuildingOnGraphNode(nearbyGraphNode)
+    const gameMode = this._gameMode();
+      // middle mouse or left mouse
+    if(event.button !== 0 && event.button !== 1) return;
+    this.viewport.handleMiddleMouseDown(event);
+
+    if(gameMode === 'spectate') return;
+    console.log(this.game.mode)
+    const rect = this.canvas?.nativeElement.getBoundingClientRect()
+    if(!rect) return;
+    const point = this.viewport.getMouse(event);
+    const nearbyGraphNode = this.game.playground.getNearestGraphNode(point)
+    if(!nearbyGraphNode) {
+      this.game.roadBuildManager.resetSelectedGraphNode();
+      return;
+    }
+    if(gameMode === 'road') {
+      const roadManager = this.game.roadBuildManager;
+      const sourceNode = roadManager.getSelectedGraphNode();
+      if(sourceNode){
+        //todo das ist nicht gut, später über das gateway abbilden!
+        this.game.tryBuildRoadBetweenGraphNodes(sourceNode, nearbyGraphNode)
       } else {
-        this.game.roadBuildManager.resetSelectedGraphNode();
+        //todo das ist nicht gut, später über das gateway abbilden!
+        roadManager.setSelectedGraphNode(nearbyGraphNode);
       }
-      // middle mouse
-      this.viewport.handleMiddleMouseDown(event);
-    } 
+    }
+    //todo das ist nicht gut, später über das gateway abbilden!
+    this.game!.tryBuildBuildingOnGraphNode(nearbyGraphNode)
+
   }
 
   // auslagern in ne directive

@@ -15,6 +15,7 @@ import { ResourceType } from '../../domain/models/resources.model';
 })
 export class ResourceCardComponent { 
   public readonly resourceType = input<ResourceType | undefined>(undefined);
+  public readonly count = input<number>(0);
 
   public readonly resourceCard = computed(() => {
     const resourceType = this.resourceType();

@@ -15,6 +15,7 @@ export class BuildingBuildManager {
         private readonly buildingFactory: BuildingFactory
     ) {}
 
+    //todo cleanup this mess here
     public buildBuilding(player: Player, type: BuildingType, graphNode: GraphNode) {
         const buildingGraphNode = this.buildingGraph.getNodeById(graphNode.id)
         //ensure that the node exists
@@ -23,10 +24,14 @@ export class BuildingBuildManager {
         if(!this.buildingCostManager.hasPlayerEnoughtResources(player, type)) throw new Error('not enough resources');
 
         this.checkIfBuildingIsOfSamePlayer(player, buildingGraphNode);
-        this.checkBuildingPosition(buildingGraphNode);
+        
+        this.checkBuildingPosition(buildingGraphNode, type);
         this.buildingCostManager.removeResourcesByBuilding(player, type)
         // ensure that the player can only build ontop of owned nodes
         const building = this.buildingFactory.constructBuilding(type, player, graphNode);
+        if(type === BuildingType.CITY) {
+            buildingGraphNode.removeBuilding()
+        }
         buildingGraphNode.tryBuild(building);
 
     }   
@@ -35,11 +40,15 @@ export class BuildingBuildManager {
         if (buildingGraphNode.player.id!== player.id) throw new Error('not same player!!!');
     }
 
-    public checkBuildingPosition(buildingGraphNode: GraphBuildingNode) {
+    public checkBuildingPosition(buildingGraphNode: GraphBuildingNode, type: BuildingType) {
         const graphNode = this.playgroundGraph.getNodeById(buildingGraphNode.id);
         if(!graphNode) throw new Error('Requested node does not exist');
 
-        this.checkIfBuildingIsBuild(graphNode)
+        if(type === BuildingType.TOWN) {
+            this.checkIfBuildingIsBuild(graphNode)
+        } else {
+            this.checkIfBuildingCanBeUpgraded(graphNode)
+        }
         
         graphNode.connectedPoints.forEach(node => {
             this.checkIfBuildingIsBuild(node);
@@ -58,5 +67,12 @@ export class BuildingBuildManager {
         // if node doesnt exist its okay because there is no building nor claimed land
         if (!buildingGraphNode) return;
         if (buildingGraphNode.hasBuilding()) throw new Error('There is already a building on this node!');
+    }
+
+    private checkIfBuildingCanBeUpgraded(graphNode: GraphNode) {
+        const buildingGraphNode = this.buildingGraph.getNodeById(graphNode.id)
+        // if node doesnt exist its okay because there is no building nor claimed land
+        if (!buildingGraphNode) return;
+        if (!buildingGraphNode.hasBuilding() && buildingGraphNode.building?.type !== BuildingType.TOWN) throw new Error('There is already a building on this node!');
     }
 }

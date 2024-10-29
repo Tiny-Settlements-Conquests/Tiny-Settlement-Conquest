@@ -18,11 +18,13 @@ export class TradeEffects {
             tap((trade) => {
                 console.log("publish")
                 this._gateway.publish('trade-offer-open', trade);
-                this._tradeRepository.addTrade({
-                    ...trade,
-                    typ: 'player',
-                    playerResponses: {}
-                });
+                if(trade.typ === 'player') {
+                    this._tradeRepository.addTrade({
+                        ...trade,
+                        typ: 'player',
+                        playerResponses: {}
+                    });
+                }
             })
         )
     )

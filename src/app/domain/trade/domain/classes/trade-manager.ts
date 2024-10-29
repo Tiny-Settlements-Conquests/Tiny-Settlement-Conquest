@@ -2,9 +2,11 @@ import { Observable, Subject, filter, race, takeUntil, timer } from 'rxjs';
 import { ResourceInventory,  } from '../../../inventory/domain/classes/resource-inventory';
 import { Player } from '../../../player/domain/classes/player';
 import { Round } from '../../../round/domain/classes/round';
-import { OpenTradeOffer, TradeCancel, TradeComplete, TradeOffer, TradeResponse } from '../models/trade.model';
+import { OpenTradeOffer, TradeCancel, TradeComplete, TradeOffer, TradeResponse, TradeState } from '../models/trade.model';
 import { Resources } from '../../../resources/domain/models/resources.model';
 import { RoundPlayer } from '../../../round/domain/models/round-player.model';
+import { isAValidTrade } from '../utils/trade.utils';
+import { checkIsAValidBankTrade } from '../utils/bank.utils';
 
 
 
@@ -21,6 +23,7 @@ export class TradeManager {
 
 
   //todo make timeout interval when created trade configurable via constructor
+  //todo split this manager into bank and player trade manager
   constructor(
     private bank: ResourceInventory, 
     private round: Round
@@ -55,15 +58,31 @@ export class TradeManager {
     console.log("TRADE OPENED", offer)
     this.tradeOfferStarted.next(offer);
     if(offer.typ === 'player') {
+      console.log("Player?")
       this.startTradeTimer(offer);
       this.openTrades[offer.id] = {
         ...offer,
         playerResponses: {}
       }
     } else {
-      console.error("to be implemented")
-      //is bank trade to be implemented
+      console.log("BANK!!")
+      this.bankTrade(offer);
     }
+  }
+
+  private bankTrade(offer: TradeOffer): void {
+    const offeredResources = offer.offeredResources;
+    const requestedResources = offer.requestedResources;
+    if(!isAValidTrade(offeredResources, requestedResources)) throw new Error('invalid trade');
+    if(!checkIsAValidBankTrade(offeredResources, requestedResources)) throw new Error('invalid bank trade');
+    const playerInv = this.round.getPlayerById(offer.player.id)?.resourceInventory;
+    if(!playerInv) throw new Error('player not found');
+    this.transferResources({
+      offeredResources,
+      requestedResources,
+      fromInventory: playerInv,
+      toInventory: this.bank
+    })
   }
 
   private startTradeTimer(offer: TradeOffer, duration: number = 10_000) {
@@ -86,7 +105,7 @@ export class TradeManager {
   }
 
   public cancelTrade(tradeId: string): void {
-    this.tradeCancel.next({ tradeId });
+    this.tradeCancel.next({ tradeId, state: TradeState.Declined });
     delete this.openTrades[tradeId];
   }
 
@@ -112,15 +131,14 @@ export class TradeManager {
 
   private checkTradeStatus(response: TradeResponse) {
     const openTrade = this.getOpenTrade(response.tradeId);
-    // has enought responses
-    if(Object.keys(openTrade.playerResponses).length < this.round.players.length - 1) return;
-    // one player has accepted
+    //check if the trade is accepted
     const hasOnePlayerAccepted = Object.values(openTrade.playerResponses).find(({accepted}) => accepted === true)
     if(hasOnePlayerAccepted) {
-      this.completeTrade(openTrade, response.respondedPlayer)
-    } else {
-      // no player accepted cancel trade
+      this.completeTrade(openTrade, response.respondedPlayer);
+      return;
+    } else if(!(Object.keys(openTrade.playerResponses).length < this.round.players.length - 1)) {
       this.cancelTrade(response.tradeId)
+      // no player accepted cancel trade
     }
   }
 
@@ -128,24 +146,46 @@ export class TradeManager {
     const offerPlayer = this.round.getPlayerById(offer.player.id);
     const acceptedPlayer = this.round.getPlayerById(acceptedRoundPlayer.id);
     if(!offerPlayer || !acceptedPlayer) throw new Error('offerPlayer or Accepted Player is null')
-    if(!offerPlayer.resourceInventory.hasEnoughtResources(offer.offeredResources)) throw new Error('1cnot enought resources')
-    if(!acceptedPlayer.resourceInventory.hasEnoughtResources(offer.requestedResources)) throw new Error('not enought resources')
+    this.transferResources({
+      fromInventory: offerPlayer.resourceInventory,
+      toInventory: acceptedPlayer.resourceInventory,
+      offeredResources: offer.offeredResources,
+      requestedResources: offer.requestedResources
+  })
 
-    Object.entries(offer.requestedResources).forEach(([key, value]) => {
-      acceptedPlayer.resourceInventory.removeFromInventory(key as keyof Resources, value);
-      offerPlayer.resourceInventory.addToInventory(key as keyof Resources, value);
-
-    })
-    Object.entries(offer.offeredResources).forEach(([key, value]) => {
-      offerPlayer.resourceInventory.removeFromInventory(key as keyof Resources, value);
-      acceptedPlayer.resourceInventory.addToInventory(key as keyof Resources, value);
-    })
-
-    console.log("OPER", offer);
     this.tradeCompleted.next({
       acceptedPlayer: acceptedRoundPlayer,
-      trade: offer
+      trade: offer,
+      tradeId: offer.id,
+      state: TradeState.Accepted
     });
+  }
+
+  private transferResources(opts: {
+    fromInventory: ResourceInventory, 
+    toInventory: ResourceInventory, 
+    offeredResources: Partial<Resources>, 
+    requestedResources: Partial<Resources>}
+  ) {
+    const {fromInventory, toInventory, offeredResources, requestedResources} = opts
+    if(!fromInventory.hasEnoughtResources(offeredResources)) throw new Error('1cnot enought resources')
+    if(!fromInventory.hasEnoughtResources(requestedResources)) throw new Error('not enought resources')
+
+    Object.entries(requestedResources).forEach(([key, value]) => {
+      toInventory.removeFromInventory(key as keyof Resources, value);
+      fromInventory.addToInventory(key as keyof Resources, value);
+
+    })
+    Object.entries(offeredResources).forEach(([key, value]) => {
+      fromInventory.removeFromInventory(key as keyof Resources, value);
+      toInventory.addToInventory(key as keyof Resources, value);
+    })
+  }
+
+  public cancelAllTrades() {
+    Object.values(this.openTrades).forEach((value) => {
+      this.cancelTrade(value.id)
+    })
   }
 
 }

@@ -1,22 +1,19 @@
-import { BehaviorSubject, Subject, combineLatest, map, merge, race, share, switchMap, take, takeUntil, tap, timer } from "rxjs";
+import { BehaviorSubject, Subject, combineLatest, map, merge, race, switchMap, takeUntil, tap, timer } from "rxjs";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
-import { rollDices } from "../../../dice/domain/functions/roll-dice.function";
+import { Building, BuildingType, PathBuilding, PathType } from "../../../buildings/domain/models/building.model";
+import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { Playground } from "../../../playground/domain/classes/playground";
+import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
+import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { Round } from "../../../round/domain/classes/round";
 import { defaultOrderStrategy } from "../../../round/domain/strategies/default-round-order.strategy";
-import { GameMode } from "../models/game-mode.model";
-import { GameDependencies, GameConfig } from "../models/game.model";
-import { Building, BuildingType, PathBuilding, PathType } from "../../../buildings/domain/models/building.model";
-import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
-import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
-import { Field } from "../../../playground/domain/classes/field";
-import { RobberManager } from "../../../robber/domain/classes/robber-manager";
-import { Player } from "../../../player/domain/classes/player";
 import { TradeManager } from "../../../trade/domain/classes/trade-manager";
+import { GameMode } from "../models/game-mode.model";
+import { GameConfig, GameDependencies } from "../models/game.model";
 
 
 export class Game {
@@ -46,8 +43,8 @@ export class Game {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
       maxRollTimer: 5_000,
-      // maxRoundTimer: 1_000_000,
-      maxRoundTimer: 5_000,
+      maxRoundTimer: 1_000_000,
+      // maxRoundTimer: 5_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
       resourceMultiplier: 1
@@ -71,6 +68,7 @@ export class Game {
     const defaultOrder = defaultOrderStrategy(this._round);
     
     this._nextRoundSignal.pipe(
+      tap(() => this.getTradeManager().cancelAllTrades()),
       takeUntil(this._endSignal)
     ).subscribe(() => {
       defaultOrder.nextRound();
@@ -206,7 +204,7 @@ export class Game {
 
   public selectRolledDice() {
     return this._diceRoller.selectRolledDice().pipe(
-      map((dices) => ({dices, player: this._round.activePlayer}))
+      map((dices) => ({dices, player: this._round.getActivePlayer()}))
     );
   }
 
@@ -224,14 +222,11 @@ export class Game {
 
   public tryBuildBuildingOnGraphNode(node: GraphNode) {
     if(this._mode === 'spectate') return;
-    const player = this._round.activePlayer;
+    const player = this._round.getActivePlayer();
     if(!player) return;
 
     try {
-      if(this._mode === 'road') {
-        this._roadBuildManager.tryBuildRoad(player, node);
-
-      } else if(this._mode === 'city') {
+      if(this._mode === 'city') {
         this._buildingBuildManager.buildBuilding(player, BuildingType.CITY, node);
         player.winningPointsInventory.addToInventory('points', 1)
         this._buildingSignal.next({
@@ -257,7 +252,7 @@ export class Game {
   }
 
   public tryBuildRoadBetweenGraphNodes(nodeA: GraphNode, nodeB: GraphNode) {
-    const player = this._round.activePlayer;
+    const player = this._round.getActivePlayer();
     if(!player) return;
     this._roadBuildManager.tryBuildRoadBetween(player, nodeA, nodeB);
     this._buildingSignal.next({
@@ -269,16 +264,17 @@ export class Game {
 
   }
 
-  robTest(player: Player, field: Field) {
-    try {
-      this._robberManager.playerRobsAtPosition(player,field);
+  getRobberManager() {
+    return this._robberManager;
+    // try {
+    //   this._robberManager.playerRobsAtPosition(player,field);
 
-    } catch(e) {
-      console.error(e);
-    }
+    // } catch(e) {
+    //   console.error(e);
+    // }
   }
 
-  tradeTest() {
+  getTradeManager() {
     return this._tradeManager
   }
 

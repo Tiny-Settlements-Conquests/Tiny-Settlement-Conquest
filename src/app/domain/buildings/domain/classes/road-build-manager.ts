@@ -17,6 +17,14 @@ export class RoadBuildManager {
     this._sourceGraphNode = null;
   }
 
+  public getSelectedGraphNode(): GraphNode | null {
+    return this._sourceGraphNode;
+  }
+
+  public setSelectedGraphNode(node: GraphNode): void {
+    this._sourceGraphNode = node;
+  }
+
   public tryBuildRoadBetween(player: Player, graphNodeA: GraphNode, graphNodeB: GraphNode) {
     try {
       this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
@@ -35,20 +43,16 @@ export class RoadBuildManager {
    * @param graphNode 
    * @returns 
    */
-  public tryBuildRoad(player: Player, graphNode: GraphNode) {
-    try {
-        if(!this._sourceGraphNode) {
-          this._sourceGraphNode = graphNode;
-          return;
-        }
-        this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
-        this.checkNodesValidForRoad(player, graphNode, this._sourceGraphNode);
-    
-        this.buildRoadBetweenNodes(player, graphNode, this._sourceGraphNode);
-        this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
-    } catch(e) {
-      this.resetSelectedGraphNode();
-    }
+  public buildRoad(player: Player, graphNode: GraphNode) {
+      if(!this._sourceGraphNode) {
+        this._sourceGraphNode = graphNode;
+        return;
+      }
+      this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
+      this.checkNodesValidForRoad(player, graphNode, this._sourceGraphNode);
+  
+      this.buildRoadBetweenNodes(player, graphNode, this._sourceGraphNode);
+      this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
   }
 
   private checkNodesValidForRoad(player:Player, nodeA: GraphNode, nodeB: GraphNode): void {

@@ -1,12 +1,13 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { MapSelectionService } from '../../domain/services/map-selection.service';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { MapCardComponent } from '../../ui/map-card/map-card.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { startWith, switchMap } from 'rxjs';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { map, startWith, switchMap } from 'rxjs';
+import { LobbyRepository } from '../../../lobby/domain/state/repository';
+import { MapInformation } from '../../domain/models/map-selection.model';
+import { MapSelectionService } from '../../domain/services/map-selection.service';
+import { MapCardComponent } from '../../ui/map-card/map-card.component';
 
 @Component({
   selector: 'app-map-card-table',
@@ -15,13 +16,14 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     MapCardComponent,
     ReactiveFormsModule,
     FormsModule,
-    FaIconComponent
+    FaIconComponent,
   ],
   templateUrl: './map-card-table.component.html',
   styleUrl: './map-card-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MapCardTableComponent { 
+export class MapCardTableComponent {
+  private readonly _lobbyRepository = inject(LobbyRepository);
   private readonly mapSelectionService = inject(MapSelectionService);
   private readonly _fb = inject(FormBuilder);
 
@@ -40,6 +42,16 @@ export class MapCardTableComponent {
         switchMap((value) => this.mapSelectionService.selectMaps(value))
       )
   );
+
+  public setSelectedMap(map: MapInformation) {
+    this._lobbyRepository.setMapData(map);
+  }
+
+ public readonly selectedMapId = toSignal(
+  this._lobbyRepository.selectMapData().pipe(
+    map((map) => map ? map.id : null)
+  )
+ )
 
 
 }

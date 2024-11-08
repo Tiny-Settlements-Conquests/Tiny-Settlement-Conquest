@@ -4,34 +4,15 @@ $tertiary-yellow: #a77e20;
 // todo import from color map
 
 :host {
-  @apply relative;
+  @apply relative flex justify-center;
 }
 
 .host {
-  @apply p-3 gap-8 rounded flex flex-col h-[720px];
+  @apply p-3 gap-8 rounded flex flex-col h-[720px] w-full;
   background-color: $primary-yellow;
   color: $tertiary-yellow;
 }
 
-button {
-  background-color: $secondary-yellow;
-  color: $tertiary-yellow;
-  @apply p-2 rounded transition-colors;
-  &:hover {
-    background-color: #ffd36d;
-  }
-}
-
-$primary-red: #FF6767;
-$secondary-red: #BB0000;
-
-.red-button {
-  color: $secondary-red;
-  background-color: $primary-red;
-  &:hover {
-    background-color: rgb(247, 131, 131);
-  }
-}
 
 .floatResource {
   @apply absolute;

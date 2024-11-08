@@ -1,44 +1,43 @@
 import { ComponentRef, DestroyRef, ViewContainerRef } from "@angular/core";
-import { takeUntilDestroyed, toSignal } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { dispatch } from '@ngneat/effects';
-import { Subject, delay, filter, forkJoin, map, merge, switchMap, take, takeUntil } from "rxjs";
+import { Subject, delay, filter, map, merge, switchMap, take, takeUntil } from "rxjs";
 import { ActionHistoryActions } from "../../../action-history/domain/state/action-history.actions";
 import { ActionHistoryRepository } from "../../../action-history/domain/state/action-history.repository";
 import { BankRepository } from "../../../bank/domain/state/bank.repository";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
+import { BuildingFactory } from "../../../buildings/domain/factories/building.factory";
 import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
 import { BuildingType } from "../../../buildings/domain/models/building.model";
+import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
 import { DiceRepository } from "../../../dice/domain/state/dice.repository";
 import { DiceOverlayComponent } from "../../../dice/ui/dice-overlay/dice-overlay.component";
 import { Graph } from "../../../graph/domain/classes/graph";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { WinningpointsInventory } from "../../../inventory/domain/classes/winningpoints-inventory";
 import { InventoryRepository } from "../../../inventory/domain/state/inventory.repository";
+import { LobbyUser } from "../../../lobby/domain/models/lobby.model";
+import { MapInformation } from "../../../map-selection/domain/models/map-selection.model";
 import { Player } from "../../../player/domain/classes/player";
 import { Playground } from "../../../playground/domain/classes/playground";
-import { PlaygroundGenerator } from "../../../playground/domain/generators/playground-generator";
-import { PlaygroundGraphGenerator } from "../../../playground/domain/generators/playground-graph-generator";
-import { PlaygroundGridGenerator } from "../../../playground/domain/generators/playground-grid-generator";
-import { ResourceGenerator } from "../../../resources/domain/classes/generators/resource-generator";
+import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 import { resourceTypeToResourceCard, resourcesToResourceCards } from "../../../resources/domain/function/resource-type.function";
+import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
+import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { Round } from "../../../round/domain/classes/round";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
 import { RoundPlayerRepository } from "../../../round/domain/state/round-players.repository";
+import { usersToPlayers } from "../../../round/domain/utils/user-to-player.utils";
+import { TradeManager } from "../../../trade/domain/classes/trade-manager";
+import { TradeActions } from "../../../trade/domain/state/trade.actions";
+import { TradeRepository } from "../../../trade/domain/state/trade.repository";
 import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameModeRepository } from "../state/game-mode.repository";
+import { loadPlayground } from "../utils/game-loader.utils";
 import { Game } from "./game";
-import { BuildingFactory } from "../../../buildings/domain/factories/building.factory";
-import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
-import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
-import { RobberManager } from "../../../robber/domain/classes/robber-manager";
-import { TradeManager } from "../../../trade/domain/classes/trade-manager";
-import { TradeRepository } from "../../../trade/domain/state/trade.repository";
-import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
-import { TradeActions } from "../../../trade/domain/state/trade.actions";
-import { TradeState } from "../../../trade/domain/models/trade.model";
 
 export class GameLocalClient {
   private _game: Game
@@ -52,6 +51,8 @@ export class GameLocalClient {
 
   //todo define an interface instead
   constructor(
+    private readonly _users: LobbyUser[],
+    private _mapInformation: MapInformation,
     private _gameComponentRef: ViewContainerRef,
     private _bankRepository: BankRepository,
     private _inventoryRepository: InventoryRepository,
@@ -216,13 +217,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
         )
       }
     })
-
-    
-
-    // for(let i = 0; i < 1; i++) {
-    //   this.game.nextRound();
-    // }
-    // this.game.startGame();
   }
 
   private syncStates() {
@@ -284,11 +278,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 }
 
   private generateGame(): Game {
-    const players = this.generatePlayers();
-    const round = this.generateRound(players);
+    const playground = loadPlayground(this._mapInformation);
+    const round = this.generateRound(usersToPlayers(this._users));
 	  this._userRepository.setUser(round.players[0]);
 
-    const playground = this.generatePlayground();
     const buildingGraph = playground.buildingGraph;
     const bankInventory = new ResourceInventory({
       straw: 50,
@@ -378,24 +371,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     playground.buildingGraph.tryAddNode(new GraphBuildingNode("32",loc.position , players[1]));
     const buildingNode = playground.buildingGraph.getNodeById("32");
     buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, players[1], buildingNode))
-
-  }
-
-  private generatePlayground() {
-    const buildingGraph = new Graph<GraphBuildingNode>();
-    const playgroundGenerator = new PlaygroundGenerator(
-      new PlaygroundGridGenerator(),
-      new ResourceGenerator(),
-      new PlaygroundGraphGenerator()
-    );
-    
-    const playground = playgroundGenerator.generate({
-      fieldHeight: 9,
-      fieldWidth: 9
-    }, buildingGraph)
-    //TODO REMOVE ME
-playground.resourceFields[0].value = 3
-    return playground
   }
 
   private openDiceOverlay() {
@@ -421,51 +396,5 @@ playground.resourceFields[0].value = 3
       take(1),
       delay(1000)
     ).subscribe(() => diceRef.destroy())
-  }
-
-  private generatePlayers() {
-    return [
-      {
-        id: '14124',
-        color: '#CD5C5C',
-        // profileUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU',
-        name: 'Admin',
-        profileUrl: '/assets/robot_2.png',
-        researchCardCount: 5,
-        resourceCardCount: 5,
-        winningPoints: 1,
-        isBot: false,
-      },
-      {
-        id: '1412523',
-        color: '#22c55e',
-        profileUrl: '/assets/robot.png',
-        name: 'Robot',
-        researchCardCount: 4,
-        resourceCardCount: 2,
-        winningPoints: 3,
-        isBot: true,
-      },
-      // {
-      //   id: '1412541241',
-      //   color: '#6B46C1',
-      //   profileUrl: '/assets/robot.png',
-      //   name: 'Robot',
-      //   researchCardCount: 6,
-      //   resourceCardCount: 3,
-      //   winningPoints: 1,
-      //   isBot: true,
-      // },
-      // {
-      //   id: '646546',
-      //   color: '#000000',
-      //   profileUrl: '/assets/robot.jpg',
-      //   name: 'Robot',
-      //   researchCardCount: 1,
-      //   resourceCardCount: 4,
-      //   winningPoints: 5,
-      //   isBot: true,
-      // }
-    ];
   }
 }

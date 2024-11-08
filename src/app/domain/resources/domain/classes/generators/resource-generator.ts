@@ -32,12 +32,12 @@ export class ResourceGenerator {
 
   private filterWaterAround(waterAround: number, dimensions: PlaygroundDimensions, grid: Field[]): Field[] {
     return grid.filter(({ colIndex, rowIndex }) => {
-      const { fieldWidth, fieldHeight } = dimensions;
+      const { playgroundWidth, playgroundHeight } = dimensions;
       return (
           colIndex > 1 &&
-          colIndex < fieldWidth - waterAround &&
+          colIndex < playgroundWidth - waterAround &&
           rowIndex > 1 &&
-          rowIndex < fieldHeight - waterAround
+          rowIndex < playgroundHeight - waterAround
       );
   });
   }

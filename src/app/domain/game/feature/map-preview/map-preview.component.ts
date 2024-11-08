@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, effect, inject, input } from '@angular/core';
 import { GraphBuildingNode } from '../../../buildings/domain/graph/graph-building-node';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
 import { Graph } from '../../../graph/domain/classes/graph';
+import { MapPlaygroundInformation } from '../../../map-selection/domain/models/map-selection.model';
 import { Playground } from '../../../playground/domain/classes/playground';
 import { PlaygroundGenerator } from '../../../playground/domain/generators/playground-generator';
 import { PlaygroundGraphGenerator } from '../../../playground/domain/generators/playground-graph-generator';
@@ -13,10 +14,9 @@ import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/pla
 import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
 import { Point } from '../../../primitives/classes/Point';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
-import { Viewport } from '../../../viewport/classes/viewport';
-import { Game } from '../../domain/classes/game';
 import { ResourceGenerator } from '../../../resources/domain/classes/generators/resource-generator';
-import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
+import { ResourceFieldPreviewRenderer } from '../../../resources/domain/classes/renderer/resource-field-preview.renderer.service';
+import { Viewport } from '../../../viewport/classes/viewport';
 
 @Component({
   selector: 'app-map-preview',
@@ -40,16 +40,27 @@ export class MapPreviewComponent implements AfterViewInit {
   
   private viewport !: Viewport;
 
-  private generateGameMap() {
-    const playground = this.generator.generate({
-      fieldHeight: 9,
-      fieldWidth: 9
-    }, new Graph<GraphBuildingNode>())
+  public mapPlaygroundInformation = input.required<MapPlaygroundInformation>();
 
+  private readonly _playground = effect(() => {
+    const {dimensions, fields, resourceFields} = this.mapPlaygroundInformation();
+    const graphGenerator = new PlaygroundGraphGenerator()
+
+    const playground = new Playground({
+      dimensions,
+      gridGraph: graphGenerator.generateGraph(
+        resourceFields.map((r) => r.field)
+      ),
+      buildingGraph: new Graph<GraphBuildingNode>(),
+      grid: fields,
+      resources: resourceFields
+    });
     this.centerViewPort(playground);
+
     this.viewport.reset();
     this.renderer.render(playground);
-  }
+  })
+
 
   public ngAfterViewInit(): void {
     const canvas = this.canvas?.nativeElement;
@@ -70,7 +81,7 @@ export class MapPreviewComponent implements AfterViewInit {
 
 
     const playgroundRenderer = new PlaygroundRenderService(
-      new ResourceFieldRendererService(ctx),
+      new ResourceFieldPreviewRenderer(ctx),
       new FieldRenderService(ctx),
       new PlaygroundGraphRenderer(
         ctx,
@@ -82,26 +93,13 @@ export class MapPreviewComponent implements AfterViewInit {
       )
     );
     this.renderer = playgroundRenderer;
-    this.generateGameMap();
-  }
-
-  public regen() {
-    this.generateGameMap();
-  }
-
-  public save() {
-    // this.game.save();
-  }
-
-  public restore() {
-    // this.game.load();
   }
 
   private centerViewPort(playground: Playground) {
-    const { fieldHeight, fieldWidth } = playground.dimensions
+    const { playgroundWidth, playgroundHeight } = playground.dimensions
     this.viewport.center = new Point(
-      ( fieldWidth +1 * -90),
-      ( fieldHeight +1 * -30)
+      ( playgroundWidth +1 * -90),
+      ( playgroundHeight +1 * -30)
     )
     this.viewport.zoom = 3;
   }

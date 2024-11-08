@@ -24,16 +24,12 @@ export class PlaygroundGenerator {
       resources.map((r) => r.field)
     );
 
-    // const test = new Grid
-    // const gridFields = 
-
-    return new Playground(
-      fields, 
-      resources, 
-      graph, 
-      buildingGraph, 
-      dimensions
-    );
+    return new Playground({
+      buildingGraph,
+      dimensions,
+      grid: fields,
+      resources,
+      gridGraph: graph 
+    });
   }
-
 }

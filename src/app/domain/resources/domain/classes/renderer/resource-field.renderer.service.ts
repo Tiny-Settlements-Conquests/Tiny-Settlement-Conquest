@@ -2,7 +2,7 @@ import { Point } from "../../../../primitives/classes/Point";
 
 export class ResourceFieldRendererService {
 
-  constructor(private readonly ctx: CanvasRenderingContext2D) { }
+  constructor(protected readonly ctx: CanvasRenderingContext2D) { }
 
   renderResourceImage(position: Point, image: HTMLImageElement) {
     const {x,y} = position;

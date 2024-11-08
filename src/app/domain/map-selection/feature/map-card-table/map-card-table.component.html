@@ -1,11 +1,11 @@
 <div class="min-h-12 ml-4 flex flex-row gap-2 items-center">
     <fa-icon [icon]="icons.search" />
-    <input [formControl]="search" placeholder="Search" class="h-full flex-1 outline-none bg-secondary-yellow text-tertiary-yellow p-1 rounded" />
+    <input [formControl]="search" placeholder="Search" class="h-full flex-1 outline-none bg-secondary-yellow text-tertiary-yellow px-2 p-1 rounded" />
     <button class="h-full w-20 bg-secondary-yellow text-tertiary-yellow rounded">Filter</button>
 </div>
 <div class="flex flex-col gap-2 overflow-y-scroll mt-4 thin-scrollbar">
     @for (map of maps(); track map.id) {
-        <app-map-card [map]="map" class="hover:bg-tertiary-yellow cursor-pointer" />
+        <app-map-card [map]="map" [active]="selectedMapId() === map.id" class="cursor-pointer" (click)="setSelectedMap(map)" />
     }
 </div>
 

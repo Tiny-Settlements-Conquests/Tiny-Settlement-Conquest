@@ -37,6 +37,7 @@ import { TradeMenuComponent } from '../../domain/trade/feature/trade-menu/trade-
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
 import { tap } from 'rxjs';
+import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
 
 
 @Component({
@@ -80,6 +81,7 @@ export class GameComponent {
   private readonly _tradeRepository = inject(TradeRepository);
   private readonly _responseQueueRepository = inject(ResponseQueueRepository);
   readonly dialog = inject(MatDialog);
+  private readonly _lobbyRepository = inject(LobbyRepository);
   //todo das overlay nochmal umbauen, sodass es einfach nur über dem canvas liegt
   public icons = {
     clock: faClock
@@ -113,7 +115,13 @@ export class GameComponent {
   }
 
   public ngOnInit() {
+    const users = this._lobbyRepository.getUsers();
+    const mapInformation = this._lobbyRepository.getMapData();
+    if(!mapInformation) return;
+
     const client = new GameLocalClient(
+      users,
+      mapInformation,
       this._app._ref,
       this._bankRepository,
       this._inventoryRepository,

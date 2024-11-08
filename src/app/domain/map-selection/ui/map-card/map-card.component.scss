@@ -1,14 +1,13 @@
 :host {
   @apply flex gap-2 items-center rounded p-1;
 
+  &.active,
   &:hover {
-    &:hover {
-      background-color: #a77e20;
-      color: #FFE5A9;
-      fa-icon {
-      color: #a77e20;
+    background-color: #a77e20;
+    color: #FFE5A9;
+    fa-icon {
+    color: #a77e20;
 
-      }
     }
     @apply transition-colors;
   }

@@ -1,34 +1,39 @@
+@let map = selectedMap();
 <div class="host">
     <div class="flex gap-4 items-center">
         <app-back-arrow routerLink="/lobby" class="bg-secondary-yellow" />
         <app-title class="!text-4xl">Select a map</app-title>
     </div>
+        
     <div class="flex gap-4 flex-row grow h-[600px]">
         <app-map-card-table class="grow" />
-        <div class="flex flex-col w-[300px] gap-2 h-full">
-            <app-title class="h-12 w-full text-2xl bg-secondary-yellow block rounded">Hell's Paradise</app-title>
-            <img src="assets/maps/default.png" class="w-80 h-80 object-contain"/>
-            <div class="mt-4 flex flex-col gap-2">
-                <div class="flex gap-4 items-center">
-                    <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.seed" />
-                    <span>Seed:  None</span>
+        @if(map) {
+            <div class="flex flex-col w-[300px] gap-2 h-full">
+                <app-title class="h-12 w-full text-2xl bg-secondary-yellow block rounded">{{map.name}}</app-title>
+                <img [src]="map.previewUrl" class="w-80 h-80 object-contain"/>
+                <div class="mt-4 flex flex-col gap-2">
+                    <div class="flex gap-4 items-center">
+                        <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.seed" />
+                        <span>Seed:  {{map.seed}}</span>
+                    </div>
+                    <div class="flex gap-4 items-center">
+                        <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.calendar" />
+                        <span>Created at: {{map.createdAt | date:'short'}}</span>
+                    </div>
+                    <div class="flex gap-4 items-center">
+                        <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.user" />
+                        <span>created by: {{map.creator.name}}</span>
+                    </div>
+                    <div class="flex gap-4 items-center">
+                        <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.size" />
+                        <span>size: {{map.playgroundInformation.dimensions.playgroundWidth}}x{{map.playgroundInformation.dimensions.playgroundHeight}}</span>
+                    </div>
                 </div>
-                <div class="flex gap-4 items-center">
-                    <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.calendar" />
-                    <span>Created at: 28.10.2024</span>
-                </div>
-                <div class="flex gap-4 items-center">
-                    <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.user" />
-                    <span>created by: System</span>
-                </div>
-                <div class="flex gap-4 items-center">
-                    <fa-icon class="flex items-center justify-center w-8 h-8 rounded bg-secondary-yellow" [icon]="icons.size" />
-                    <span>size: 5x5</span>
+                <div class="h-full flex">
+                    <button class="mt-auto ml-auto flex items-center justify-center w-20 h-12">Select</button>
                 </div>
             </div>
-            <div class="h-full flex">
-                <button class="mt-auto ml-auto flex items-center justify-center w-20 h-12">Select</button>
-            </div>
-        </div>
+        }
+
     </div>
 </div>

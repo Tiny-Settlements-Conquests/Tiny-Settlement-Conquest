@@ -1,0 +1,7 @@
+
+@let progressItem = progress();
+<h3 class="!text-2xl mb-6">
+    <span class="text-4xl">{{progressItem?.progress ?? 0}} %</span> Completed
+</h3>
+<app-loading-bar [progress]="progressItem?.progress ?? 0"/>
+<span>Loading Assets: {{progressItem?.lastLoadedItem?.name ?? '...'}}</span>

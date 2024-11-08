@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, HostListener, input } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faMaximize, faUser } from '@fortawesome/free-solid-svg-icons';
-import { SavedMap } from '../../domain/models/map-selection.model';
+import { MapInformation } from '../../domain/models/map-selection.model';
 
 @Component({
   selector: 'app-map-card',
@@ -18,5 +18,11 @@ export class MapCardComponent {
     user: faUser,
     size: faMaximize
   }
-  public map = input.required<SavedMap>()
+  public map = input.required<MapInformation>()
+
+  public readonly active = input<boolean>(false)
+  @HostBinding('class.active')
+  get isActive() {
+    return this.active() === true;
+  }
 }

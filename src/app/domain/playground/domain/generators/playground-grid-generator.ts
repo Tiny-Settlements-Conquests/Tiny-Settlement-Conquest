@@ -24,13 +24,13 @@ export class PlaygroundGridGenerator {
   public generateGrid(dimensions: PlaygroundDimensions): Field[] {
     const startPoly = this.defaultGameFieldPoly()
 
-	  const { fieldWidth, fieldHeight } = dimensions;
+	  const { playgroundWidth, playgroundHeight } = dimensions;
     const { width, height } = startPoly;
     const generatedFields: Field[] = [];
 
-    for (let i = 0; i < fieldHeight; i++) {
+    for (let i = 0; i < playgroundHeight; i++) {
         const rowStartPoly = this.generateRowStartPolygon(startPoly, width, height, i);
-        const rowFields = this.generateRowFields(i, rowStartPoly, fieldWidth, width);
+        const rowFields = this.generateRowFields(i, rowStartPoly, playgroundWidth, width);
         generatedFields.push(...rowFields);
     }
 
@@ -43,9 +43,9 @@ export class PlaygroundGridGenerator {
     return new Polygon(startPoly.points.map(p => add(p, new Point(newX, newY))));
   }
 
-  private generateRowFields(rowIndex: number, rowStartPoly: Polygon, fieldWidth: number, width: number): Field[] {
+  private generateRowFields(rowIndex: number, rowStartPoly: Polygon, playgroundWidth: number, width: number): Field[] {
     const rowFields: Field[] = [];
-    for (let j = 0; j < fieldWidth; j++) {
+    for (let j = 0; j < playgroundWidth; j++) {
       const fieldPolygon = rowStartPoly.points.map((p) => add(p, new Point(width * j, 0)));
       rowFields.push(
         new Field(

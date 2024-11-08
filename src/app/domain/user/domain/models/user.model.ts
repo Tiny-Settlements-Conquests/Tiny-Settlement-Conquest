@@ -3,4 +3,3 @@ export interface User {
     name: string;
     profileUrl: string;
 }
-

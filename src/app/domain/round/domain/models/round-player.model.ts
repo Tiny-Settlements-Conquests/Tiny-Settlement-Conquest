@@ -1,6 +1,6 @@
-import { User } from "../../../user/domain/models/user.model";
+import { Player } from "../../../player/domain/models/player.model";
 
-export interface RoundPlayer extends User {
+export interface RoundPlayer extends Player {
     color: string;
     resourceCardCount: number;
     winningPoints: number;

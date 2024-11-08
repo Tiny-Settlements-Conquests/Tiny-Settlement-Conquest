@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { GameMapGuardService } from './domain/game/domain/services/game-map-guard.service';
 
 export const routes: Routes = [
     {
@@ -26,8 +27,12 @@ export const routes: Routes = [
     { 
         path: 'game',  loadComponent : () => import('./domain/layouts/ui/game-layout/').then(m => m.GameLayoutComponent),
         children: [
-            { path: '', loadComponent : () => import('./pages/game/').then(m => m.GameComponent)},
-        ]
+            { 
+                path: '', loadComponent : () => import('./pages/game/').then(m => m.GameComponent),
+                canActivate: [GameMapGuardService],
+            },
+        ],
+        
     },
     
 ];

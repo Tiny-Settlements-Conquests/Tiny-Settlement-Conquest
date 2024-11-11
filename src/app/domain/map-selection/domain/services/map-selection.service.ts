@@ -79,7 +79,11 @@ export class MapSelectionService {
     id: 'map-7',
     seed: '74522',
     playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
-  }]
+  }];
+
+  public getMaps(): MapInformation[] {
+    return this.maps;
+  }
 
   public selectMaps(string: string | null = ''): Observable<MapInformation[]> {
     return of(this.maps).pipe(

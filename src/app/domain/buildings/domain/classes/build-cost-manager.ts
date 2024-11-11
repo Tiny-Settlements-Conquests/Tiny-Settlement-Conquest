@@ -10,8 +10,8 @@ export class BuildCostManager {
     private bank: ResourceInventory,
     public readonly buildingCosts = {
       city: {
-        stone: 2,
-        straw: 3
+        stone: 3,
+        straw: 2
       },
       town: {
         wood: 1,
@@ -41,7 +41,7 @@ export class BuildCostManager {
       if (inventory[key as keyof Resources] < value) {
         hasEnough = false;
       }
-    })
+    });
     return hasEnough;
   }
 

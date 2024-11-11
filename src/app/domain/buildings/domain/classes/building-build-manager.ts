@@ -22,7 +22,6 @@ export class BuildingBuildManager {
         if (!buildingGraphNode)  throw new Error("Building node does not exist");
 
         if(!this.buildingCostManager.hasPlayerEnoughtResources(player, type)) throw new Error('not enough resources');
-
         this.checkIfBuildingIsOfSamePlayer(player, buildingGraphNode);
         
         this.checkBuildingPosition(buildingGraphNode, type);

@@ -29,7 +29,7 @@ export const routes: Routes = [
         children: [
             { 
                 path: '', loadComponent : () => import('./pages/game/').then(m => m.GameComponent),
-                canActivate: [GameMapGuardService],
+                // canActivate: [GameMapGuardService],
             },
         ],
         

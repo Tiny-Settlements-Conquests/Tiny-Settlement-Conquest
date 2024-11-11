@@ -32,7 +32,7 @@ export class LobbyPlayerCardsComponent {
     this._userRepository.selectUser().pipe(
       tap((me) => {
         if(!me) return;
-        this._lobbyRepository.setUsers([{...me, isRobot: false}, generateRandomLobbyRobot(), generateRandomLobbyRobot()])
+        this._lobbyRepository.setUsers([{...me, isRobot: false}, generateRandomLobbyRobot()])
       })
     )
   )

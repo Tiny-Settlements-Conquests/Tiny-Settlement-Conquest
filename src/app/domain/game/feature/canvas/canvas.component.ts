@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
+import { GraphNode } from '../../../graph/domain/classes/graph-node';
 import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
 import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
 import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
+import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
 import { Game } from '../../domain/classes/game';
-import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 import { GameModeRepository } from '../../domain/state/game-mode.repository';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Point } from '../../../primitives/classes/Point';
 
 @Component({
   selector: 'app-canvas',
@@ -48,7 +48,7 @@ export class CanvasComponent implements AfterViewInit {
   public viewport !: Viewport;
   private renderer !: PlaygroundRenderService;
 
-  private lastClickedElement: Point | null = null
+  private lastClickedNode: GraphNode | null = null
 
 
   public ngAfterViewInit(): void {
@@ -103,18 +103,19 @@ export class CanvasComponent implements AfterViewInit {
     const point = this.viewport.getMouse(event);
     const nearbyGraphNode = this.game.playground.getNearestGraphNode(point)
     if(!nearbyGraphNode) {
-      this.game.roadBuildManager.resetSelectedGraphNode();
+      this.lastClickedNode = null;
       return;
     }
     if(gameMode === 'road') {
-      const roadManager = this.game.roadBuildManager;
-      const sourceNode = roadManager.getSelectedGraphNode();
-      if(sourceNode){
+      let lastClickedNode = this.lastClickedNode
+      const sourceNode = nearbyGraphNode;
+      if(sourceNode && lastClickedNode){
         //todo das ist nicht gut, später über das gateway abbilden!
-        this.game.tryBuildRoadBetweenGraphNodes(sourceNode, nearbyGraphNode)
+        this.game.tryBuildRoadBetweenGraphNodes(sourceNode, lastClickedNode)
+        this.lastClickedNode = null;
       } else {
         //todo das ist nicht gut, später über das gateway abbilden!
-        roadManager.setSelectedGraphNode(nearbyGraphNode);
+        this.lastClickedNode = sourceNode;
       }
     }
     //todo das ist nicht gut, später über das gateway abbilden!

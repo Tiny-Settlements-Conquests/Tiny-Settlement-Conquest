@@ -148,11 +148,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       trade.selectTradeCancel
     )
     tradeEvent.pipe(
-      delay(3000)
+      delay(2000)
     ).subscribe((data) =>{
       this._tradeRepository.removeTrade(data.tradeId)
     })
-
 
     trade.selectTradeCompleted.subscribe((data)=> {
       dispatch(
@@ -339,10 +338,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       return new Player(
         p,
         new ResourceInventory({
-          wood: 10,
+          wood: 1,
           bricks: 10,
           stone: 10,
-          straw: 10,
+          straw: 3,
           wool: 10
         }), 
         new WinningpointsInventory({

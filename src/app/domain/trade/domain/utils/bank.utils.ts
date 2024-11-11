@@ -11,5 +11,9 @@ export function checkIsAValidBankTrade(offeredResources: Partial<Resources>, req
       }
       return false;
     }, true);
-    return division && fourCardsCount === Object.keys(filteredOfferedResources).length
+    return division && fourCardsCount === sumResources(requestedResources)
+}
+
+function sumResources(resources: Partial<Resources>) {
+  return Object.values(resources).reduce((sum, count) => sum + count, 0);
 }

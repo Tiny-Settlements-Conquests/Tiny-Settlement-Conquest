@@ -252,15 +252,20 @@ export class Game {
   }
 
   public tryBuildRoadBetweenGraphNodes(nodeA: GraphNode, nodeB: GraphNode) {
-    const player = this._round.getActivePlayer();
-    if(!player) return;
-    this._roadBuildManager.tryBuildRoadBetween(player, nodeA, nodeB);
-    this._buildingSignal.next({
-      type: PathType.ROAD,
-      graphNodeA: nodeA,
-      graphNodeB: nodeB,
-      owner: player
-    })
+    try {
+      const player = this._round.getActivePlayer();
+      if(!player) return;
+      this._roadBuildManager.buildRoadBetween(player, nodeA, nodeB);
+      this._buildingSignal.next({
+        type: PathType.ROAD,
+        graphNodeA: nodeA,
+        graphNodeB: nodeB,
+        owner: player
+      })
+
+    } catch(e) {
+      console.error("ERROR",e);
+    }
 
   }
 

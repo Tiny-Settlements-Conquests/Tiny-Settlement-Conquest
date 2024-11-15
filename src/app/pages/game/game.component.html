@@ -15,8 +15,8 @@
         <app-next-move-button class="h-full" />
     }
 </div>
-<div class="absolute top-[200px] left-4">
-    @if(mySelf){
+<div class="absolute top-[200px] left-4 flex flex-col gap-2">
+    @if(mySelf !== undefined){
         @for (item of selectTradeRequests(); track $index) {
             
             <app-trade-request 

@@ -1,12 +1,11 @@
 import { Observable, Subject, filter, race, takeUntil, timer } from 'rxjs';
-import { ResourceInventory,  } from '../../../inventory/domain/classes/resource-inventory';
-import { Player } from '../../../player/domain/classes/player';
-import { Round } from '../../../round/domain/classes/round';
-import { OpenTradeOffer, TradeCancel, TradeComplete, TradeOffer, TradeResponse, TradeState } from '../models/trade.model';
+import { ResourceInventory, } from '../../../inventory/domain/classes/resource-inventory';
 import { Resources } from '../../../resources/domain/models/resources.model';
+import { Round } from '../../../round/domain/classes/round';
 import { RoundPlayer } from '../../../round/domain/models/round-player.model';
-import { isAValidTrade } from '../utils/trade.utils';
+import { PlayerTrade, TradeCancel, TradeComplete, TradeOffer, TradeRequest, TradeResponse, TradeState, TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
+import { isAValidTrade } from '../utils/trade.utils';
 
 
 
@@ -15,11 +14,11 @@ export class TradeManager {
   private tradeOfferCount = 0;
   private maxTradeOffersPerRound = 3;
 
-  private tradeOfferStarted = new Subject<TradeOffer>();
+  private tradeOfferStarted = new Subject<PlayerTrade>();
   private tradeResponses = new Subject<TradeResponse>();
   private tradeCompleted = new Subject<TradeComplete>();
   private tradeCancel = new Subject<TradeCancel>();
-  private openTrades: { [key: string]: OpenTradeOffer } = {}
+  private openPlayerTrades: { [key: string]: PlayerTrade } = {}
 
 
   //todo make timeout interval when created trade configurable via constructor
@@ -29,7 +28,7 @@ export class TradeManager {
     private round: Round
   ) {}
 
-  public get selectTradeOfferStarted(): Observable<TradeOffer> {
+  public get selectTradeOfferStarted(): Observable<PlayerTrade> {
     return this.tradeOfferStarted.asObservable();
   }
 
@@ -54,18 +53,20 @@ export class TradeManager {
     return this.tradeResponses.asObservable();
   }
 
-  public startTrade(offer: TradeOffer): void {
-    console.log("TRADE OPENED", offer)
-    this.tradeOfferStarted.next(offer);
-    if(offer.typ === 'player') {
-      console.log("Player?")
+  public startTrade(request: TradeRequest): void {
+    const offer: TradeOffer = {
+      ...request,
+      playerResponses: {},
+      id: Math.random().toString()
+    }
+    if(offer.typ === TradeType.Player) {
+      this.tradeOfferStarted.next(offer);
       this.startTradeTimer(offer);
-      this.openTrades[offer.id] = {
+      this.openPlayerTrades[offer.id] = {
         ...offer,
         playerResponses: {}
       }
     } else {
-      console.log("BANK!!")
       this.bankTrade(offer);
     }
   }
@@ -106,7 +107,7 @@ export class TradeManager {
 
   public cancelTrade(tradeId: string): void {
     this.tradeCancel.next({ tradeId, state: TradeState.Declined });
-    delete this.openTrades[tradeId];
+    delete this.openPlayerTrades[tradeId];
   }
 
   public respondToTrade(response: TradeResponse): void {
@@ -122,9 +123,7 @@ export class TradeManager {
   }
 
   private getOpenTrade(tradeId: string) {
-    console.log(this.openTrades);
-    console.log(tradeId);
-    const openTrade = this.openTrades[tradeId]
+    const openTrade = this.openPlayerTrades[tradeId]
     if(!openTrade) throw new Error("Trade not found");
     return openTrade
   }
@@ -142,7 +141,7 @@ export class TradeManager {
     }
   }
 
-  private completeTrade(offer: OpenTradeOffer, acceptedRoundPlayer: RoundPlayer): void {
+  private completeTrade(offer: TradeOffer, acceptedRoundPlayer: RoundPlayer): void {
     const offerPlayer = this.round.getPlayerById(offer.player.id);
     const acceptedPlayer = this.round.getPlayerById(acceptedRoundPlayer.id);
     if(!offerPlayer || !acceptedPlayer) throw new Error('offerPlayer or Accepted Player is null')
@@ -183,7 +182,7 @@ export class TradeManager {
   }
 
   public cancelAllTrades() {
-    Object.values(this.openTrades).forEach((value) => {
+    Object.values(this.openPlayerTrades).forEach((value) => {
       this.cancelTrade(value.id)
     })
   }

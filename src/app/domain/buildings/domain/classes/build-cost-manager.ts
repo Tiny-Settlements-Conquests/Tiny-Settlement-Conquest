@@ -2,6 +2,7 @@
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { Player } from "../../../player/domain/classes/player";
 import { ResourceType, Resources } from "../../../resources/domain/models/resources.model";
+import { transferResourcesBetween } from "../../../resources/domain/utils/resource.utils";
 import { PlaceableType } from "../models/building.model";
 
 export class BuildCostManager {
@@ -51,10 +52,7 @@ export class BuildCostManager {
   } 
 
   private removeResources(player: Player, resources: Partial<Resources>) {
-    Object.entries(resources).forEach(([key, value]) => {
-      player.resourceInventory.removeFromInventory(key as ResourceType, value);
-      this.bank.addToInventory(key as ResourceType, value);
-    })
+    transferResourcesBetween({inventoryA: player.resourceInventory, inventoryB: this.bank, resourcesOfPlayerA: resources})
   }
 
 }

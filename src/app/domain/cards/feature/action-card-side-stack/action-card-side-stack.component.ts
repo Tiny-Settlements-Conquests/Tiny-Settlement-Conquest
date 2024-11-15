@@ -1,6 +1,7 @@
-import { CommonModule, NgStyle } from '@angular/common';
+import { NgStyle } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, computed, signal } from '@angular/core';
-import { ActionCardComponent, ActionCardMode } from '../action-card/action-card.component';
+import { ActionCardMode } from '../../domain/models/action-card.model';
+import { ActionCardComponent } from '../action-card/action-card.component';
 
 @Component({
   selector: 'app-action-card-side-stack',

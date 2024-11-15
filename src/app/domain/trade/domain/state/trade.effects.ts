@@ -4,6 +4,7 @@ import { tap } from 'rxjs';
 import { TradeRepository } from './trade.repository';
 import { TradeActions } from './trade.actions';
 import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
+import { TradeType } from '../models/trade.model';
 
 @Injectable({
     providedIn: 'root'
@@ -16,15 +17,12 @@ export class TradeEffects {
         actions.pipe(
             ofType(TradeActions.addTrade),
             tap((trade) => {
-                console.log("publish")
-                this._gateway.publish('trade-offer-open', trade);
-                if(trade.typ === 'player') {
-                    this._tradeRepository.addTrade({
-                        ...trade,
-                        typ: 'player',
-                        playerResponses: {}
-                    });
-                }
+                this._tradeRepository.addTrade({
+                    ...trade,
+                    typ: TradeType.Player,
+                    playerResponses: {},
+                    
+                });
             })
         )
     )
@@ -42,6 +40,7 @@ export class TradeEffects {
         actions.pipe(
             ofType(TradeActions.acceptTrade),
             tap((trade) => {
+                //todo umbauen 
                 this._gateway.publish('trade-offer-accept', trade)
                 this._tradeRepository.addPlayerResponse(trade)
             })

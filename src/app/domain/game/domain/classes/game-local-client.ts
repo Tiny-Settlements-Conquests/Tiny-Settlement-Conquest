@@ -5,6 +5,7 @@ import { Subject, delay, filter, map, merge, switchMap, take, takeUntil } from "
 import { ActionHistoryActions } from "../../../action-history/domain/state/action-history.actions";
 import { ActionHistoryRepository } from "../../../action-history/domain/state/action-history.repository";
 import { BankRepository } from "../../../bank/domain/state/bank.repository";
+import { MediumBot } from "../../../bot/domain/classes/medium-bot";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
@@ -38,6 +39,7 @@ import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameModeRepository } from "../state/game-mode.repository";
 import { loadPlayground } from "../utils/game-loader.utils";
 import { Game } from "./game";
+import { TradeType } from "../../../trade/domain/models/trade.model";
 
 export class GameLocalClient {
   private _game: Game
@@ -65,6 +67,7 @@ export class GameLocalClient {
     private _responseQueueRepository: ResponseQueueRepository,
     private _destroyRef: DestroyRef,
   ) { 
+    //TODO umbenennen in event Queue
     this._responseQueueRepository.selectLatestResponse().subscribe((t) => {
       if(t && t.type == 'trade-offer-open') {
         this.game.getTradeManager().startTrade(t.data);
@@ -91,18 +94,31 @@ this._game.selectPlayers().subscribe(roundPlayers => {
   }))
   this._roundPlayerRepository.setRoundPlayers(roundplayers);
 });
-
+//this is locally only 
 dispatch(
   TradeActions.addTrade({
     id: '2352',
     offeredResources: {
       bricks: 6
     },
+    playerResponses: {},
+    player: this._roundPlayerRepository.getRoundPlayers()[0],
+    requestedResources: {
+      wood: 1
+    },
+    typ: TradeType.Player
+  }),
+  TradeActions.addTrade({
+    id: '5342',
+    offeredResources: {
+      bricks: 2
+    },
+    playerResponses: {},
     player: this._roundPlayerRepository.getRoundPlayers()[1],
     requestedResources: {
       wood: 1
     },
-    typ: 'player'
+    typ: TradeType.Player
   })
 )
 this._tradeRepository.selectAllTrades().subscribe(trades => {
@@ -115,10 +131,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
   // })
 })
 //!!
-    this.syncStates();
-    // this.simulateGame();
     this.syncTrades();
-    // this.syncDices();
+    this.syncStates();
+    this.simulateGame();
+    this.syncDices();
     this._userRepository.selectUser().pipe(
       map((me) => {
         if(me) {
@@ -141,6 +157,11 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 
   private syncTrades() {
     const trade = this.game.getTradeManager();
+    trade.selectTradeOfferStarted.subscribe((trade) => {
+      dispatch(
+        TradeActions.addTrade(trade)
+      )
+    })
 
     trade.selectTradeResponse.subscribe((data) => console.log("JAJAJAAJJAJA" , data))
     const tradeEvent = merge(
@@ -172,7 +193,7 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     ).subscribe((d) => {
       this._diceRepository.resetDices();
       this._diceRef?.destroy();
-      if(this._roundPlayerRepository.getMe() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerRepository.getMe()?.id) {
+      if(this._roundPlayerRepository.getMe() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerRepository.getMe()?.id && !d.activePlayer.roundPlayer.isBot) {
         this.openDiceOverlay()
       }
     })
@@ -259,11 +280,14 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       this._inventoryRepository.updateResourceAmount(type, newAmount);
     })
 
-    this.game.round.selectActivePlayer().subscribe((player) => {
+    this.game.selectActiveRoundPlayer().subscribe((player) => {
       console.log("NEW ACTIVE PLAYER", player?.name)
       this._gameModeRepository.updateMode('spectate');
       if(player) {
-        this._roundPlayerRepository.updateActiveRoundPlayer(player.roundPlayer.id)
+        this._roundPlayerRepository.updateActiveRoundPlayer(player.id)
+        if(player.isBot) {
+          new MediumBot().makeMove(this.game, player)
+        }
       }
     })
 
@@ -279,8 +303,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
   private generateGame(): Game {
     const playground = loadPlayground(this._mapInformation);
     const round = this.generateRound(usersToPlayers(this._users));
-	  this._userRepository.setUser(round.players[0]);
-
     const buildingGraph = playground.buildingGraph;
     const bankInventory = new ResourceInventory({
       straw: 50,
@@ -338,10 +360,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
       return new Player(
         p,
         new ResourceInventory({
-          wood: 1,
+          wood: 10,
           bricks: 10,
           stone: 10,
-          straw: 3,
+          straw: 0,
           wool: 10
         }), 
         new WinningpointsInventory({

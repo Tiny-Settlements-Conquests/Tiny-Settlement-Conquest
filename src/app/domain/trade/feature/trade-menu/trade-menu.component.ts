@@ -2,16 +2,11 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleDown, faCircleUp, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { map, switchMap, tap } from 'rxjs';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
-import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
-import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
 import { BlockComponent } from '../../../layouts/ui/block/block.component';
-import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
+import { resourceTypes } from '../../../resources/domain/models/resources.model';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
-import { resourceTypes, ResourceType } from '../../../resources/domain/models/resources.model';
 
-import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
 import { TradeOfferService } from '../../domain/services/trade-offer.service';
 
 @Component({
@@ -28,7 +23,6 @@ import { TradeOfferService } from '../../domain/services/trade-offer.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradeMenuComponent implements OnInit{ 
-  private readonly _playerRepository = inject(RoundPlayerRepository)
   public readonly _tradeOfferService = inject(TradeOfferService);
 
   public readonly isPlayerTrade = toSignal(

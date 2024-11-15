@@ -1,4 +1,4 @@
-import { BehaviorSubject, Subject, combineLatest, map, merge, race, switchMap, takeUntil, tap, timer } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, map, merge, race, switchMap, takeUntil, tap, timer } from "rxjs";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
@@ -14,6 +14,7 @@ import { defaultOrderStrategy } from "../../../round/domain/strategies/default-r
 import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { GameMode } from "../models/game-mode.model";
 import { GameConfig, GameDependencies } from "../models/game.model";
+import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
 
 export class Game {
@@ -32,7 +33,7 @@ export class Game {
   
   private readonly _buildingSignal = new Subject<PathBuilding | Building>();
 
-  private readonly _state = new BehaviorSubject<'roll' | 'round'>('roll');
+  private readonly _state = new BehaviorSubject<'roll' | 'round' | 'rob'>('roll');
   private readonly _nextRoundSignal = new Subject();
   private readonly _pauseSignal = new Subject();
   private readonly _endSignal = new Subject();
@@ -71,8 +72,9 @@ export class Game {
       tap(() => this.getTradeManager().cancelAllTrades()),
       takeUntil(this._endSignal)
     ).subscribe(() => {
-      defaultOrder.nextRound();
+      this._diceRoller.resetRoll()
       this.startRoundTimers();
+      defaultOrder.nextRound();
     })
   
   }
@@ -84,6 +86,10 @@ export class Game {
   private resume() {
   }
 
+  public get buildingBuildManager(): BuildingBuildManager {
+    return this._buildingBuildManager;
+  }
+
   public get roadBuildManager() {
     return this._roadBuildManager;
   }
@@ -93,7 +99,6 @@ export class Game {
   }
 
   private startRoundTimers() {
-    this._diceRoller.resetRoll()
     this.startRollTimer().pipe(
       takeUntil(this._pauseSignal),
       switchMap(() => {
@@ -136,8 +141,10 @@ export class Game {
     )
   }
 
-  public selectActiveRoundPlayer() {
-    return this._round.selectActivePlayer();
+  public selectActiveRoundPlayer(): Observable<RoundPlayer> {
+    return this._round.selectActivePlayer().pipe(
+      map((player) => player.roundPlayer)
+    );
   }
 
   public selectRound() {

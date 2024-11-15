@@ -101,7 +101,7 @@ export class CanvasComponent implements AfterViewInit {
     const rect = this.canvas?.nativeElement.getBoundingClientRect()
     if(!rect) return;
     const point = this.viewport.getMouse(event);
-    const nearbyGraphNode = this.game.playground.getNearestGraphNode(point)
+    const nearbyGraphNode = this.game.playground.getNearestGraphNode(point);
     if(!nearbyGraphNode) {
       this.lastClickedNode = null;
       return;

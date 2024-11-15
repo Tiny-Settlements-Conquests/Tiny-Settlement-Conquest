@@ -1,9 +1,9 @@
-import { BehaviorSubject, combineLatest, map, tap } from "rxjs";
+import { BehaviorSubject, combineLatest, map } from "rxjs";
 import { Graph } from "../../../graph/domain/classes/graph";
-import { Inventory } from "../../../inventory/domain/classes/inventory";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { WinningpointsInventory } from "../../../inventory/domain/classes/winningpoints-inventory";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
+import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
 
 
 export class Player {
@@ -12,7 +12,7 @@ export class Player {
     private readonly _roundPlayer: RoundPlayer,
     private readonly _resourceInventory: ResourceInventory,
     private readonly _winngingPointsInventory: WinningpointsInventory,
-    private readonly _buildingGraph: Graph
+    private readonly _buildingGraph: Graph<GraphBuildingNode>
   ) { }
 
   public selectChanges() {
@@ -33,7 +33,7 @@ export class Player {
     return this._roundPlayer;
   }
 
-  public get buildingGraph(): Graph {
+  public get buildingGraph(): Graph<GraphBuildingNode> {
     return this._buildingGraph;
   }
 

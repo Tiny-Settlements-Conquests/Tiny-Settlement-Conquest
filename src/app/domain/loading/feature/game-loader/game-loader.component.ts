@@ -27,9 +27,7 @@ export class GameLoaderComponent {
 
   private _progressWatch = effect(() => {
     const progress = this.progress();
-    console.log("PROGRESS: " + progress?.progress)
     if(progress?.progress !== undefined && progress.progress === 100) {
-      console.log("WIE", progress.progress)
       asapScheduler.schedule(() => {
         this.router.navigate(['/game']);
       }, 2000)

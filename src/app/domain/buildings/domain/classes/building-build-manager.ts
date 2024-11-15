@@ -29,7 +29,7 @@ export class BuildingBuildManager {
         // ensure that the player can only build ontop of owned nodes
         const building = this.buildingFactory.constructBuilding(type, player, graphNode);
         if(type === BuildingType.CITY) {
-            buildingGraphNode.removeBuilding()
+            buildingGraphNode.removeBuilding();
         }
         buildingGraphNode.tryBuild(building);
 

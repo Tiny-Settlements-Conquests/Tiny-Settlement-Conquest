@@ -1,4 +1,4 @@
-import { ActionCardMode } from "../../../cards/feature/action-card/action-card.component";
+import { ActionCardMode } from "../../../cards/domain/models/action-card.model";
 import { ResourceCard } from "../models/resource-card.model";
 import { ResourceType, Resources } from "../models/resources.model";
 
@@ -6,30 +6,35 @@ export function resourceTypeToResourceCard(resourceType: ResourceType): Resource
     if(resourceType === 'wood') {
         return {
             typ: 'wood',
-            imageUrl: '/assets/resources/wood.png'
+            imageUrl: '/assets/resources/wood.png',
+            cardMode: 'darkGreen'
         }
     }
     if(resourceType ==='stone') {
         return {
             typ:'stone',
-            imageUrl:'/assets/resources/stone.png'
+            imageUrl:'/assets/resources/stone.png',
+            cardMode: 'gray'
         }
     }
     if(resourceType === 'wool') {
         return {
             typ: 'wool',
-            imageUrl: '/assets/resources/sheep.png'
+            imageUrl: '/assets/resources/sheep.png',
+            cardMode: 'lightGreen'
         }
     }
     if(resourceType ==='straw') {
         return {
             typ:'straw',
-            imageUrl:'/assets/resources/wheat.png'
+            imageUrl:'/assets/resources/wheat.png',
+            cardMode: 'yellow'
         }
     }
     return {
         typ: 'bricks',
-        imageUrl: '/assets/resources/brick.png'
+        imageUrl: '/assets/resources/brick.png',
+        cardMode: 'red'
     }
 }
 

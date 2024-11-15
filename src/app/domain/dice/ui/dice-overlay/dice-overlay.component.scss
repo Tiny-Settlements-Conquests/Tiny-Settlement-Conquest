@@ -1,7 +1,5 @@
 :host {
-  @apply top-0 absolute flex flex-col gap-10 items-center justify-center ;
-  height: calc(100% - 16px);
-  width: calc(100% - 16px);
+  @apply top-0 absolute flex flex-col gap-10 items-center justify-center h-full w-full;
 }
 
 button {

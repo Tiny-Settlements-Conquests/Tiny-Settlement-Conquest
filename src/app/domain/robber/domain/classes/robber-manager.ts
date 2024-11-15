@@ -13,7 +13,6 @@ export class RobberManager {
   public playerRobsAtPosition(player:Player, position: Field): void {
     this.moveRobber(position);
     const players = this.getPlayersByNearbyPosition(position);
-    console.log("PLAYÖRS", players)
     const randomPlayer = this.getRandomPlayerExclude(player, players);
     if(!randomPlayer) {
       throw new Error('No player nearby');

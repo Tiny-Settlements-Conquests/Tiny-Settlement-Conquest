@@ -7,6 +7,12 @@ export enum TradeState {
   Declined,
 }
 
+export enum TradeType {
+  Bank,
+  Player,
+}
+
+type id  =  string;
 interface TradeInformation {
   id: string;
   player: RoundPlayer;
@@ -33,17 +39,20 @@ export interface TradeCancel {
   tradeId: string;
 }
 
-export interface OpenTradeOffer extends PlayerTrade {
-  playerResponses: { [playerId: string]: TradeResponse };
-}
-
 export type TradeOffer = BankTrade | PlayerTrade;
 
 export interface BankTrade extends TradeInformation {
-  typ: 'bank',
+  typ: TradeType.Bank,
 }
 
 export interface PlayerTrade extends TradeInformation {
-  typ: 'player',
+  typ: TradeType.Player,
+  playerResponses: { [playerId: string]: TradeResponse };
+}
 
+export interface TradeRequest {
+  typ: TradeType,
+  player: RoundPlayer;
+  offeredResources: Partial<Resources>;
+  requestedResources: Partial<Resources>;
 }

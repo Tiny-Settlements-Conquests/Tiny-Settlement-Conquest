@@ -7,6 +7,7 @@ export class DiceRoller {
     private _hasRolledThisRound = false;
   
     public rollDices(): RolledDices {
+      console.log("ROLL");
       if (this._hasRolledThisRound) throw new Error();
       const dices = rollDices();
       this._rolledDice.next(dices);
@@ -29,6 +30,7 @@ export class DiceRoller {
     }
   
     public resetRoll(): void {
+      console.log("RESET ROLL");
       this._hasRolledThisRound = false;
     }
   }

@@ -56,4 +56,14 @@ export class PlaygroundGraphRenderer {
             
         })
     }
+
+    public renderDebugInformation(graph: Graph) {
+        const {nodes} = graph;
+        if(nodes.length === 0) return;
+        const pointRenderer = new PointRendererService(this.ctx);
+
+        nodes.forEach((node) => {
+            pointRenderer.renderWithText(node.position, `id: ${node.id}`)
+        })
+    }
 }

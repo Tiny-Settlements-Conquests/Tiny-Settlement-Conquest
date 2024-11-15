@@ -1,4 +1,5 @@
 import { Resources } from "../../../resources/domain/models/resources.model";
+import { sumResources } from "../../../resources/domain/utils/resource.utils";
 import { filterEmptyResources } from "./trade.utils";
 
 export function checkIsAValidBankTrade(offeredResources: Partial<Resources>, requestedResources: Partial<Resources>) {
@@ -14,6 +15,3 @@ export function checkIsAValidBankTrade(offeredResources: Partial<Resources>, req
     return division && fourCardsCount === sumResources(requestedResources)
 }
 
-function sumResources(resources: Partial<Resources>) {
-  return Object.values(resources).reduce((sum, count) => sum + count, 0);
-}

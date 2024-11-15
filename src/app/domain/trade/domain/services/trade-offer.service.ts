@@ -10,6 +10,8 @@ import { TradeActions } from '../state/trade.actions';
 import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
+import { TradeType } from '../models/trade.model';
+import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
 
 @Injectable({
   providedIn: 'any'
@@ -18,6 +20,7 @@ export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
   private readonly _inventoryRepository = inject(InventoryRepository);
   private readonly _playerRepository = inject(RoundPlayerRepository); 
+  private readonly _eventQueue = inject(GATEWAY_TOKEN);
 
   public readonly offerForm = this._fb.group({
     isPlayerTrade: this._fb.control<boolean>(true),
@@ -154,14 +157,11 @@ export class TradeOfferService {
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
     if(!me || !offeredResources || !requestedResources) return;
-    dispatch(
-      TradeActions.addTrade({
-        typ: isPlayerTrade ? 'player' : 'bank',
-        id: Math.random().toString(),
-        player: me,
-        offeredResources: offeredResources.resources,
-        requestedResources: requestedResources.resources,
-      })
-    )
+    this._eventQueue.publish('trade-offer-open', {
+      typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
+      player: me,
+      offeredResources: offeredResources.resources,
+      requestedResources: requestedResources.resources,
+    })
   }
 }

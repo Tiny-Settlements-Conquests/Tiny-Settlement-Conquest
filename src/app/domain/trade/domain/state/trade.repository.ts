@@ -1,22 +1,22 @@
+import { Injectable } from "@angular/core";
 import { createStore } from "@ngneat/elf";
 import { deleteEntities, selectAllEntities, setEntities, updateEntities, upsertEntities, withEntities } from "@ngneat/elf-entities";
-import { OpenTradeOffer, TradeOffer, TradeResponse } from "../models/trade.model";
-import { Injectable } from "@angular/core";
+import { PlayerTrade, TradeResponse } from "../models/trade.model";
 
 const tradeStore = createStore(
     { name: 'trades' },
-    withEntities<OpenTradeOffer>()
+    withEntities<PlayerTrade>()
 );
 
 @Injectable(
     { providedIn: 'root' }
   )
 export class TradeRepository {
-    public addTrade(trade: OpenTradeOffer) {
-        tradeStore.update(setEntities([trade]));
+    public addTrade(trade: PlayerTrade) {
+        tradeStore.update(upsertEntities([trade]));
     }
 
-    public removeTrade(tradeId: OpenTradeOffer['id']) {
+    public removeTrade(tradeId: PlayerTrade['id']) {
         tradeStore.update(deleteEntities([tradeId]));
     }
 
@@ -30,7 +30,7 @@ export class TradeRepository {
         )
     }
 
-    public updateTrade(trade: OpenTradeOffer) {
+    public updateTrade(trade: PlayerTrade) {
         tradeStore.update(upsertEntities([trade]));
     }
 

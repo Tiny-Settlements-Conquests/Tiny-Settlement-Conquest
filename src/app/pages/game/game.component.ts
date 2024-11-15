@@ -5,6 +5,7 @@ import {
 } from '@angular/material/dialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
+import { tap } from 'rxjs';
 import { AppComponent } from '../../app.component';
 import { ActionHistoryRepository } from '../../domain/action-history/domain/state/action-history.repository';
 import { ActionHistoryComponent } from '../../domain/action-history/feature/action-history/action-history.component';
@@ -25,19 +26,21 @@ import { InventoryRepository } from '../../domain/inventory/domain/state/invento
 import { ResourceInventoryComponent } from '../../domain/inventory/feature/resource-inventory/resource-inventory.component';
 import { BlockComponent } from '../../domain/layouts/ui/block/block.component';
 import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
-import { PlayerCardComponent } from '../../domain/round/ui/player-card/player-card.component';
+import { LobbyUser } from '../../domain/lobby/domain/models/lobby.model';
+import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
+import { generateRandomLobbyRobot } from '../../domain/lobby/domain/utils/lobby.utils';
+import { MapSelectionService } from '../../domain/map-selection/domain/services/map-selection.service';
 import { ResponseQueueRepository } from '../../domain/response-queue/domain/state/response-queue.repository';
 import { RoundPlayerRepository } from '../../domain/round/domain/state/round-players.repository';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
 import { RoundPlayerCardsComponent } from '../../domain/round/feature/round-player-cards/round-player-cards.component';
+import { PlayerCardComponent } from '../../domain/round/ui/player-card/player-card.component';
 import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
 import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/trade-button.component';
 import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/trade-dialog.component';
 import { TradeMenuComponent } from '../../domain/trade/feature/trade-menu/trade-menu.component';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
-import { tap } from 'rxjs';
-import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
 
 
 @Component({
@@ -82,6 +85,7 @@ export class GameComponent {
   private readonly _responseQueueRepository = inject(ResponseQueueRepository);
   readonly dialog = inject(MatDialog);
   private readonly _lobbyRepository = inject(LobbyRepository);
+  private readonly _REMOVEMESOON = inject(MapSelectionService)
   //todo das overlay nochmal umbauen, sodass es einfach nur über dem canvas liegt
   public icons = {
     clock: faClock
@@ -115,8 +119,15 @@ export class GameComponent {
   }
 
   public ngOnInit() {
-    const users = this._lobbyRepository.getUsers();
-    const mapInformation = this._lobbyRepository.getMapData();
+    // const users = this._lobbyRepository.getUsers();
+    const users: LobbyUser[] = [generateRandomLobbyRobot(), {isRobot: false,...this._userRepository.getUser() ?? generateRandomLobbyRobot()}];
+
+    // const mapInformation = this._lobbyRepository.getMapData();
+    
+    const mapInformation = this._REMOVEMESOON.getMaps()[0];
+    
+
+    
     if(!mapInformation) return;
 
     const client = new GameLocalClient(

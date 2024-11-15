@@ -17,4 +17,17 @@ export class PointRendererService {
     ctx.restore();
   }
 
+  public renderWithText(point: Point, text: string, {fillStyle = 'blue', strokeStyle = 'black', lineWidth = 5} = {}) {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.fillStyle = fillStyle;
+    ctx.strokeStyle = strokeStyle;
+    ctx.lineWidth = lineWidth;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.fillText(text, point.x, point.y)
+    ctx.stroke();
+    ctx.restore();
+  }
 }

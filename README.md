@@ -14,11 +14,10 @@ Our goal is to develop a complete Catan clone, which will initially be available
 - Building roads, villages, cities: Players can expand their settlements and territory on the map.
 - Basic bot: A simple computer-controlled opponent allows single players to compete against a virtual opponent.
 - Event history: A record of past events and moves to make the game progress understandable and support strategic decisions.
+- Trade: The ability to trade resources with other players or the bank to develop strategies and overcome resource shortages.
 
 ## Missing Features
 While our current version already offers some basic features, there are still some key elements missing to complete the player experience:
-
-- Trade: The ability to trade resources with other players or the bot to develop strategies and overcome resource shortages.
 - Development cards: A variety of cards that grant players various advantages or influence the course of the game.
 - Map editor: A tool that allows players to create and share their own maps to create customized game worlds.
 - Robber

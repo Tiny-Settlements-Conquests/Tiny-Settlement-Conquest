@@ -1,6 +1,6 @@
 import { createStore, withProps, select } from '@ngneat/elf';
 import { filter, map, of, switchMap } from 'rxjs';
-import { getActiveEntity, getAllEntities, getEntity, selectActiveEntity, selectAllEntities, setActiveId, setEntities, withActiveId, withEntities } from '@ngneat/elf-entities';
+import { getActiveEntity, getAllEntities, getEntity, selectActiveEntity, selectAllEntities, setActiveId, setEntities, updateEntities, upsertEntitiesById, withActiveId, withEntities } from '@ngneat/elf-entities';
 import { Injectable, inject } from '@angular/core';
 import { RoundPlayer } from '../models/round-player.model';
 import { UserRepository } from '../../../user/domain/state/user.repository';
@@ -20,6 +20,14 @@ export class RoundPlayerRepository {
 
   public setRoundPlayers(roundPlayers: RoundPlayer[]) {
     roundPlayerStore.update(setEntities(roundPlayers));
+  }
+
+  public setWinningPointsForPlayer(points: number, playerId: RoundPlayer['id']) {
+    roundPlayerStore.update(updateEntities(playerId, ((entity) => ({
+          ...entity,
+          winningPoints: points
+        })),
+    ));
   }
 
   public selectRoundPlayers() {

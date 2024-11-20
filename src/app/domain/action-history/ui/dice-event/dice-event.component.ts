@@ -1,4 +1,3 @@
-import { NgStyle } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { DiceRandomNumberComponent } from '../../../dice/ui/dice-random-number/dice-random-number.component';
 import { DiceAction } from '../../domain/models/action.model';
@@ -8,7 +7,6 @@ import { DiceAction } from '../../domain/models/action.model';
   standalone: true,
   imports: [
     DiceRandomNumberComponent,
-    NgStyle
   ],
   templateUrl: './dice-event.component.html',
   styleUrl: './dice-event.component.scss',

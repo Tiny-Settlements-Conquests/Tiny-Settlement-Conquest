@@ -1,12 +1,9 @@
 import { NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ChangeDetectionStrategy, Component, input, Input, signal } from '@angular/core';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
-import { BlockComponent } from '../../../layouts/ui/block/block.component';
 import { RoundPlayer } from '../../domain/models/round-player.model';
 import { PlayerWinningPointsComponent } from '../player-winning-points/player-winning-points.component';
-import { WinningPointsFlagComponent } from '../../../player/ui/winning-points-flag/winning-points-flag.component';
 
 
 //todo checken ob das überhaupt sinn ergibt, eig. nicht -> ist ja schon als round-player-card implementiert
@@ -14,12 +11,9 @@ import { WinningPointsFlagComponent } from '../../../player/ui/winning-points-fl
   selector: 'app-player-card',
   standalone: true,
   imports: [
-    BlockComponent,
-    FontAwesomeModule,
     ActionCardComponent,
     NgStyle,
     PlayerWinningPointsComponent,
-    WinningPointsFlagComponent
   ],
   templateUrl: './player-card.component.html',
   styleUrl: './player-card.component.scss',
@@ -30,16 +24,9 @@ export class PlayerCardComponent {
     question: faQuestion
   }
 
-  private readonly _player = signal<RoundPlayer | null>(null);
+  public readonly player = input.required<RoundPlayer>();
 
-  @Input({required: true})
-  public set player(v: RoundPlayer) {
-    this._player.set(v);
-  }
-
-  public get player(): RoundPlayer | null {
-    return this._player();
-  }
+  public readonly winningPoints = input<number>(0);
 
   private readonly _isMe = signal<boolean>(false);
   

@@ -57,7 +57,7 @@ export class BuildingsSelectionComponent {
       return false;
     }
 
-    return inventory.bricks > 0 && inventory.wood > 0 && inventory.stone > 0 && inventory.wool > 0 && this.isMyTurn();
+    return inventory.bricks > 0 && inventory.wood > 0 && inventory.straw > 0 && inventory.wool > 0 && this.isMyTurn();
   })
 
   public readonly activateCity = computed(() => {

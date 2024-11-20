@@ -7,9 +7,11 @@ export enum Edition {
 export interface ENVIRONMENT {
     prod: boolean;
     edition: Edition;
+    version: string;
 }
 
 export const ENVIRONMENT: ENVIRONMENT = {
-    prod: false,
-    edition: Edition.SINGLEPLAYER
+    prod: true,
+    edition: Edition.SINGLEPLAYER,
+    version: '0.1.0',
 }

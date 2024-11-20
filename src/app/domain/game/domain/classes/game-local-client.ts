@@ -121,6 +121,10 @@ dispatch(
     typ: TradeType.Player
   })
 )
+this.game.selectPlayersWinningPoints().subscribe(({amount, player}) => {
+  this._roundPlayerRepository.setWinningPointsForPlayer(amount, player.id);
+})
+
 this._tradeRepository.selectAllTrades().subscribe(trades => {
   //todo fix me later 
   // const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
@@ -281,7 +285,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     })
 
     this.game.selectActiveRoundPlayer().subscribe((player) => {
-      console.log("NEW ACTIVE PLAYER", player?.name)
       this._gameModeRepository.updateMode('spectate');
       if(player) {
         this._roundPlayerRepository.updateActiveRoundPlayer(player.id)
@@ -363,7 +366,7 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
           wood: 10,
           bricks: 10,
           stone: 10,
-          straw: 0,
+          straw: 10,
           wool: 10
         }), 
         new WinningpointsInventory({
@@ -385,7 +388,10 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
         const randomLocation = playground.graph.nodes[parseInt("" + Math.random() * playground.graph.nodes.length)];
         playground.buildingGraph.tryAddNode(new GraphBuildingNode(randomLocation.id,randomLocation.position , activePlayer));
         const buildingNode = playground.buildingGraph.getNodeById(randomLocation.id);
-        buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, activePlayer, buildingNode))
+        buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, activePlayer, buildingNode));
+        activePlayer.winningPointsInventory.setInventory({
+          points: activePlayer.winningPointsAmount + 1,
+        })
       } catch(e) {}
     }
     const loc = playground.graph.nodes[32]
@@ -395,7 +401,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
   }
 
   private openDiceOverlay() {
-    console.log("open")
     this._diceOverlayOpen.next(true);
     
     const component = this._gameComponentRef.createComponent(DiceOverlayComponent);
@@ -410,7 +415,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
     const diceRef = this._diceRef;
     if(!diceRef) return;
 
-    console.log("ROLLDICE", dices);
     diceRef.instance.dices = dices;
     diceRef.instance.rollDices()
     diceRef.instance.result.pipe(

@@ -1,7 +1,7 @@
 <div 
     (click)="updateGameMode('road')"
-    [ngClass]="{ ' !bg-slate-200': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
-    class="cursor-pointer bg-slate-300 rounded hover:bg-slate-200 transition-colors flex flex-row items-center gap-2 p-1">
+    [ngClass]="{ ' !bg-slate-300': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
+    class="cursor-pointer bg-slate-400 rounded hover:bg-slate-300 transition-colors flex flex-row items-center gap-2 p-1">
     <img src="assets/buildings/road.png" class="w-14 h-14 block" />
     <h3 class="text-2xl text-slate-700">Road</h3>
     <div class="ml-auto flex gap-1">
@@ -11,8 +11,8 @@
 </div>
 <div 
     (click)="updateGameMode('town')"
-    [ngClass]="{' !bg-slate-200': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
-    class="cursor-pointer bg-slate-300 rounded hover:bg-slate-200 transition-colors flex flex-row items-center gap-2 p-1"
+    [ngClass]="{' !bg-slate-300': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
+    class="cursor-pointer bg-slate-400 rounded hover:bg-slate-300 transition-colors flex flex-row items-center gap-2 p-1"
     >
     <img src="assets/buildings/town.png" class="w-14 h-14 block" />
     <h3 class="text-2xl text-slate-700">Town</h3>
@@ -26,8 +26,8 @@
 </div>
 <div 
     (click)="updateGameMode('city')"
-    [ngClass]="{ ' !bg-slate-200': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
-    class="cursor-pointer bg-slate-300 rounded hover:bg-slate-200 transition-colors flex flex-row items-center gap-2 p-1"
+    [ngClass]="{ ' !bg-slate-300': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
+    class="cursor-pointer bg-slate-400 rounded hover:bg-slate-300 transition-colors flex flex-row items-center gap-2 p-1"
 >
     <img src="assets/buildings/city.png" class="w-14 h-14 block" />
     <h3 class="text-2xl text-slate-700">City</h3>

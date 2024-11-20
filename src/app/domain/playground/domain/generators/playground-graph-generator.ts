@@ -7,7 +7,6 @@ export class PlaygroundGraphGenerator {
     public generateGraph(fields: Field[]): Graph {
       // Generate polygon graphs
       const subGraphs = this.generateSubGraphsForFields(fields);
-      console.log(subGraphs);
       
       return this.combineSubgraphs(subGraphs);
   }

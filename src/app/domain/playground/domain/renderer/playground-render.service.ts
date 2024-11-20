@@ -22,8 +22,10 @@ export class PlaygroundRenderService {
     });
 
     this.buildingGraphRenderer.render(playground.buildingGraph);
-    this.buildingGraphRenderer.renderDebugInformation(playground.graph);
+  }
 
+  public renderDebugInformation(playground: Playground) {
+    this.buildingGraphRenderer.renderDebugInformation(playground.graph);
   }
   
   protected renderFieldOrResource(field: Field, resources: ResourceField[]) {

@@ -102,13 +102,13 @@ export class Game {
     this.startRollTimer().pipe(
       takeUntil(this._pauseSignal),
       switchMap(() => {
-        console.log('roll timer abgelaufen');
+        console.log('roll timer end');
         return this.startRoundTimer()
       }),
       takeUntil(this._pauseSignal),
     ).subscribe(() => {
       this._nextRoundSignal.next(true);
-      console.log("runde zu ende...")
+      console.log("round end...")
     })
   }
 

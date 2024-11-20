@@ -12,6 +12,7 @@ import { ResourceFieldRendererService } from '../../../resources/domain/classes/
 import { Viewport } from '../../../viewport/classes/viewport';
 import { Game } from '../../domain/classes/game';
 import { GameModeRepository } from '../../domain/state/game-mode.repository';
+import { DEV_TOKEN } from '../../../../app.config';
 
 @Component({
   selector: 'app-canvas',
@@ -24,7 +25,8 @@ import { GameModeRepository } from '../../domain/state/game-mode.repository';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CanvasComponent implements AfterViewInit {
-  private readonly _gameModeRepository = inject(GameModeRepository)
+  private readonly _gameModeRepository = inject(GameModeRepository);
+  private readonly _devMode = inject(DEV_TOKEN)
 
   private readonly _gameMode = toSignal(
     this._gameModeRepository.selectMode()
@@ -81,6 +83,9 @@ export class CanvasComponent implements AfterViewInit {
   public animate() {
     this.viewport.reset();
     this.renderer.render(this.game!.playground);
+    if(this._devMode) {
+      this.renderer.renderDebugInformation(this.game!.playground)
+    }
     requestAnimationFrame(this.animate.bind(this));
   }
 
@@ -97,7 +102,6 @@ export class CanvasComponent implements AfterViewInit {
     this.viewport.handleMiddleMouseDown(event);
 
     if(gameMode === 'spectate') return;
-    console.log(this.game.mode)
     const rect = this.canvas?.nativeElement.getBoundingClientRect()
     if(!rect) return;
     const point = this.viewport.getMouse(event);

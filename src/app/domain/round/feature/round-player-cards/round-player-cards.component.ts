@@ -13,7 +13,6 @@ import { PlayerCardComponent } from '../../ui/player-card/player-card.component'
   imports: [
     PlayerCardComponent,
     NgClass,
-    DiceRandomNumberComponent
   ],
   templateUrl: './round-player-cards.component.html',
   styleUrl: './round-player-cards.component.scss',

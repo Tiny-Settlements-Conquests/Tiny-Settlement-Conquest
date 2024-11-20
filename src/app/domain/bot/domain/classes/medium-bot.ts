@@ -25,7 +25,7 @@ export class MediumBot implements Bot {
     // Prioritäten setzen
     this.decicionTree(game, playerObj);
     
-      
+    game.nextRound();
      
   }
 
@@ -39,17 +39,14 @@ export class MediumBot implements Bot {
       //   game.buildingBuildManager.buildBuilding(playerObj, BuildingType.CITY, game.playground.buildingGraph.nodes[0])
       // }
 
-    console.log(buildingResult);
     if(buildingResult) {
       const hasEnoughtResources = this.hasEnoughtResourcesForBuilding(game, buildingResult, player);
-      console.log()
       if(hasEnoughtResources) {
         this.findAPlaceToBuild(game, player, buildingResult)
 
       } else {
         const trade = this.getTradeOffer(game, player, buildingResult);
         // game.getTradeManager().startTrade(trade);
-        console.log("TRADED")
       }
     }
     this.currentLoop++;
@@ -78,8 +75,6 @@ export class MediumBot implements Bot {
 
       const node= graphNode.connectedPoints.find((p) => {
         const doesExist = buildingGraph.getNodeById(p.id);
-        console.log("FOUND NODEH", doesExist);
-        console.log("FOUND BUILDING NODEH", buildingGraphNode)
         return !doesExist ;
       });
 

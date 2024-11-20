@@ -1,18 +1,15 @@
-import { NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRightToBracket, faCheckCircle, faCircleXmark, faCrown, faDice, faGear, faMap, faPlay } from '@fortawesome/free-solid-svg-icons';
-import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
-import { MapPreviewComponent } from '../../domain/game/feature/map-preview/map-preview.component';
-import { BlockComponent } from '../../domain/layouts/ui/block/block.component';
-import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
-import { LobbyPlayerCardsComponent } from '../../domain/lobby/feature/lobby-player-cards/lobby-player-cards.component';
-import { BackArrowComponent } from '../../domain/layouts/ui/back-arrow/back-arrow.component';
+import { faArrowRightToBracket, faCheckCircle, faCircleXmark, faCrown, faGear, faMap, faPlay } from '@fortawesome/free-solid-svg-icons';
 import { ButtonComponent } from '../../domain/button/button/button.component';
-import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { MapPreviewComponent } from '../../domain/game/feature/map-preview/map-preview.component';
+import { BackArrowComponent } from '../../domain/layouts/ui/back-arrow/back-arrow.component';
+import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
 import { GameLoaderComponent } from '../../domain/loading/feature/game-loader/game-loader.component';
+import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
+import { LobbyPlayerCardsComponent } from '../../domain/lobby/feature/lobby-player-cards/lobby-player-cards.component';
 
 
 export interface Player {
@@ -28,11 +25,8 @@ export interface Player {
   standalone: true,
   imports: [
     FontAwesomeModule,
-    CanvasComponent,
-    BlockComponent,
     TitleComponent,
     RouterLink,
-    NgClass,
     MapPreviewComponent,
     LobbyPlayerCardsComponent,
     BackArrowComponent,

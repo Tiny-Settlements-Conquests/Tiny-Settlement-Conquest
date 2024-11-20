@@ -106,9 +106,7 @@ export class GameComponent {
   )
 
   public readonly selectTradeRequests = toSignal(
-    this._tradeRepository.selectAllTrades().pipe(
-      tap((d) => console.log("ALL TRAAAAADES", d))
-    )
+    this._tradeRepository.selectAllTrades()
   );
   public readonly roundPlayers = toSignal(
     this._roundPlayerRepository.selectRoundPlayers()
@@ -119,12 +117,12 @@ export class GameComponent {
   }
 
   public ngOnInit() {
-    // const users = this._lobbyRepository.getUsers();
-    const users: LobbyUser[] = [generateRandomLobbyRobot(), {isRobot: false,...this._userRepository.getUser() ?? generateRandomLobbyRobot()}];
+    const users = this._lobbyRepository.getUsers();
+    // const users: LobbyUser[] = [generateRandomLobbyRobot(), {isRobot: false,...this._userRepository.getUser() ?? generateRandomLobbyRobot()}];
 
-    // const mapInformation = this._lobbyRepository.getMapData();
+    const mapInformation = this._lobbyRepository.getMapData();
     
-    const mapInformation = this._REMOVEMESOON.getMaps()[0];
+    // const mapInformation = this._REMOVEMESOON.getMaps()[0];
     
 
     

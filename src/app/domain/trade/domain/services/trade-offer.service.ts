@@ -1,17 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { combineLatest, filter, map, Observable, startWith, switchMap } from 'rxjs';
+import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
 import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
-import { combineLatest, filter, map, Observable, startWith, switchMap, tap } from 'rxjs';
-import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
-import { Resources, ResourceType } from '../../../resources/domain/models/resources.model';
 import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
-import { dispatch } from '@ngneat/effects';
-import { TradeActions } from '../state/trade.actions';
+import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
+import { ResourceType } from '../../../resources/domain/models/resources.model';
 import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
+import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
-import { TradeType } from '../models/trade.model';
-import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
 
 @Injectable({
   providedIn: 'any'
@@ -83,7 +81,6 @@ export class TradeOfferService {
           card: resourceTypeToResourceCard(type as ResourceType)
         }))),
         map((resources) => resources.filter(r => r.amount > 0)),
-        tap(console.log)
       )
     })
   )
@@ -102,7 +99,6 @@ export class TradeOfferService {
           card: resourceTypeToResourceCard(type as ResourceType)
         }))),
         map((resources) => resources.filter(r => r.amount > 0)),
-        tap(console.log)
       )
     })
   )
@@ -122,7 +118,6 @@ export class TradeOfferService {
           card: resourceTypeToResourceCard(type as ResourceType)
         }))),
         map((resources) => resources.filter(r => r.amount > 0)),
-        tap(console.log)
       )
     })
   )

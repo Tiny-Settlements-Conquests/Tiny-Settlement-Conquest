@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, ApplicationConfig } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, InjectionToken, Provider } from '@angular/core';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 
@@ -10,6 +10,7 @@ import { ActionHistoryEffects } from './domain/action-history/domain/state/actio
 import { TradeEffects } from './domain/trade/domain/state/trade.effects';
 import { provideGateway } from './domain/gateway/domain/providers/gateway.provider';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { ENVIRONMENT } from '../env/environment';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -31,6 +32,13 @@ const provideElfDevTools = (() =>
   ]
 )
 
+export const DEV_TOKEN = new InjectionToken('DEV_TOKEN')
+
+const provideDevToken = ((): Provider => ({
+  provide: DEV_TOKEN,
+  useValue: !ENVIRONMENT.prod
+}))
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -42,6 +50,9 @@ export const appConfig: ApplicationConfig = {
       TradeEffects
     ),
     provideAnimations(),
-    provideGateway(), provideAnimationsAsync()
+    provideGateway(), provideAnimationsAsync(),
+    provideDevToken()
   ]
 };
+
+

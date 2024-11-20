@@ -1,23 +1,13 @@
-import { NgStyle } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { asapScheduler } from 'rxjs';
-import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
-import { DiceRandomNumberComponent } from '../../../dice/ui/dice-random-number/dice-random-number.component';
-import { BlockComponent } from '../../../layouts/ui/block/block.component';
 import { ActionHistoryRepository } from '../../domain/state/action-history.repository';
-import { BuildEventComponent } from '../../ui/build-event/build-event.component';
 import { ActionEventComponent } from '../action-event/action-event.component';
 
 @Component({
   selector: 'app-action-history',
   standalone: true,
   imports: [
-    BlockComponent, 
-    ActionCardComponent, 
-    NgStyle,
-    DiceRandomNumberComponent,
-    BuildEventComponent,
     ActionEventComponent
   ],
   templateUrl: './action-history.component.html',

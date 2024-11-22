@@ -1,0 +1,29 @@
+@let action = historyAction();
+<div class="flex items-center justify-center min-w-[34px] h-full">
+    @if (!isFollowUp()) {
+        <img 
+            class="block rounded-full w-8 h-8 border-1 border-2 border-solid border-slate-200" 
+            [src]="action.player.profileUrl" 
+        />
+    } @else {
+        <div class="border-l-2 border-solid border-slate-200 h-full"></div>
+    }
+</div>
+@if(!isFollowUp()) {
+    <span [ngStyle]="{'color': action.player.color}">
+        {{action.player.name}} 
+    </span>
+}
+
+@if (action.typ === 'build'){
+    <app-build-event [action]="action" />
+}
+@if (action.typ === 'dice'){
+    <app-dice-event [action]="action" />
+}
+@if (action.typ === 'trade'){
+    <app-trade-event [action]="action" />
+}
+@if (action.typ === 'resource'){
+    <app-resource-event [action]="action" />
+}

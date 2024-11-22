@@ -1,17 +1,5 @@
 :host {
-  display: block;
-}
-
-// Stile für den Button
-button {
-  background-color: white; // Hintergrundfarbe weiß
-  color: black; // Textfarbe schwarz
-  padding: 5px 10px; // Innenabstand des Buttons
-  border: 2px solid black; // Schwarze Umrandung
-  border-radius: 20px; // Runde Ecken
-  cursor: pointer; // Zeiger-Cursor bei Hover
-
-  &:hover {
-    background-color: #f0f0f0; // Hintergrundfarbe beim Überfahren
-  }
+  @apply flex flex-col bg-slate-700 m-3 py-2 pl-1 pr-1 rounded-lg text-slate-200 h-[300px] overflow-y-scroll;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable both-edges;
 }

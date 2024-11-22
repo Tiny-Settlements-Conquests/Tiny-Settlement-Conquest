@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostBinding, HostListener, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { ActionCardMode } from '../../domain/models/action-card.model';
 
-export type ActionCardMode = 'blue' | 'blueOrange' | 'yellow' | 'darkGreen' | 'lightGreen' | 'red' | 'gray' | 'purple';
 
 @Component({
   selector: 'app-action-card',

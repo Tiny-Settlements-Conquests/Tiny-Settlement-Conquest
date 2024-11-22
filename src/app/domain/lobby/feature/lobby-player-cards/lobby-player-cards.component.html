@@ -1,0 +1,27 @@
+@for (user of users(); track $index) {
+    <div class="slot">
+        <img 
+            class="rounded-full w-14 h-14" 
+            [src]="user.profileUrl"
+        />
+        @if(user.isRobot) {
+            <span class="bg-primary-yellow absolute left-3 bottom-1  text-xs p-1 rounded">Bot</span>
+        }
+        <div class="flex text-2xl gap-2">
+            {{user.name}}
+            @if(user.id !== undefined && me()?.id === user.id) {
+                <fa-icon class="border-solid border-black text-yellow-300" [icon]="icons.crown" />
+            }
+            
+        </div>
+        @if(user.id !== me()?.id) {
+            <app-button color="red" class="w-8 h-8  ml-auto" (click)="kickPlayer(user.id)">
+                <fa-icon [icon]="icons.x" />
+            </app-button>
+        }
+    </div >
+}
+
+<app-button color="yellow" class="text-xl" [disabled]="isMaxUsers()" (clickEvent)="addPlayer()">
+    add Robot
+</app-button>

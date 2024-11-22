@@ -1,21 +1,27 @@
-import { CommonModule, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { TitleComponent } from '../../../layouts/ui/title/title.component';
-import { BlockComponent } from '../../../layouts/ui/block/block.component';
-import { GameModeRepository } from '../../../game/domain/state/game-mode.repository';
-import { GameMode } from '../../../game/domain/models/game-mode.model';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { GameMode } from '../../../game/domain/models/game-mode.model';
+import { GameModeRepository } from '../../../game/domain/state/game-mode.repository';
 import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
+import { BlockComponent } from '../../../layouts/ui/block/block.component';
+import { TitleComponent } from '../../../layouts/ui/title/title.component';
 import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
-
+import { TooltipDirective } from '../../../tooltip/tooltip.directive';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
 @Component({
   selector: 'app-buildings-selection',
   standalone: true,
   imports: [
     TitleComponent,
     BlockComponent,
-    NgClass
+    NgClass,
+    TooltipDirective,
+    MatTooltipModule,
+    ResourceCardComponent
   ],
+
   templateUrl: './buildings-selection.component.html',
   styleUrl: './buildings-selection.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +57,7 @@ export class BuildingsSelectionComponent {
       return false;
     }
 
-    return inventory.bricks > 0 && inventory.wood > 0 && inventory.stone > 0 && inventory.wool > 0 && this.isMyTurn();
+    return inventory.bricks > 0 && inventory.wood > 0 && inventory.straw > 0 && inventory.wool > 0 && this.isMyTurn();
   })
 
   public readonly activateCity = computed(() => {

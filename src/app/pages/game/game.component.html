@@ -1,20 +1,29 @@
+@let mySelf = me();
+<app-game-information-bar />
 @if(game !== undefined) {
-    <app-canvas [game]="game" />
+    <app-canvas class="m-3" [game]="game" />
 }
-<div class="absolute flex flex-col right-4 flex gap-2 w-[400px]">
+<div class="absolute flex flex-col top-[130px] right-4 flex gap-2 w-[400px]">
+    
     <app-action-history />
-    <app-chat />
-    <app-bank />
-    <app-round-player-cards />
-
+    <app-building-options-inventory />
+    
 </div>
-<div class="absolute bottom-4 flex left-4 flex gap-4">
-    <app-resource-inventory />
-    <app-buildings-selection />
-    <div>
-        @if (isMyTurn()) {
-            <app-round-countdown class="absolute -top-10" />
-        }
+<div class="absolute bottom-4 flex flex-row right-4 gap-4">
+    @if (isMyTurn()) {
+        <app-trade-button (click)="openDialog()" class="h-full" />
         <app-next-move-button class="h-full" />
-    </div>
+    }
+</div>
+<div class="absolute top-[200px] left-4 flex flex-col gap-2">
+    @if(mySelf !== undefined){
+        @for (item of selectTradeRequests(); track $index) {
+            
+            <app-trade-request 
+                [tradeOffer]="item"
+                [roundPlayers]="roundPlayers()?? []"
+                [me]="mySelf"
+            />
+        }
+    }
 </div>

@@ -1,18 +1,20 @@
-import { BehaviorSubject, Subject, combineLatest, map, merge, race, share, switchMap, take, takeUntil, tap, timer } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, map, merge, race, switchMap, takeUntil, tap, timer } from "rxjs";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
-import { rollDices } from "../../../dice/domain/functions/roll-dice.function";
+import { Building, BuildingType, PathBuilding, PathType } from "../../../buildings/domain/models/building.model";
+import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { Playground } from "../../../playground/domain/classes/playground";
+import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
+import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { Round } from "../../../round/domain/classes/round";
 import { defaultOrderStrategy } from "../../../round/domain/strategies/default-round-order.strategy";
+import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { GameMode } from "../models/game-mode.model";
-import { GameDependencies, GameConfig } from "../models/game.model";
-import { Building, BuildingType, PathBuilding, PathType } from "../../../buildings/domain/models/building.model";
-import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
-import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
+import { GameConfig, GameDependencies } from "../models/game.model";
+import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
 
 export class Game {
@@ -24,12 +26,14 @@ export class Game {
   private readonly _costManager: BuildCostManager;
   private readonly _diceRoller: DiceRoller;
   private readonly _resourceDistributor: ResourceDistributor;
+  private readonly _robberManager: RobberManager;
+  private readonly _tradeManager: TradeManager;
 
   private _mode: GameMode = 'city';
   
   private readonly _buildingSignal = new Subject<PathBuilding | Building>();
 
-  private readonly _state = new BehaviorSubject<'roll' | 'round'>('roll');
+  private readonly _state = new BehaviorSubject<'roll' | 'round' | 'rob'>('roll');
   private readonly _nextRoundSignal = new Subject();
   private readonly _pauseSignal = new Subject();
   private readonly _endSignal = new Subject();
@@ -40,7 +44,8 @@ export class Game {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
       maxRollTimer: 5_000,
-      maxRoundTimer: 10_000,
+      maxRoundTimer: 1_000_000,
+      // maxRoundTimer: 5_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
       resourceMultiplier: 1
@@ -54,6 +59,8 @@ export class Game {
     this._costManager = dependencies.buildCostManager;
     this._diceRoller = dependencies.diceRoller;
     this._resourceDistributor = dependencies.resourceDistributor;
+    this._robberManager = dependencies.robberManager;
+    this._tradeManager = dependencies.tradeManager;
     this.startGame();
   }
 
@@ -62,11 +69,12 @@ export class Game {
     const defaultOrder = defaultOrderStrategy(this._round);
     
     this._nextRoundSignal.pipe(
+      tap(() => this.getTradeManager().cancelAllTrades()),
       takeUntil(this._endSignal)
     ).subscribe(() => {
-      console.log("NEXT ROUND");
-      defaultOrder.nextRound();
+      this._diceRoller.resetRoll()
       this.startRoundTimers();
+      defaultOrder.nextRound();
     })
   
   }
@@ -76,6 +84,10 @@ export class Game {
   }
 
   private resume() {
+  }
+
+  public get buildingBuildManager(): BuildingBuildManager {
+    return this._buildingBuildManager;
   }
 
   public get roadBuildManager() {
@@ -90,13 +102,13 @@ export class Game {
     this.startRollTimer().pipe(
       takeUntil(this._pauseSignal),
       switchMap(() => {
-        console.log('roll timer abgelaufen');
+        console.log('roll timer end');
         return this.startRoundTimer()
       }),
       takeUntil(this._pauseSignal),
     ).subscribe(() => {
       this._nextRoundSignal.next(true);
-      console.log("runde zu ende...")
+      console.log("round end...")
     })
   }
 
@@ -129,8 +141,10 @@ export class Game {
     )
   }
 
-  public selectActiveRoundPlayer() {
-    return this._round.selectActivePlayer();
+  public selectActiveRoundPlayer(): Observable<RoundPlayer> {
+    return this._round.selectActivePlayer().pipe(
+      map((player) => player.roundPlayer)
+    );
   }
 
   public selectRound() {
@@ -197,7 +211,7 @@ export class Game {
 
   public selectRolledDice() {
     return this._diceRoller.selectRolledDice().pipe(
-      map((dices) => ({dices, player: this._round.activePlayer}))
+      map((dices) => ({dices, player: this._round.getActivePlayer()}))
     );
   }
 
@@ -215,14 +229,11 @@ export class Game {
 
   public tryBuildBuildingOnGraphNode(node: GraphNode) {
     if(this._mode === 'spectate') return;
-    const player = this._round.activePlayer;
+    const player = this._round.getActivePlayer();
     if(!player) return;
 
     try {
-      if(this._mode === 'road') {
-        this._roadBuildManager.tryBuildRoad(player, node);
-
-      } else if(this._mode === 'city') {
+      if(this._mode === 'city') {
         this._buildingBuildManager.buildBuilding(player, BuildingType.CITY, node);
         player.winningPointsInventory.addToInventory('points', 1)
         this._buildingSignal.next({
@@ -242,24 +253,41 @@ export class Game {
         })
         
       }
-      console.log("YYYYY");
-
     } catch(e) {
       console.log("ERROR",e)
     }
   }
 
   public tryBuildRoadBetweenGraphNodes(nodeA: GraphNode, nodeB: GraphNode) {
-    const player = this._round.activePlayer;
-    if(!player) return;
-    this._roadBuildManager.tryBuildRoadBetween(player, nodeA, nodeB);
-    this._buildingSignal.next({
-      type: PathType.ROAD,
-      graphNodeA: nodeA,
-      graphNodeB: nodeB,
-      owner: player
-    })
+    try {
+      const player = this._round.getActivePlayer();
+      if(!player) return;
+      this._roadBuildManager.buildRoadBetween(player, nodeA, nodeB);
+      this._buildingSignal.next({
+        type: PathType.ROAD,
+        graphNodeA: nodeA,
+        graphNodeB: nodeB,
+        owner: player
+      })
 
+    } catch(e) {
+      console.error("ERROR",e);
+    }
+
+  }
+
+  getRobberManager() {
+    return this._robberManager;
+    // try {
+    //   this._robberManager.playerRobsAtPosition(player,field);
+
+    // } catch(e) {
+    //   console.error(e);
+    // }
+  }
+
+  getTradeManager() {
+    return this._tradeManager
   }
 
 }

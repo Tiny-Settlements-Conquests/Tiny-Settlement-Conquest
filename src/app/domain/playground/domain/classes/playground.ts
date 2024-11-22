@@ -4,14 +4,18 @@ import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Point } from "../../../primitives/classes/Point";
 import { distance } from "../../../primitives/functions/util";
 import { ResourceField } from "../../../resources/domain/models/resource-field.model";
-import { PlaygroundDimensions } from "../models/playground.model";
+import { PlaygroundDimensions, PlaygroundInformation } from "../models/playground.model";
 import { Field } from "./field";
 
-export interface PlaygroundRenderer {
-  render(grid: Field[], resources: ResourceField[]): void;
-}
 
+//todo hier brauchen wir noch eine struktur die einfacher die fields und die graphNodes miteinander verknüpft
 export class Playground {
+  private readonly _grid: Field[];
+  private readonly _resources: ResourceField[];
+  private readonly _gridGraph: Graph;
+  private readonly _buildingGraph: Graph<GraphBuildingNode>;
+  private readonly _dimensions: PlaygroundDimensions;
+
   public get graph(): Graph {
     return this._gridGraph;
   }
@@ -20,17 +24,13 @@ export class Playground {
     return this._buildingGraph
   }
 
-  constructor(
-    private readonly _grid: Field[],
-    private readonly _resources: ResourceField[],
-    private readonly _gridGraph: Graph,
-    private readonly _buildingGraph: Graph<GraphBuildingNode>,
-    public readonly dimensions: PlaygroundDimensions = { fieldWidth: 9, fieldHeight: 9 },
-  ) { }
-
-  public loadPlayground(grid: Field[], resources: ResourceField[]): void {
-    // this._grid = grid;
-    // this._resources = resources;
+  constructor(data:PlaygroundInformation) { 
+    const {dimensions, grid, resources, gridGraph, buildingGraph} = data;
+    this._dimensions = dimensions;
+    this._grid = grid;
+    this._resources = resources;
+    this._gridGraph = gridGraph;
+    this._buildingGraph = buildingGraph;
   }
 
   public getNearestGraphNode(point: Point): GraphNode | undefined {
@@ -40,16 +40,22 @@ export class Playground {
     return graph.nodes.find((p) => distance(p.position, point) < 10 );
   }
 
-  public importPlayground() {
-
-  }
-
-  public exportPlayground() {
-
+  public exportPlayground(): PlaygroundInformation {
+    return {
+      grid: this._grid,
+      resources: this._resources,
+      gridGraph: this._gridGraph,
+      buildingGraph: this._buildingGraph,
+      dimensions: this._dimensions,
+    }
   }
 
   public get gridField(): Field[] {
     return this._grid;
+  }
+
+  public get dimensions(): PlaygroundDimensions {
+    return this._dimensions;
   }
 
   public get resourceFields(): ResourceField[] {
@@ -57,11 +63,11 @@ export class Playground {
   }
 
   public get width(): number {
-    return this.dimensions.fieldWidth;
+    return this._dimensions.playgroundWidth;
   }
 
   public get height(): number {
-    return this.dimensions.fieldHeight;
+    return this._dimensions.playgroundHeight;
   }
 
 

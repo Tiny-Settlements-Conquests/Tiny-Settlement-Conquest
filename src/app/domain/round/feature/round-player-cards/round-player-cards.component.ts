@@ -3,9 +3,9 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DiceRepository } from '../../../dice/domain/state/dice.repository';
 import { DiceRandomNumberComponent } from '../../../dice/ui/dice-random-number/dice-random-number.component';
-import { PlayerCardComponent } from '../../../player/feature/players-card/player-card.component';
 import { UserRepository } from '../../../user/domain/state/user.repository';
 import { RoundPlayerRepository } from '../../domain/state/round-players.repository';
+import { PlayerCardComponent } from '../../ui/player-card/player-card.component';
 
 @Component({
   selector: 'app-round-player-cards',
@@ -13,7 +13,6 @@ import { RoundPlayerRepository } from '../../domain/state/round-players.reposito
   imports: [
     PlayerCardComponent,
     NgClass,
-    DiceRandomNumberComponent
   ],
   templateUrl: './round-player-cards.component.html',
   styleUrl: './round-player-cards.component.scss',
@@ -33,7 +32,7 @@ export class RoundPlayerCardsComponent {
   );
 
   public readonly me = toSignal(
-    this._userRepository.selectUser()
+    this._roundPlayerRepository.selectMe()
   )
 
   public readonly dices = toSignal(

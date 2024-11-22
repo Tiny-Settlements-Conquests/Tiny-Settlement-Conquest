@@ -1,100 +1,71 @@
-<app-block>
-    <app-title>Custom Match</app-title>
-</app-block>
-<div class="flex flex-row gap-4">
-    <div class="flex flex-col gap-2 flex-1" >
-        <app-block>
-            <app-title>
-                Players: {{playerCount()}} / {{maxPlayers()}}
+
+<img class="w-24 h-24 -left-[100px] -top-8 floatResource" src="assets/resources/wheat.png" />
+<img class="w-32 h-32 -right-[200px] -top-[150px] floatResource" style="--initial-rotation: 75deg;" src="assets/resources/wheat.png" />
+<img class="w-16 h-16 -right-[100px] bottom-[150px] floatResource" style="--initial-rotation: 45deg;" src="assets/resources/wheat.png" />
+
+@let map = selectedMap();
+@if(gameStarted() === false) {
+    <div class="host">
+        <div class="flex gap-4 items-center">
+            <app-back-arrow routerLink="/home" class="bg-secondary-yellow" />
+            <app-title class=" !text-4xl">
+                Start a new game
             </app-title>
-        </app-block>
-        @for (slot of slots(); track $index) {
-            @if(slot.player !== null) {
-                <app-block class="flex gap-2 items-center">
-                    @if(slot.player.isHost) {
-                        <div class="bg-yellow-500 rounded-full w-16 h-16 flex items-center justify-center">
-                            <img 
-                                class="rounded-full w-14 h-14" 
-                                src="{{slot.player.profileUrl}}" 
-                            />
-                        </div>
+        </div>
+        <div class="flex flex-row gap-4">
+            <div class="flex flex-row gap-2 flex-1" >
+                <app-lobby-player-cards />
+            </div>
+            <div class="w-96 flex flex-col gap-2">
+                <app-title class="bg-secondary-yellow rounded">
+                    Map: 
+                    @if(map) {
+                        {{map.name}} ({{map.playgroundInformation.dimensions.playgroundHeight + "x" + map.playgroundInformation.dimensions.playgroundWidth}})
                     } @else {
-                        <img 
-                            class="rounded-full w-14 h-14" 
-                            src="{{slot.player.profileUrl}}" 
+                        None Selected
+                    }
+                </app-title>
+                <div class="w-96 h-96 rounded bg-secondary-yellow">
+                    @if(map) {
+                        <app-map-preview 
+                            #mapPreview 
+                            class="h-full w-full"
+                            [mapPlaygroundInformation]="map.playgroundInformation"
                         />
                     }
-                    <div class="flex flex-col gap-2 ">
-                        
-                        <app-title>
-                            {{slot.player.name}}
-                            @if(slot.player.isHost) {
-                                <fa-icon class="border-solid border-black text-yellow-500" [icon]="icons.crown" />
-                            }
-                        </app-title>
-                        
-                        <div class="text-zinc-500">{{slot.player.ready ? 'is Ready' : 'is not ready'}}</div>
-                    </div>
-                    <div class="ml-auto w-20 text-red-600">
-                        kick
-                    </div>
-                    @if(slot.player.ready) {
-                        <fa-icon class="flex-0 text-2xl text-green-500" [icon]="icons.checkmark"/>
-                    } @else {
-                        <fa-icon class="flex-0 text-2xl text-red-600" [icon]="icons.cross"/>
-                    }
-                </app-block>
-            } @else {
-                <app-block class="flex p-2 gap-2 items-center" [ngClass]="!slot.isOpen ? 'opacity-90' : ''">
-                    <app-title>
-                        {{slot.isOpen ? 'Empty' : 'Closed'}}
-                    </app-title>
-                    <button 
-                        (click)="toggleIsOpen($index)"
-                        
-                        class="ml-auto p-2 w-28 text-red-600">
-                        {{
-                            slot.isOpen ? 'Close' : 'Open'
-                        }}
-                    </button>
-                </app-block>
-            }
-        }
-    </div>
-    <div class="w-96 flex flex-col gap-2">
-        <app-block class="flex p-2 gap-2 items-center">
-            <app-title>
-                Map: Starter Map (5x5)
-            </app-title>
-        </app-block>
-        <div class="w-96 h-96 bg-gray-200 rounded">
-            <app-map-preview #mapPreview class="h-full w-full"/>
+                </div>
+                <div class="flex gap-2">
+                    <app-button 
+                        [disabled]="true"
+                        color="yellow"
+                        class="!flex items-center justify-center gap-4 w-full"
+                    >
+                        <fa-icon [icon]="icons.gear" class="text-2xl " />
+                        Settings
+                    </app-button>
+                    <app-button 
+                        color="yellow"
+                        class="!flex items-center justify-center gap-4 w-full"
+                        [routerLink]="['/map-selection']"
+                    >
+                        <fa-icon [icon]="icons.map" class="text-2xl " />
+                        Maps
+                    </app-button>
+                </div>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <button (click)="mapPreview.regen()" class="ml-auto p-2 shadow-md bg-zinc-800 w-28 text-zinc-200 rounded flex items-center justify-center gap-2">
-                <fa-icon [icon]="icons.dice" class="text-2xl " />
-                Random
-            </button>
-            <button (click)="mapPreview.restore()" class="p-2 shadow-md bg-zinc-800 w-28 text-zinc-200 rounded flex items-center justify-center gap-2">
-                <fa-icon [icon]="icons.file" class="text-2xl " />
-                Load
-            </button>
+        <div class="flex h-full">
+            <app-button
+                color="yellow"
+                [disabled]="!canStart()"
+                (clickEvent)="startGame()"
+                class="mt-auto ml-auto w-28 !flex items-center justify-center gap-2"
+            >
+                <fa-icon [icon]="icons.play" class="text-2xl " />
+                Start
+            </app-button>
         </div>
     </div>
-</div>
-<div class="flex">
-    <button 
-        class="p-2 shadow-md bg-red-700 w-28 text-zinc-200 rounded flex items-center justify-center gap-2"
-        [routerLink]="['/servers']"
-    >
-        <fa-icon [icon]="icons.bracketArrow" class="text-2xl " />
-        Leave
-    </button>
-    <button
-        [ngClass]="!canStart() ? 'pointer-events-none opacity-50' : 'cursor-pointer' "
-        class="ml-auto p-2 shadow-md bg-blue-600 w-28 text-zinc-200 rounded flex items-center justify-center gap-2">
-        <fa-icon [icon]="icons.play" class="text-2xl " />
-        Start
-    </button>
-    
-</div>
+} @else {
+    <app-game-loader />
+}

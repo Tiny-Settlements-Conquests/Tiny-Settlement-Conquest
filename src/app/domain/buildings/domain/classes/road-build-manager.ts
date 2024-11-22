@@ -6,49 +6,18 @@ import { PathType } from "../models/building.model";
 import { BuildCostManager } from "./build-cost-manager";
 
 export class RoadBuildManager {
-  private _sourceGraphNode: GraphNode | null = null;
 
   constructor(
     private readonly buildingGraph: Graph<GraphBuildingNode>,
     private readonly buildingCostManager: BuildCostManager,
   ) {}
 
-  public resetSelectedGraphNode(){
-    this._sourceGraphNode = null;
-  }
+  public buildRoadBetween(player: Player, graphNodeA: GraphNode, graphNodeB: GraphNode) {
+    if(!this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD)) throw new Error('HAS NOT ENOUGHT RESOURCES')
+    this.checkNodesValidForRoad(player, graphNodeA, graphNodeB);
 
-  public tryBuildRoadBetween(player: Player, graphNodeA: GraphNode, graphNodeB: GraphNode) {
-    try {
-      this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
-      this.checkNodesValidForRoad(player, graphNodeA, graphNodeB);
-  
-      this.buildRoadBetweenNodes(player, graphNodeA, graphNodeB);
-      this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
-  } catch(e) {
-    this.resetSelectedGraphNode();
-  }
-  }
-
-  /**
-   * @deprecated use tryBuildRoadBetween instead
-   * @param player 
-   * @param graphNode 
-   * @returns 
-   */
-  public tryBuildRoad(player: Player, graphNode: GraphNode) {
-    try {
-        if(!this._sourceGraphNode) {
-          this._sourceGraphNode = graphNode;
-          return;
-        }
-        this.buildingCostManager.hasPlayerEnoughtResources(player, PathType.ROAD);
-        this.checkNodesValidForRoad(player, graphNode, this._sourceGraphNode);
-    
-        this.buildRoadBetweenNodes(player, graphNode, this._sourceGraphNode);
-        this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
-    } catch(e) {
-      this.resetSelectedGraphNode();
-    }
+    this.buildRoadBetweenNodes(player, graphNodeA, graphNodeB);
+    this.buildingCostManager.removeResourcesByBuilding(player, PathType.ROAD)
   }
 
   private checkNodesValidForRoad(player:Player, nodeA: GraphNode, nodeB: GraphNode): void {
@@ -91,6 +60,5 @@ export class RoadBuildManager {
       this.buildingGraph.tryAddNode(roadNodeSource);
       this.buildingGraph.tryAddNode(roadNodeTarget);
     }
-    this.resetSelectedGraphNode();
   }
 }

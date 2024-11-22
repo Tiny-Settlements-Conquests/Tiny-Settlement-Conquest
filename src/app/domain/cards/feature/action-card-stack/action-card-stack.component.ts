@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
-import { ActionCardComponent, ActionCardMode } from '../action-card/action-card.component';
+import { ActionCardComponent } from '../action-card/action-card.component';
+import { ActionCardMode } from '../../domain/models/action-card.model';
 
 @Component({
   selector: 'app-action-card-stack',

@@ -1,6 +1,6 @@
 import { createStore, withProps, select } from '@ngneat/elf';
-import { map, of, switchMap } from 'rxjs';
-import { getActiveEntity, getAllEntities, getEntity, selectActiveEntity, selectAllEntities, setActiveId, setEntities, withActiveId, withEntities } from '@ngneat/elf-entities';
+import { filter, map, of, switchMap } from 'rxjs';
+import { getActiveEntity, getAllEntities, getEntity, selectActiveEntity, selectAllEntities, setActiveId, setEntities, updateEntities, upsertEntitiesById, withActiveId, withEntities } from '@ngneat/elf-entities';
 import { Injectable, inject } from '@angular/core';
 import { RoundPlayer } from '../models/round-player.model';
 import { UserRepository } from '../../../user/domain/state/user.repository';
@@ -22,6 +22,14 @@ export class RoundPlayerRepository {
     roundPlayerStore.update(setEntities(roundPlayers));
   }
 
+  public setWinningPointsForPlayer(points: number, playerId: RoundPlayer['id']) {
+    roundPlayerStore.update(updateEntities(playerId, ((entity) => ({
+          ...entity,
+          winningPoints: points
+        })),
+    ));
+  }
+
   public selectRoundPlayers() {
     return roundPlayerStore.pipe(selectAllEntities())
   }
@@ -40,6 +48,12 @@ export class RoundPlayerRepository {
 
   public getActiveRoundPlayer() {
     return roundPlayerStore.query(getActiveEntity());
+  }
+
+  public getMe() {
+    const players = this.getRoundPlayers();
+    const me = this._userRepository.getUser()
+    return players.find(x => x.id === me?.id);
   }
 
   public selectMe() {
@@ -65,6 +79,16 @@ export class RoundPlayerRepository {
           })
         )
       })
+    )
+  }
+
+  public selectRoundPlayersExceptMe() {
+    return roundPlayerStore.pipe(
+      selectAllEntities(),
+      switchMap((players) => this.selectMe().pipe(
+        filter((me) => me !== undefined),
+        map((me) => players.filter((p) => p.id !== me.id))
+      ))
     )
   }
 

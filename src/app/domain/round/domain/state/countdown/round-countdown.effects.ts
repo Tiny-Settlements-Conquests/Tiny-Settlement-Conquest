@@ -25,7 +25,7 @@ export class RoundCountdownEffects {
             interval(1000).pipe(
               timeMapper(countdown),
               tap((countdown) => {
-                console.log(countdown)
+                // console.log(countdown)
                 if(countdown <= 0 && this.intervalRef.value) {
                   this.intervalRef.value.unsubscribe()
                 }

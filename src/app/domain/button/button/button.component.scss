@@ -1,0 +1,27 @@
+@use 'colors' as color;
+
+:host {
+  @apply flex items-center justify-center rounded p-2  cursor-pointer transition-colors;
+  &.disabled {
+    opacity: 0.5 !important;
+    cursor: default !important;
+    pointer-events: none;
+  }
+  &.red {
+    background-color: color.$secondary-red;
+    color: color.$primary-red;
+    &:hover {
+      background-color: color.$primary-red;
+      color: color.$secondary-red;
+    }
+  }
+
+  &.yellow {
+    background-color: color.$secondary-yellow;
+    color: color.$tertiary-yellow;
+    &:hover {
+      background-color: #ffd36d;
+    }
+  }
+}
+

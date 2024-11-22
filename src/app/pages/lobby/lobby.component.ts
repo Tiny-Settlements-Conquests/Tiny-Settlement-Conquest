@@ -1,17 +1,16 @@
-import { ChangeDetectionStrategy, Component, signal, type OnInit, computed } from '@angular/core';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faArrowRightToBracket, faCheckCircle, faCircleXmark, faCross, faCrown, faDice, faFile, faPlay } from '@fortawesome/free-solid-svg-icons';
-import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
-import { BlockComponent } from '../../domain/layouts/ui/block/block.component';
-import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { NgClass } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowRightToBracket, faCheckCircle, faCircleXmark, faCrown, faGear, faMap, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { ButtonComponent } from '../../domain/button/button/button.component';
 import { MapPreviewComponent } from '../../domain/game/feature/map-preview/map-preview.component';
+import { BackArrowComponent } from '../../domain/layouts/ui/back-arrow/back-arrow.component';
+import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
+import { GameLoaderComponent } from '../../domain/loading/feature/game-loader/game-loader.component';
+import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
+import { LobbyPlayerCardsComponent } from '../../domain/lobby/feature/lobby-player-cards/lobby-player-cards.component';
 
-interface PlayerSlot {
-  player: Player | null;
-  isOpen: boolean;
-}
 
 export interface Player {
   id: string;
@@ -26,92 +25,55 @@ export interface Player {
   standalone: true,
   imports: [
     FontAwesomeModule,
-    CanvasComponent,
-    BlockComponent,
     TitleComponent,
     RouterLink,
-    NgClass,
-    MapPreviewComponent
+    MapPreviewComponent,
+    LobbyPlayerCardsComponent,
+    BackArrowComponent,
+    ButtonComponent,
+    GameLoaderComponent
   ],
   templateUrl: './lobby.component.html',
   styleUrl: './lobby.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LobbyComponent implements OnInit {
+export class LobbyComponent {
+  private readonly _lobbyRepository = inject(LobbyRepository);
+
+  public readonly gameStarted = signal(false);
+
   public readonly icons = {
     crown: faCrown,
     checkmark: faCheckCircle,
     cross: faCircleXmark,
-    dice: faDice,
-    file: faFile,
+    gear: faGear,
+    map: faMap,
     play: faPlay,
     bracketArrow: faArrowRightToBracket
   }
 
-  ngOnInit(): void { }
+  private readonly selectUsers = toSignal(
+    this._lobbyRepository.selectUsers()
+  )
 
-  public slots = signal<(PlayerSlot)[]>([
-    {
-      player: {
-        id: '14124',
-        profileUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU',
-        isHost: true,
-        name: 'AA.',
-        ready: true
-      },
-      isOpen: true
-    },
-    {
-      player: {
-        id: '1412523',
-        profileUrl: 'https://media.gq-magazine.co.uk/photos/5f0d7b425a8518ef1776783c/master/w_1600%2Cc_limit/20200714-mercedes-05.jpg',
-        isHost: false,
-        name: 'Test.',
-        ready: false
-      },
-      isOpen: true
-    },
-    {
-      player: {
-
-        id: '1412541241',
-        profileUrl: 'https://avatars.githubusercontent.com/u/1330321?v=4',
-        isHost: false,
-        name: 't',
-        ready: false
-      },
-      isOpen: true
-    },
-    {
-      player: {
-        id: '646546',
-        profileUrl: 'https://avatars.githubusercontent.com/u/1330321?v=4',
-        isHost: false,
-        name: 'Woo',
-        ready: true
-      },
-      isOpen: true
-    },
-    {
-      player: null,
-      isOpen: true
-    }
-  ]);
-  
-  public playerCount = computed(() => this.slots().filter(p => p.player !== null).length);
-
-  public maxPlayers = computed(() => {
-    return this.slots().filter(p => p.isOpen == true).length
-  });
+  public readonly selectedMap = toSignal(
+    this._lobbyRepository.selectMapData()
+  )
 
   public canStart = computed(() => {
-    return this.slots().filter(p => p.player !== null && p.player.ready == true).length == this.playerCount();
+    const users = this.selectUsers();
+    const map = this.selectedMap()
+    if(!users || !map) return false;
+    return users.length > 1;
   })
 
+ 
+
   public toggleIsOpen(index: number) {
-    this.slots.update((old) => {
-      old[index].isOpen =!old[index].isOpen;
-      return [...old];
-    });
+    
+  }
+
+  public startGame() {
+    this.gameStarted.set(true);
   }
 }

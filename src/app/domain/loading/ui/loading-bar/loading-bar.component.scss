@@ -1,0 +1,13 @@
+@use 'colors' as color;
+:host {
+  background-color: color.$secondary-yellow;
+  @apply p-[2px] rounded-full;
+}
+
+.inner {
+  transition: 0.4s linear;  
+  transition-property: width;
+  @apply rounded-full;
+  background: linear-gradient(color.$tertiary-yellow, transparent),
+  repeating-linear-gradient(135deg, color.$primary-yellow 0 0.6em, color.$tertiary-yellow 0 1.2em);
+}

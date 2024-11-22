@@ -1,18 +1,38 @@
-<app-block 
+<div 
     (click)="updateGameMode('road')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
-    class="background border-4 border-solid flex items-center justify-center relative w-24 cursor-pointer transition ease-in-out hover:scale-95  ">
-    <img src="assets/buildings/road.png" />
-</app-block>
-<app-block 
+    [ngClass]="{ ' !bg-slate-300': activeMode() == 'road' && activateRoad(), 'brightness-50 pointer-events-none': !activateRoad() }"
+    class="cursor-pointer bg-slate-400 rounded hover:bg-slate-300 transition-colors flex flex-row items-center gap-2 p-1">
+    <img src="assets/buildings/road.png" class="w-14 h-14 block" />
+    <h3 class="text-2xl text-slate-700">Road</h3>
+    <div class="ml-auto flex gap-1">
+        <app-resource-card [resourceType]="'wood'"  />
+        <app-resource-card [resourceType]="'bricks'"  />
+    </div>
+</div>
+<div 
     (click)="updateGameMode('town')"
-    [ngClass]="{' border-cyan-400': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
-    class="background border-4 border-solid border-cyan-100 flex items-center justify-center relative w-24 brightness-50 cursor-pointer transition ease-in-out hover:scale-95">
-    <img src="assets/buildings/town.png" />
-</app-block>
-<app-block 
+    [ngClass]="{' !bg-slate-300': activeMode() == 'town' && activateTown(), 'brightness-50 pointer-events-none': !activateTown() }"
+    class="cursor-pointer bg-slate-400 rounded hover:bg-slate-300 transition-colors flex flex-row items-center gap-2 p-1"
+    >
+    <img src="assets/buildings/town.png" class="w-14 h-14 block" />
+    <h3 class="text-2xl text-slate-700">Town</h3>
+    <div class="ml-auto flex gap-1">
+        <app-resource-card [resourceType]="'wood'" />
+        <app-resource-card [resourceType]="'bricks'" />
+        <app-resource-card [resourceType]="'straw'" />
+        <app-resource-card [resourceType]="'wool'" />
+
+    </div>
+</div>
+<div 
     (click)="updateGameMode('city')"
-    [ngClass]="{ ' border-cyan-400': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
-    class="background border-4 border-solid border-cyan-100 flex items-center justify-center relative w-24 overflow-hidden brightness-50 cursor-pointer transition ease-in-out hover:scale-95">
-    <img src="assets/buildings/city.png" />
-</app-block>
+    [ngClass]="{ ' !bg-slate-300': activeMode() == 'city' && activateCity(), 'brightness-50 pointer-events-none': !activateCity() }"
+    class="cursor-pointer bg-slate-400 rounded hover:bg-slate-300 transition-colors flex flex-row items-center gap-2 p-1"
+>
+    <img src="assets/buildings/city.png" class="w-14 h-14 block" />
+    <h3 class="text-2xl text-slate-700">City</h3>
+    <div class="ml-auto flex gap-1">
+        <app-resource-card [resourceType]="'straw'" [count]="2" />
+        <app-resource-card [resourceType]="'stone'" [count]="3" />
+    </div>
+</div>

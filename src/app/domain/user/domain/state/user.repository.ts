@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createStore, withProps } from '@ngneat/elf';
 import { map } from 'rxjs';
-import { User } from '../../../player/domain/classes/player';
+import { User } from '../models/user.model';
 
 const userStore = createStore(
     { name: 'user' },

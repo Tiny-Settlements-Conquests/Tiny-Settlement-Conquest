@@ -1,7 +1,7 @@
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Player } from "../../../player/domain/classes/player";
 import { Point } from "../../../primitives/classes/Point";
-import { Building, BuildingTyp } from "../models/building.model";
+import { Building } from "../models/building.model";
 
 export class GraphBuildingNode extends GraphNode {
   public constructor(
@@ -24,6 +24,10 @@ export class GraphBuildingNode extends GraphNode {
 
   public get building(): Building | null {
     return this._building;
+  }
+
+  removeBuilding() {
+    this._building = null;
   }
 
   public tryBuild(building: Building) {

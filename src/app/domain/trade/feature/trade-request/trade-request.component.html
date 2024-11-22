@@ -1,0 +1,54 @@
+<div class="flex flex-row gap-4 items-center">
+    @let offer = tradeOffer();
+    <img [src]="offer.player.profileUrl" class="w-12 h-12 rounded-full" [matTooltip]="offer.player.name" />
+    
+    <div class="flex gap-2">
+        @for (player of roundPlayersWithoutHost(); track $index) {
+            <div class="relative w-fit" [matTooltip]="player.name">
+                <img [src]="player.profileUrl" class="w-12 h-12 rounded-full" />
+                <fa-icon class="text-slate-200 absolute bottom-0 right-0 bg-green-600 rounded-full p-1 text-xs" [icon]="getStatusIcon(player)" />
+            </div>
+        }
+    </div>
+    
+    @let meId = me().id;
+    @if(offer.player.id !== meId && !offer.playerResponses[meId]) {
+        <button 
+            class="flex items-center justify-center h-8 w-8 bg-green-500 p-2 rounded text-slate-200 transition-colors hover:bg-green-400"
+            (click)="acceptTrade()"
+            matTooltip="Accept Trade"
+        >
+            <fa-icon 
+                [icon]="icons.add" 
+            />
+        </button>
+        <button
+            matTooltip="Deny Trade"
+            class="flex items-center justify-center h-8 w-8 bg-red-500 p-2 rounded text-slate-200 transition-colors hover:bg-red-400"
+            (click)="denyTrade()"
+        >
+            <fa-icon [icon]="icons.close" />
+        </button>
+    }
+
+</div>
+
+<div class="flex flex-row justify-between">
+    <div class="flex gap-2 items-center" matTooltip="the following resources will be added to your inventory">
+        <fa-icon [icon]="icons.down" class="text-green-400 text-2xl" />
+        @for (item of requestedResources(); track $index) {
+            <app-action-card-stack [count]="item.count" [mode]="item.card.cardMode">
+                <img [src]="item.card.imageUrl" class="absolute w-10 h-8" />
+            </app-action-card-stack>
+        }
+    </div>
+    <div class="flex gap-2 items-center" matTooltip="the following resources will be removed from your inventory">
+        <fa-icon [icon]="icons.up" class="text-red-400 text-2xl" />
+        @for (item of offeredResources(); track $index) {
+            <app-action-card-stack [count]="item.count" [mode]="item.card.cardMode">
+                <img [src]="item.card.imageUrl" class="absolute w-10 h-8" />
+            </app-action-card-stack>
+        }
+    </div>
+
+</div>

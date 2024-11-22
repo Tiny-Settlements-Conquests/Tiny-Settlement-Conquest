@@ -3,14 +3,10 @@ import { Graph } from "../../../graph/domain/classes/graph";
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 
 export class PlaygroundGraphGenerator {
-
-  constructor() { }
-
   // public generateGraph(fields: Field[]): any {
     public generateGraph(fields: Field[]): Graph {
       // Generate polygon graphs
       const subGraphs = this.generateSubGraphsForFields(fields);
-      console.log(subGraphs);
       
       return this.combineSubgraphs(subGraphs);
   }

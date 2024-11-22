@@ -1,0 +1,11 @@
+@use 'colors' as color;
+
+:host {
+  display: block;
+  @apply w-full flex flex-col gap-4 ;
+}
+
+.slot {
+  @apply relative  h-fit w-full flex  items-center rounded-lg px-4 py-2;
+  background-color: color.$secondary-yellow;
+}

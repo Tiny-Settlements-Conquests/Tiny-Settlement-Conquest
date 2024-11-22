@@ -1,0 +1,7 @@
+@use 'colors' as color;
+
+:host {
+  @apply px-3 py-6 gap-4 rounded flex flex-col w-[500px];
+  background-color: color.$primary-yellow;
+  color: color.$tertiary-yellow;
+}

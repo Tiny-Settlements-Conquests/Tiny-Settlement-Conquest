@@ -1,0 +1,17 @@
+:host {
+  @apply flex relative items-center justify-center;
+}
+
+svg {
+  stroke: #38bdf8;
+}
+
+.color {
+  stroke: #475569;
+}
+
+.circle {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 4;
+}

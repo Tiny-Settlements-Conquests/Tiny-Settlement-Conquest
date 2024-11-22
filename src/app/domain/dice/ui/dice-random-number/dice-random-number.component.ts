@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, HostBinding, Input, computed, outpu
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faDiceFive, faDiceFour, faDiceOne, faDiceSix, faDiceThree, faDiceTwo } from '@fortawesome/free-solid-svg-icons';
 import { finalize, interval, take } from 'rxjs';
-import { rollDice, rollDices } from '../../domain/functions/roll-dice.function';
+import { rollDice } from '../../domain/functions/roll-dice.function';
 import { Dices } from '../../domain/models/dice.model';
 
 @Component({

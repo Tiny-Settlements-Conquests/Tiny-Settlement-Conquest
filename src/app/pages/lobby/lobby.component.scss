@@ -1,5 +1,30 @@
+$primary-yellow: #FFE5A9;
+$secondary-yellow: #ecc568;
+$tertiary-yellow: #a77e20;
+// todo import from color map
+
 :host {
-  display: flex;
-  flex-direction: column;
-  @apply p-3 gap-8;
+  @apply relative flex justify-center;
+}
+
+.host {
+  @apply p-3 gap-8 rounded flex flex-col h-[720px] w-full;
+  background-color: $primary-yellow;
+  color: $tertiary-yellow;
+}
+
+
+.floatResource {
+  @apply absolute;
+  animation: floatBreath 5s ease-in-out infinite;
+  transform: rotate(var(--initial-rotation, 0deg));
+}
+
+@keyframes floatBreath {
+  0%, 100% {
+    transform: translateY(0) scale(1) rotate(calc(var(--initial-rotation, 0deg) + 0deg));
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1) rotate(calc(var(--initial-rotation, 0deg) + 5deg));
+  }
 }

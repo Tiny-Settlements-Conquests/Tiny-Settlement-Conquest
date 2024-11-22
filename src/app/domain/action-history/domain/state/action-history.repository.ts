@@ -15,7 +15,7 @@ const actionHistoryStore = createStore(
 })
 export class ActionHistoryRepository {
 
-    public selectActions() {
+    public selectAllActions() {
         return actionHistoryStore.pipe(
             selectAllEntities()
         )

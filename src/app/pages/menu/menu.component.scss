@@ -1,0 +1,57 @@
+:host {
+  @apply h-screen flex items-center justify-center w-full;
+}
+
+h3 {
+  height:72px;
+  width:400px;
+  text-shadow: 1px 1px 2px black;
+  @apply cursor-pointer shadow-md hover:brightness-75 shadow-black flex items-center justify-center text-2xl rounded-md tracking-widest uppercase text-slate-100;
+}
+
+.wood-bg {
+  background-image: url('/assets/menu/wood.png');
+}
+
+.straw-bg {
+  background-image: url('/assets/menu/straw.png');
+}
+
+.stone-bg {
+  background-image: url('/assets/menu/stone.png');
+}
+
+.bricks-bg {
+  background-image: url('/assets/menu/bricks.png');
+}
+
+.coming-soon {
+  @apply relative overflow-hidden pointer-events-none;
+}
+
+.coming-soon::before {
+  padding-top:50px;
+  content:'';
+  @apply bg-blue-500 right-0 -top-12 w-16 h-[132px] absolute  -rotate-45;
+}
+
+.coming-soon::after {
+  font-size:10px;
+  @apply uppercase absolute rotate-45 right-0 ;
+
+  content: 'coming soon';
+  @apply overflow-visible
+}
+
+.cloud {
+  animation: moveCloud var(--animation-duration) linear infinite;
+}
+
+@keyframes moveCloud {
+  0% {
+      transform: translateX(100vw);
+  }
+  100% {
+      transform: translateX(-100vw); /* Bewegung über den gesamten Bildschirm */
+  }
+}

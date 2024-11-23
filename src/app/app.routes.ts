@@ -5,11 +5,15 @@ export const routes: Routes = [
     {
         pathMatch: 'full',
         path: '',
-        redirectTo: 'lobby'
+        redirectTo: 'menu'
     },
     { 
-        path: '',  loadComponent : () => import('./domain/layouts/ui/default-layout/').then(m => m.DefaultLayoutComponent),
+        path: '',  loadComponent : () => import('./domain/layouts/ui/parallax-layout/').then(m => m.ParallaxLayoutComponent),
         children: [
+            {
+                path: 'menu',
+                loadComponent : () => import('./pages/menu/').then(m => m.MenuComponent),
+            },
             { 
                 path: 'lobby', 
                 loadComponent : () => import('./pages/lobby/').then(m => m.LobbyComponent),

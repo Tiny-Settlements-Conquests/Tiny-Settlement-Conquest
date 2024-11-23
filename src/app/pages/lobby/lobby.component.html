@@ -1,22 +1,22 @@
 
 <img class="w-24 h-24 -left-[100px] -top-8 floatResource" src="assets/resources/wheat.png" />
-<img class="w-32 h-32 -right-[200px] -top-[150px] floatResource" style="--initial-rotation: 75deg;" src="assets/resources/wheat.png" />
+<img class="w-32 h-32 -right-[200px] -top-[50px] floatResource" style="--initial-rotation: 75deg;" src="assets/resources/wheat.png" />
 <img class="w-16 h-16 -right-[100px] bottom-[150px] floatResource" style="--initial-rotation: 45deg;" src="assets/resources/wheat.png" />
 
 @let map = selectedMap();
 @if(gameStarted() === false) {
     <div class="host">
         <div class="flex gap-4 items-center">
-            <app-back-arrow routerLink="/home" class="bg-secondary-yellow" />
+            <app-back-arrow routerLink="/menu" class="bg-secondary-yellow" />
             <app-title class=" !text-4xl">
                 Start a new game
             </app-title>
         </div>
-        <div class="flex flex-row gap-4">
+        <div class="flex flex-row gap-10">
             <div class="flex flex-row gap-2 flex-1" >
                 <app-lobby-player-cards />
             </div>
-            <div class="w-96 flex flex-col gap-2">
+            <div class="w-96 flex flex-col gap-4">
                 <app-title class="bg-secondary-yellow rounded">
                     Map: 
                     @if(map) {

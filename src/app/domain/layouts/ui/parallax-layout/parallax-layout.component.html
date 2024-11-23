@@ -1,0 +1,11 @@
+<div class="absolute flex flex-row justify-center items-center h-full w-screen z-[99]">
+    <div class="max-w-[1200px] w-[1000px]">
+        <router-outlet/>
+    </div>
+</div>
+<app-parallax [mouseEvent]="mouseEvent()" />
+<app-cloud-spawner class="w-full absolute h-[300px] top-0" />
+<span class="absolute bottom-0 left-0 p-2 text-white z-[60]">Version {{versionToken}} </span>
+<a class="cursor-pointer absolute bottom-2 right-2 z-[100]" href="https://github.com/Tiny-Settlements-Conquests/Tiny-Settlement-Conquest">
+    <img class="w-8 h-8" src="assets/github.png" alt="Github logo"/>
+</a>

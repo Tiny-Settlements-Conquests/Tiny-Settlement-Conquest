@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+.cloud {
+  animation: moveCloud var(--animation-duration) linear infinite;
+}
+
+@keyframes moveCloud {
+  0% {
+      transform: translateX(100vw);
+  }
+  100% {
+      transform: translateX(-100vw); /* Bewegung über den gesamten Bildschirm */
+  }
+}

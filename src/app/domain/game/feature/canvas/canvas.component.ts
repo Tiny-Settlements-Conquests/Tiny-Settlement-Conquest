@@ -12,7 +12,7 @@ import { ResourceFieldRendererService } from '../../../resources/domain/classes/
 import { Viewport } from '../../../viewport/classes/viewport';
 import { Game } from '../../domain/classes/game';
 import { GameModeRepository } from '../../domain/state/game-mode.repository';
-import { DEV_TOKEN } from '../../../../app.config';
+import { DEV_TOKEN } from '../../../../utils/tokens/dev.token';
 
 @Component({
   selector: 'app-canvas',

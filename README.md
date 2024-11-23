@@ -1,8 +1,8 @@
 # Tiny Settlement Conquests
 Tiny Settlement Conquests is an exciting project that brings the beloved world of Catan to life in a new dimension. As a clone of the classic game Catan, we aim to provide a unique gaming experience that captures the charm and challenges of the original while also creating new opportunities for players.
 
-<img width="1272" alt="Tiny Settlement Conquests Menu" src="https://github.com/user-attachments/assets/378b5d2e-d736-44ed-86fe-b8e35ea07ee9">
-<img width="1475" alt="Bildschirmfoto 2024-11-23 um 21 21 31" src="https://github.com/user-attachments/assets/a6409548-5903-4a0b-85ac-650f3814130e">
+<img width="1728" alt="Bildschirmfoto 2024-11-24 um 00 03 57" src="https://github.com/user-attachments/assets/9418a8b0-d91f-4ef1-abcf-8de4a16089f0">
+<img width="1415" alt="Bildschirmfoto 2024-11-24 um 00 26 10" src="https://github.com/user-attachments/assets/fd3d1f9f-05b3-4654-b3ad-912ccd098d56">
 
 ![image](https://github.com/user-attachments/assets/cb82af36-371a-4c81-a9fe-a7849d1b3b37)
 

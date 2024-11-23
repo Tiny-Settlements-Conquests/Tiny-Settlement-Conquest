@@ -18,7 +18,7 @@ export class AppComponent {
   ngOnInit() {
     this._userRepository.setUser({
       name: 'Player',
-      profileUrl: 'assets/robot_3.png',
+      profileUrl: 'assets/avatars/robot_3.png',
       id: '2',
     })
   }

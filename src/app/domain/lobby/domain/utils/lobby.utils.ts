@@ -2,12 +2,12 @@ import { LobbyUser } from "../models/lobby.model";
 
 export function generateRandomLobbyRobot(): LobbyUser {
     const profileUrls = [
-         'assets/robot_3.png',
-         'assets/robot.png',
-         'assets/robot_2.png'
+         'assets/avatars/robot_3.png',
+         'assets/avatars/robot.png',
+         'assets/avatars/robot_2.png'
     ];
     const randomNames = [
-        'Andy', 'Mika', 'Robin', 'Bob', 'Tim'
+        'Andy', 'Mika', 'Robin', 'Bob', 'Tim', 'Andrew'
     ];
 
     return {

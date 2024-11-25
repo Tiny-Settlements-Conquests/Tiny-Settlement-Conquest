@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostBinding, HostListener, input, output } from '@angular/core';
 
-type colors = 'yellow' | 'red';
+export type colors = 'yellow' | 'red' | 'brown';
 
 @Component({
   selector: 'app-button',

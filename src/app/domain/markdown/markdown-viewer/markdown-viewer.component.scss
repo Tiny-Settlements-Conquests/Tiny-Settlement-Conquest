@@ -1,0 +1,28 @@
+:host {
+  @apply block h-full overflow-y-scroll;
+}
+
+.markdown {
+  &::ng-deep {
+    h1 { 
+      @apply block mb-6 text-2xl;
+    }
+
+    h2 {
+      @apply block mb-4 text-2xl;
+    }
+    h3 {
+      @apply block mb-2 text-xl;
+    }
+
+    img {
+      @apply mb-4
+    }
+
+    ul,
+    b,
+    p {
+      @apply text-xs block mb-2;
+    }
+  }
+}

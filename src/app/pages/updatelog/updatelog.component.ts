@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { DomSanitizer } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { marked } from 'marked';
 import { BackArrowComponent } from '../../domain/layouts/ui/back-arrow/back-arrow.component';
 import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
+import { TreeComponent } from '../../domain/tree/tree/tree.component';
 import { UpdatelogLoaderService } from '../../domain/updatelog/domain/services/updatelog-loader.service';
 import { extractHeadings } from '../../domain/updatelog/domain/utils/heading-parser.utils';
-import { TreeComponent } from '../../domain/tree/tree/tree.component';
+import { MarkdownViewerComponent } from '../../domain/markdown/markdown-viewer/markdown-viewer.component';
 
 @Component({
   selector: 'app-updatelog',
@@ -16,7 +16,8 @@ import { TreeComponent } from '../../domain/tree/tree/tree.component';
     BackArrowComponent,
     TitleComponent,
     RouterLink,
-    TreeComponent
+    TreeComponent,
+    MarkdownViewerComponent
   ],
   templateUrl: './updatelog.component.html',
   styleUrl: './updatelog.component.scss',
@@ -24,7 +25,6 @@ import { TreeComponent } from '../../domain/tree/tree/tree.component';
 })
 export class UpdatelogComponent { 
   private readonly _updateLogLoader = inject(UpdatelogLoaderService);
-  private readonly _sanitizer = inject(DomSanitizer);
   
   private readonly markdownContentRaw = toSignal(
     this._updateLogLoader.loadMarkdown('assets/updates/update.md')
@@ -33,7 +33,8 @@ export class UpdatelogComponent {
   public readonly markdownContent = computed(() => {
     const raw = this.markdownContentRaw();
     if(raw === undefined) return '';
-    return marked(raw);
+    console.log(marked.lexer(raw))
+    return <string>marked(raw);
   });
 
   public readonly headings = computed(() => {

@@ -7,5 +7,10 @@
 .host {
   @apply p-3 gap-8 rounded flex flex-col h-[720px] w-full;
   background-color: rgba(255, 233, 208, 0.90);
-  color: color.$tertiary-yellow;
+  color: color.$tertiary-brown;
+}
+
+.divider {
+  border-left-width: 1px;
+  border-color: color.$secondary-brown;
 }

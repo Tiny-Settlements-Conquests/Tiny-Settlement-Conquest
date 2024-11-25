@@ -1,12 +1,13 @@
 <div class="host">
     <div class="flex gap-4 items-center">
-        <app-back-arrow routerLink="/menu" class="bg-secondary-yellow" />
+        <app-back-arrow routerLink="/menu" class="bg-secondary-brown" color="brown" />
         <app-title class="!text-4xl">
             Updatelog
         </app-title>
     </div>
-    <div class="flex gap-4">
-        <app-tree class="w-[200px]" [nodes]="headings()" />
-        <div [innerHTML]="markdownContent()" class="flex-grow"></div>
+    <div class="flex gap-4 flex-grow overflow-hidden">
+        <app-tree class="w-[250px] flex-grow flex-shrink-0" [nodes]="headings()" />
+        <div class="divider"></div>
+        <app-markdown-viewer [markdownContent]="markdownContent()" class="flex-grow flex-shrink thin-scrollbar" />
     </div>
 </div>

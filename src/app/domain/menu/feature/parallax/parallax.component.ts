@@ -17,7 +17,7 @@ export class ParallaxComponent {
 
   private hostRef = inject(ElementRef);
   private readonly defaultLeft = -8;
-  private readonly defaultBottom = -2;
+  private readonly defaultBottom = -3;
   private readonly mountainsParallax = 900;
   private readonly forestParallax = 400;
   private readonly grasslandParallax = 200;

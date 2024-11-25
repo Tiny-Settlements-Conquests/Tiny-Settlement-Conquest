@@ -1,9 +1,10 @@
+import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { CloudSpawnerComponent } from '../../../menu/feature/cloud-spawner/cloud-spawner.component';
+import { RouterOutlet } from '@angular/router';
 import { VERSION_TOKEN } from '../../../../utils/tokens/version.token';
+import { CloudSpawnerComponent } from '../../../menu/feature/cloud-spawner/cloud-spawner.component';
 import { ParallaxComponent } from '../../../menu/feature/parallax/parallax.component';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { CreditsComponent } from '../../../credits/credits/credits.component';
 
 @Component({
   selector: 'app-parallax-layout',
@@ -12,6 +13,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     RouterOutlet,
     CloudSpawnerComponent,
     ParallaxComponent,
+    CreditsComponent
   ],
   templateUrl: './parallax-layout.component.html',
   styleUrl: './parallax-layout.component.scss',
@@ -19,6 +21,7 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 })
 export class ParallaxLayoutComponent {
   public readonly versionToken = inject(VERSION_TOKEN);
+  private readonly _location = inject(Location)
 
   public mouseEvent = signal<MouseEvent | null>(null);
 
@@ -27,4 +30,12 @@ export class ParallaxLayoutComponent {
     this.mouseEvent.set(event);
   }
 
+  public isMainMenu = signal(false);
+
+  ngOnInit() {
+    this.isMainMenu.set(this._location.path().includes('menu'));
+    this._location.onUrlChange((url) => {
+      this.isMainMenu.set(url.includes('menu'));
+    })
+  }
 }

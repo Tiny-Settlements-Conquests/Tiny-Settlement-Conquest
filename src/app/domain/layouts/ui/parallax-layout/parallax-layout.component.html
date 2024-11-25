@@ -5,7 +5,10 @@
 </div>
 <app-parallax [mouseEvent]="mouseEvent()" />
 <app-cloud-spawner class="w-full absolute h-[300px] top-0" />
-<span class="absolute bottom-0 left-0 p-2 text-white z-[60]">Version {{versionToken}} </span>
-<a class="cursor-pointer absolute bottom-2 right-2 z-[100]" href="https://github.com/Tiny-Settlements-Conquests/Tiny-Settlement-Conquest">
+<a class="fadeIn cursor-pointer flex items-center flex-col absolute bottom-2 right-2 z-[100]" href="https://github.com/Tiny-Settlements-Conquests/Tiny-Settlement-Conquest">
     <img class="w-8 h-8" src="assets/github.png" alt="Github logo"/>
+    <span class="text-white shadow-text z-[60]">Version {{versionToken}} </span>
 </a>
+@if(isMainMenu()) {
+    <app-credits class="absolute bottom-2 left-2 z-[100] fadeIn" />
+}

@@ -12,6 +12,7 @@ export class BrickResourceField extends Resource implements ResourceField {
   ) { 
     super();
     this.resourceImage.src = "/assets/resources/brick.png";
+    this.resourceBackgroundImage.src = "/assets/terrain/bricks.png";
   }
 
 }

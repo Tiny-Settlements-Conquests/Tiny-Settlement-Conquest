@@ -1,0 +1,12 @@
+<div class="host">
+    <div class="flex gap-4 items-center">
+        <app-back-arrow routerLink="/menu" class="bg-secondary-yellow" />
+        <app-title class="!text-4xl">
+            Updatelog
+        </app-title>
+    </div>
+    <div class="flex gap-4">
+        <app-tree class="w-[200px]" [nodes]="headings()" />
+        <div [innerHTML]="markdownContent()" class="flex-grow"></div>
+    </div>
+</div>

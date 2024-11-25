@@ -21,6 +21,10 @@ export const routes: Routes = [
             {
                 path: 'map-selection', 
                 loadComponent : () => import('./pages/map-selection/').then(m => m.MapSelectionComponent)
+            }, 
+            {
+                path: 'updatelog',
+                loadComponent : () => import('./pages/updatelog/').then(m => m.UpdatelogComponent)
             }
         ]
     },

@@ -1,7 +1,4 @@
-$primary-yellow: #FFE5A9;
-$secondary-yellow: #ecc568;
-$tertiary-yellow: #a77e20;
-// todo import from color map
+@use 'colors' as color;
 
 :host {
   @apply relative flex justify-center;
@@ -10,7 +7,7 @@ $tertiary-yellow: #a77e20;
 .host {
   @apply p-3 gap-8 rounded flex flex-col h-[720px] w-full;
   background-color: rgba(255, 229, 169,0.90);
-  color: $tertiary-yellow;
+  color: color.$tertiary-yellow;
 }
 
 

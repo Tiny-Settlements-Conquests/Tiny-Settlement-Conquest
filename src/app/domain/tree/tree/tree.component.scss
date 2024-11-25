@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+li {
+  @apply mt-2;
+}
+
+.h1 {
+  @apply text-2xl;
+}
+
+.h2 {
+  @apply text-2xl ml-4;
+}
+
+.h3 {
+  @apply text-xl ml-8;
+}
+
+.h4 {
+  @apply text-xl ml-12;
+}

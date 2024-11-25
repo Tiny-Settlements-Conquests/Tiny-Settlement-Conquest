@@ -12,6 +12,7 @@ import { RoundCountdownEffects } from './domain/round/domain/state/countdown/rou
 import { TradeEffects } from './domain/trade/domain/state/trade.effects';
 import { provideDevToken } from './utils/tokens/dev.token';
 import { provideVersionToken } from './utils/tokens/version.token';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -48,7 +49,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideGateway(), provideAnimationsAsync(),
     provideDevToken(),
-    provideVersionToken()
+    provideVersionToken(),
+    provideHttpClient(withInterceptorsFromDi())
   ]
 };
 

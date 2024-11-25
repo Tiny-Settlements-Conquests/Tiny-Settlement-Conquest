@@ -16,6 +16,16 @@
     }
   }
 
+  &.brown {
+    background-color: color.$secondary-brown;
+    color: color.$primary-brown;
+    &:hover {
+      background-color: color.$primary-brown;
+      color: color.$secondary-brown;
+    }
+  }
+
+
   &.yellow {
     background-color: color.$secondary-yellow;
     color: color.$tertiary-yellow;

@@ -6,7 +6,7 @@ import { UserRepository } from './domain/user/domain/state/user.repository';
   selector: 'app-root',
   standalone: true,
   imports: [
-    RouterOutlet, 
+    RouterOutlet,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

@@ -1,6 +1,6 @@
 <div class="grow-1 flex gap-2 items-center">
     @if(isPlayerTrade()) {
-        <img class="w-12 h-12 mx-3" src="/assets/robot.png" />
+        <img class="w-12 h-12 mx-3" src="/assets/avatars/robot.png" />
     } @else {
         <img class="w-12 h-12 mx-3" src="/assets/buildings/bank.png" />
     }
@@ -33,7 +33,7 @@
     </div>
 </div>
 <div class="flex items-center">
-    <img class="rounded-full mx-4 w-12 h-12 border-1" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO2F0VxhmZzAFM54PA95eDdtkEtHlZDga9ew&usqp=CAU" />
+    <img class="rounded-full mx-4 w-12 h-12 border-1" src="/assets/avatars/robot.png" />
     @for (item of resources(); track $index) {
         <app-action-card-stack class="cursor-pointer" [mode]="item.mode" [count]="item.amount" (click)="_tradeOfferService.addOfferedResource(item.card.typ)">
             <img [src]="item.card.imageUrl" class="absolute w-10 h-8" />

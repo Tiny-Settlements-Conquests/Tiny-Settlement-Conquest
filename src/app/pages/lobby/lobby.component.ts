@@ -31,7 +31,7 @@ export interface Player {
     LobbyPlayerCardsComponent,
     BackArrowComponent,
     ButtonComponent,
-    GameLoaderComponent
+    GameLoaderComponent,
   ],
   templateUrl: './lobby.component.html',
   styleUrl: './lobby.component.scss',

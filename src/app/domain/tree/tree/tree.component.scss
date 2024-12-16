@@ -1,5 +1,5 @@
 :host {
-  display: block;
+  @apply block;
 }
 
 li {
@@ -7,11 +7,11 @@ li {
 }
 
 .h1 {
-  @apply text-2xl;
+  @apply text-xl font-bold;
 }
 
 .h2 {
-  @apply text-2xl ml-4;
+  @apply text-xl ml-4;
 }
 
 .h3 {

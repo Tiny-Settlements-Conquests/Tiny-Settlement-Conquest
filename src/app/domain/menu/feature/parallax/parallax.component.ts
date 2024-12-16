@@ -55,7 +55,7 @@ export class ParallaxComponent {
     this.applyParallaxVertical(
       isTopOfCenter,
       mousePosDiffVertical / 900,
-      this.defaultBottom + 16,
+      this.defaultBottom + 14,
       forestRef,
     )
     

@@ -16,7 +16,7 @@ export class PlaygroundRenderService {
 
   public render(playground: Playground) {
     const resources = playground.resourceFields;
-    const fields = playground.gridField
+    const fields = playground.fields
     fields.forEach((field) => {
       this.renderFieldOrResource(field, resources);
     });

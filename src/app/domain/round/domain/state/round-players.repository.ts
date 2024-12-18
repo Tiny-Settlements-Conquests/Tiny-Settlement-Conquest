@@ -22,6 +22,7 @@ export class RoundPlayerRepository {
     roundPlayerStore.update(setEntities(roundPlayers));
   }
 
+  //todo build a proper effect for this fn
   public setWinningPointsForPlayer(points: number, playerId: RoundPlayer['id']) {
     roundPlayerStore.update(updateEntities(playerId, ((entity) => ({
           ...entity,

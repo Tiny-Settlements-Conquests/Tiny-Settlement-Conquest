@@ -1,7 +1,6 @@
-
 import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
 import { Player } from "../../../player/domain/classes/player";
-import { ResourceType, Resources } from "../../../resources/domain/models/resources.model";
+import { Resources } from "../../../resources/domain/models/resources.model";
 import { transferResourcesBetween } from "../../../resources/domain/utils/resource.utils";
 import { PlaceableType } from "../models/building.model";
 

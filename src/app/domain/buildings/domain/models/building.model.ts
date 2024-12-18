@@ -1,10 +1,12 @@
 import { GraphNode } from "../../../graph/domain/classes/graph-node";
 import { Player } from "../../../player/domain/classes/player";
 
-/**
- * @deprecated replace by BuildingTyp
- */
-export type BuildingTyp = 'town' | 'city';
+export type BuildingEvents = 'buildBuilding' | 'buildRoad';
+
+export type BuildingEventsParamsMap = {
+    'buildBuilding': GraphNode,
+    'buildRoad': {from: GraphNode, to:GraphNode}
+}
 
 export enum BuildingType {
     TOWN = 'town',
@@ -34,6 +36,3 @@ export interface PathBuilding extends Buildable {
     graphNodeA: GraphNode;
     graphNodeB: GraphNode
 }
-
-
-

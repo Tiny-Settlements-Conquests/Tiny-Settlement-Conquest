@@ -36,7 +36,10 @@ export const routes: Routes = [
                 canActivate: [GameMapGuardService],
             },
         ],
-        
     },
+    {
+        path: '**',
+        redirectTo: 'menu'
+    }
     
 ];

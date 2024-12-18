@@ -5,19 +5,20 @@ export function preloadImageItems(items: PreloadImageItem[]): Observable<Preload
     const totalItems = items.length;
     let lastItem: null | PreloadImageItem = null
 
+    console.log("E!", totalItems)
     return from(items).pipe(
       concatMap((item) => 
         loadImage(item).pipe(
           delay(125),
         )
       ),
+      tap((c) => console.log(c)),
       tap((item) => lastItem = item),
       scan((loadedCount) => loadedCount + 1, 0), // Zählt die geladenen Bilder
       map((progress) => ({
         progress: Math.floor((progress / totalItems) * 100),
         lastLoadedItem: lastItem
       })), // Fortschritt und zuletzt geladenes Bild berechnen
-      catchError(() => [{ progress: 100, lastLoadedItem: null }]) // Setzt den Fortschritt auf 100% im Falle eines Fehlers
     );
 }
 
@@ -27,8 +28,8 @@ function loadImage(item: PreloadImageItem): Observable<PreloadImageItem> {
         img.src = item.url;
 
         img.onload = () => {
-        observer.next(item);
-        observer.complete();
+          observer.next(item);
+          observer.complete();
         };
 
         img.onerror = () => {

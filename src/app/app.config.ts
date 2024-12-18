@@ -7,12 +7,12 @@ import { Actions, provideEffects, provideEffectsManager } from '@ngneat/effects-
 import { devTools } from '@ngneat/elf-devtools';
 import { routes } from './app.routes';
 import { ActionHistoryEffects } from './domain/action-history/domain/state/action-history.effects';
-import { provideGateway } from './domain/gateway/domain/providers/gateway.provider';
 import { RoundCountdownEffects } from './domain/round/domain/state/countdown/round-countdown.effects';
 import { TradeEffects } from './domain/trade/domain/state/trade.effects';
 import { provideDevToken } from './utils/tokens/dev.token';
 import { provideVersionToken } from './utils/tokens/version.token';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { EventQueueEffects } from './domain/response-queue/domain/state/event-queue.effects';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -44,10 +44,11 @@ export const appConfig: ApplicationConfig = {
     provideEffects(
       RoundCountdownEffects, 
       ActionHistoryEffects,
-      TradeEffects
+      TradeEffects,
+      EventQueueEffects
     ),
     provideAnimations(),
-    provideGateway(), provideAnimationsAsync(),
+    provideAnimationsAsync(),
     provideDevToken(),
     provideVersionToken(),
     provideHttpClient(withInterceptorsFromDi())

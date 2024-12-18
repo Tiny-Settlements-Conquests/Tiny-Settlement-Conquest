@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, ViewChild } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { dispatch } from '@ngneat/effects';
+import { DEV_TOKEN } from '../../../../utils/tokens/dev.token';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
 import { GraphNode } from '../../../graph/domain/classes/graph-node';
+import { Playground } from '../../../playground/domain/classes/playground';
 import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
 import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
 import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
 import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
+import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
 import { Viewport } from '../../../viewport/classes/viewport';
-import { Game } from '../../domain/classes/game';
 import { GameModeRepository } from '../../domain/state/game-mode.repository';
-import { DEV_TOKEN } from '../../../../utils/tokens/dev.token';
 
 @Component({
   selector: 'app-canvas',
@@ -26,8 +28,7 @@ import { DEV_TOKEN } from '../../../../utils/tokens/dev.token';
 })
 export class CanvasComponent implements AfterViewInit {
   private readonly _gameModeRepository = inject(GameModeRepository);
-  private readonly _devMode = inject(DEV_TOKEN)
-
+  private readonly _devMode = inject(DEV_TOKEN);
   private readonly _gameMode = toSignal(
     this._gameModeRepository.selectMode()
   )
@@ -43,8 +44,7 @@ export class CanvasComponent implements AfterViewInit {
   canvasWrapper: ElementRef<HTMLDivElement> | undefined ;
 
 
-  @Input({ 'required' : true })
-  public game !: Game
+  public playground = input.required<Playground>()
 
 
   public viewport !: Viewport;
@@ -81,10 +81,11 @@ export class CanvasComponent implements AfterViewInit {
   }
 
   public animate() {
+    const playground = this.playground();
     this.viewport.reset();
-    this.renderer.render(this.game!.playground);
+    this.renderer.render(playground);
     if(this._devMode) {
-      this.renderer.renderDebugInformation(this.game!.playground)
+      this.renderer.renderDebugInformation(playground)
     }
     requestAnimationFrame(this.animate.bind(this));
   }
@@ -97,6 +98,7 @@ export class CanvasComponent implements AfterViewInit {
   @HostListener('mousedown', ['$event'])
   public mouseDown(event: MouseEvent) {
     const gameMode = this._gameMode();
+    const playground = this.playground();
       // middle mouse or left mouse
     if(event.button !== 0 && event.button !== 1) return;
     this.viewport.handleMiddleMouseDown(event);
@@ -105,7 +107,7 @@ export class CanvasComponent implements AfterViewInit {
     const rect = this.canvas?.nativeElement.getBoundingClientRect()
     if(!rect) return;
     const point = this.viewport.getMouse(event);
-    const nearbyGraphNode = this.game.playground.getNearestGraphNode(point);
+    const nearbyGraphNode = playground.getNearestGraphNode(point);
     if(!nearbyGraphNode) {
       this.lastClickedNode = null;
       return;
@@ -114,8 +116,13 @@ export class CanvasComponent implements AfterViewInit {
       let lastClickedNode = this.lastClickedNode
       const sourceNode = nearbyGraphNode;
       if(sourceNode && lastClickedNode){
-        //todo das ist nicht gut, später über das gateway abbilden!
-        this.game.tryBuildRoadBetweenGraphNodes(sourceNode, lastClickedNode)
+        dispatch(EventQueueActions.publish({
+          eventType: 'buildRoad',
+          data: {
+            from: sourceNode,
+            to: lastClickedNode
+          }
+        }))
         this.lastClickedNode = null;
       } else {
         //todo das ist nicht gut, später über das gateway abbilden!
@@ -123,7 +130,10 @@ export class CanvasComponent implements AfterViewInit {
       }
     }
     //todo das ist nicht gut, später über das gateway abbilden!
-    this.game!.tryBuildBuildingOnGraphNode(nearbyGraphNode)
+    dispatch(EventQueueActions.publish({
+      eventType: 'buildBuilding',
+      data: nearbyGraphNode
+    }))
 
   }
 

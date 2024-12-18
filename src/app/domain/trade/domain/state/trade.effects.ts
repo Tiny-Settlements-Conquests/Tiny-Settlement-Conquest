@@ -1,17 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { createEffect, ofType } from '@ngneat/effects';
+import { createEffect, dispatch, ofType } from '@ngneat/effects';
 import { tap } from 'rxjs';
-import { TradeRepository } from './trade.repository';
+import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
+import { TradeState, TradeType } from '../models/trade.model';
 import { TradeActions } from './trade.actions';
-import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
-import { TradeType } from '../models/trade.model';
+import { TradeRepository } from './trade.repository';
 
 @Injectable({
     providedIn: 'root'
 })
 export class TradeEffects {
     private readonly _tradeRepository = inject(TradeRepository);
-    private readonly _gateway = inject(GATEWAY_TOKEN);
 
     public addTrade = createEffect((actions) =>
         actions.pipe(
@@ -40,8 +39,12 @@ export class TradeEffects {
         actions.pipe(
             ofType(TradeActions.acceptTrade),
             tap((trade) => {
-                //todo umbauen 
-                this._gateway.publish('trade-offer-accept', trade)
+                dispatch(
+                    EventQueueActions.publish({
+                        eventType: 'trade-offer-accept', 
+                        data: trade,
+                    })
+                )
                 this._tradeRepository.addPlayerResponse(trade)
             })
         )
@@ -51,7 +54,16 @@ export class TradeEffects {
         actions.pipe(
             ofType(TradeActions.denyTrade),
             tap((trade) => {
-                this._gateway.publish('trade-offer-deny', trade)
+                const tradeEvent = {
+                    state: TradeState.Declined,
+                    tradeId: trade.tradeId,
+                }
+                dispatch(
+                    EventQueueActions.publish({
+                        eventType: 'trade-offer-deny', 
+                        data: tradeEvent,
+                    })
+                )
                 this._tradeRepository.addPlayerResponse(trade)
             })
         )

@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { combineLatest, filter, map, Observable, startWith, switchMap } from 'rxjs';
-import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
 import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
 import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
 import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
@@ -10,6 +9,9 @@ import { RoundPlayerRepository } from '../../../round/domain/state/round-players
 import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
+import { EventQueueRepository } from '../../../response-queue/domain/state/event-queue.repository';
+import { dispatch } from '@ngneat/effects';
+import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
 
 @Injectable({
   providedIn: 'any'
@@ -18,7 +20,7 @@ export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
   private readonly _inventoryRepository = inject(InventoryRepository);
   private readonly _playerRepository = inject(RoundPlayerRepository); 
-  private readonly _eventQueue = inject(GATEWAY_TOKEN);
+  private readonly _eventQueue = inject(EventQueueRepository);
 
   public readonly offerForm = this._fb.group({
     isPlayerTrade: this._fb.control<boolean>(true),
@@ -152,11 +154,16 @@ export class TradeOfferService {
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
     if(!me || !offeredResources || !requestedResources) return;
-    this._eventQueue.publish('trade-offer-open', {
-      typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
-      player: me,
-      offeredResources: offeredResources.resources,
-      requestedResources: requestedResources.resources,
-    })
+    dispatch(
+      EventQueueActions.publish({
+        eventType: 'trade-offer-open',
+        data: {
+          typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
+          player: me,
+          offeredResources: offeredResources.resources,
+          requestedResources: requestedResources.resources,
+        }
+      })
+    )
   }
 }

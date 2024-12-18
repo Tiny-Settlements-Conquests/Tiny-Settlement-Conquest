@@ -1,7 +1,8 @@
 @let mySelf = me();
+@let playgroundRef = playground();
 <app-game-information-bar />
-@if(game !== undefined) {
-    <app-canvas class="m-3" [game]="game" />
+@if(playgroundRef !== undefined) {
+    <app-canvas class="m-3" [playground]="playgroundRef" />
 }
 <div class="absolute flex flex-col top-[130px] right-4 flex gap-2 w-[400px]">
     

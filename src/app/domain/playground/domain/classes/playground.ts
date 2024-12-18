@@ -50,7 +50,7 @@ export class Playground {
     }
   }
 
-  public get gridField(): Field[] {
+  public get fields(): Field[] {
     return this._grid;
   }
 

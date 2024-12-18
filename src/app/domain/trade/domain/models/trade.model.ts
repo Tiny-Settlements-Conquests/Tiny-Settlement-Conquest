@@ -1,6 +1,14 @@
 import { Resources } from "../../../resources/domain/models/resources.model";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 
+export type TradeEvents = 'trade-offer-open' | 'trade-offer-accept' | 'trade-offer-deny'
+
+export type TradeEventsParamsMap = {
+  'trade-offer-open': TradeRequest,
+  'trade-offer-accept': TradeResponse,
+  'trade-offer-deny': TradeCancel,
+}
+
 export enum TradeState {
   Open,
   Accepted,
@@ -12,7 +20,6 @@ export enum TradeType {
   Player,
 }
 
-type id  =  string;
 interface TradeInformation {
   id: string;
   player: RoundPlayer;

@@ -38,15 +38,12 @@ export class TradeMenuComponent implements OnInit{
     close: faXmark
   }
 
-  //todo outsource in service
   public resources = toSignal(this._tradeOfferService.selectMyInventoryResources)
 
-  //todo outsource in service
   public requestedResources = toSignal(
     this._tradeOfferService.selectRequestedResources
   )
 
-  //todo outsource in service
   public offeredResources = toSignal(
     this._tradeOfferService.selectOfferedResources
   )

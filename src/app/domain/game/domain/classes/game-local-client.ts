@@ -1,49 +1,19 @@
-import { ComponentRef, DestroyRef, ViewContainerRef } from "@angular/core";
+import { ComponentRef } from "@angular/core";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { dispatch } from '@ngneat/effects';
 import { Subject, delay, filter, map, merge, switchMap, take, takeUntil } from "rxjs";
 import { ActionHistoryActions } from "../../../action-history/domain/state/action-history.actions";
-import { ActionHistoryRepository } from "../../../action-history/domain/state/action-history.repository";
-import { BankRepository } from "../../../bank/domain/state/bank.repository";
 import { MediumBot } from "../../../bot/domain/classes/medium-bot";
-import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
-import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
-import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
-import { BuildingFactory } from "../../../buildings/domain/factories/building.factory";
-import { GraphBuildingNode } from "../../../buildings/domain/graph/graph-building-node";
-import { BuildingType } from "../../../buildings/domain/models/building.model";
-import { DiceRoller } from "../../../dice/domain/classes/dice-roller";
-import { DiceRepository } from "../../../dice/domain/state/dice.repository";
 import { DiceOverlayComponent } from "../../../dice/ui/dice-overlay/dice-overlay.component";
-import { Graph } from "../../../graph/domain/classes/graph";
-import { ResourceInventory } from "../../../inventory/domain/classes/resource-inventory";
-import { WinningpointsInventory } from "../../../inventory/domain/classes/winningpoints-inventory";
-import { InventoryRepository } from "../../../inventory/domain/state/inventory.repository";
-import { LobbyUser } from "../../../lobby/domain/models/lobby.model";
-import { MapInformation } from "../../../map-selection/domain/models/map-selection.model";
-import { Player } from "../../../player/domain/classes/player";
-import { Playground } from "../../../playground/domain/classes/playground";
-import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 import { resourceTypeToResourceCard, resourcesToResourceCards } from "../../../resources/domain/function/resource-type.function";
-import { ResponseQueueRepository } from "../../../response-queue/domain/state/response-queue.repository";
-import { RobberManager } from "../../../robber/domain/classes/robber-manager";
-import { Round } from "../../../round/domain/classes/round";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
-import { RoundPlayerRepository } from "../../../round/domain/state/round-players.repository";
-import { usersToPlayers } from "../../../round/domain/utils/user-to-player.utils";
-import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { TradeActions } from "../../../trade/domain/state/trade.actions";
-import { TradeRepository } from "../../../trade/domain/state/trade.repository";
-import { UserRepository } from "../../../user/domain/state/user.repository";
-import { GameModeRepository } from "../state/game-mode.repository";
-import { loadPlayground } from "../utils/game-loader.utils";
+import { GameClientDependencies } from "../models/game-client.model";
 import { Game } from "./game";
-import { TradeType } from "../../../trade/domain/models/trade.model";
+import { GameClient } from "./game-client.abstract";
 
-export class GameLocalClient {
-  private _game: Game
-
+export class GameLocalClient extends GameClient {
   public get game() {
     return this._game;
   }
@@ -52,93 +22,85 @@ export class GameLocalClient {
   private _diceOverlayOpen = new Subject();
 
   //todo define an interface instead
-  constructor(
-    private readonly _users: LobbyUser[],
-    private _mapInformation: MapInformation,
-    private _gameComponentRef: ViewContainerRef,
-    private _bankRepository: BankRepository,
-    private _inventoryRepository: InventoryRepository,
-    private _roundPlayerRepository: RoundPlayerRepository,
-    private _userRepository: UserRepository,
-    private _gameModeRepository: GameModeRepository,
-    private _diceRepository: DiceRepository,
-    private _actionHistoryRepository: ActionHistoryRepository,
-    private _tradeRepository: TradeRepository,
-    private _responseQueueRepository: ResponseQueueRepository,
-    private _destroyRef: DestroyRef,
-  ) { 
-    //TODO umbenennen in event Queue
-    this._responseQueueRepository.selectLatestResponse().subscribe((t) => {
+  constructor(deps: GameClientDependencies, private readonly _game: Game) {
+    super(deps)
+    //todo das später noch besser machen mit event streams
+    this._eventQueueRepository.selectLatestResponse().subscribe((t) => {
       if(t && t.type == 'trade-offer-open') {
         this.game.getTradeManager().startTrade(t.data);
       } else if(t?.type === 'trade-offer-accept') {
         this.game.getTradeManager().respondToTrade(t.data)
       } else if(t?.type === 'trade-offer-deny') {
         this.game.getTradeManager().respondToTrade(t.data)
+      } else if(t?.type === 'buildBuilding') {
+        this.game.tryBuildBuildingOnGraphNode(t.data);
+      } else if(t?.type === 'buildRoad') {
+        this.game.tryBuildRoadBetweenGraphNodes(t.data.from, t.data.to);
+      } else if(t?.type === 'nextRound') {
+        this.game.nextRound();
       }
     })
     
-    this._game = this.generateGame();
-//!!remove me later
-this._game.selectPlayers().subscribe(roundPlayers => {
-  //todo build a mapper
-  const roundplayers = roundPlayers.map((p): RoundPlayer => ({
-    color: p.color,
-    id: p.id,
-    isBot: p.roundPlayer.isBot,
-    name: p.name,
-    profileUrl: p.profileUrl,
-    researchCardCount: p.researchCardCount,
-    winningPoints: p.winningPointsAmount,
-    resourceCardCount: p.resourceCardCount
-  }))
-  this._roundPlayerRepository.setRoundPlayers(roundplayers);
-});
-//this is locally only 
-dispatch(
-  TradeActions.addTrade({
-    id: '2352',
-    offeredResources: {
-      bricks: 6
-    },
-    playerResponses: {},
-    player: this._roundPlayerRepository.getRoundPlayers()[0],
-    requestedResources: {
-      wood: 1
-    },
-    typ: TradeType.Player
-  }),
-  TradeActions.addTrade({
-    id: '5342',
-    offeredResources: {
-      bricks: 2
-    },
-    playerResponses: {},
-    player: this._roundPlayerRepository.getRoundPlayers()[1],
-    requestedResources: {
-      wood: 1
-    },
-    typ: TradeType.Player
-  })
-)
-this.game.selectPlayersWinningPoints().subscribe(({amount, player}) => {
-  this._roundPlayerRepository.setWinningPointsForPlayer(amount, player.id);
-})
+    //!!remove me later
+    this._game.selectPlayers().subscribe(roundPlayers => {
+      //todo build a mapper
+      const roundplayers = roundPlayers.map((p): RoundPlayer => ({
+        color: p.color,
+        id: p.id,
+        isBot: p.roundPlayer.isBot,
+        name: p.name,
+        profileUrl: p.profileUrl,
+        researchCardCount: p.researchCardCount,
+        winningPoints: p.winningPointsAmount,
+        resourceCardCount: p.resourceCardCount
+      }))
+      this._roundPlayerRepository.setRoundPlayers(roundplayers);
+    });
+    //this is locally only 
+    // dispatch(
+    //   TradeActions.addTrade({
+    //     id: '2352',
+    //     offeredResources: {
+    //       bricks: 6
+    //     },
+    //     playerResponses: {},
+    //     player: this._roundPlayerRepository.getRoundPlayers()[0],
+    //     requestedResources: {
+    //       wood: 1
+    //     },
+    //     typ: TradeType.Player
+    //   }),
+    //   TradeActions.addTrade({
+    //     id: '5342',
+    //     offeredResources: {
+    //       bricks: 2
+    //     },
+    //     playerResponses: {},
+    //     player: this._roundPlayerRepository.getRoundPlayers()[1],
+    //     requestedResources: {
+    //       wood: 1
+    //     },
+    //     typ: TradeType.Player
+    //   })
+    // )
+    this.game.selectPlayersWinningPoints().subscribe(({amount, player}) => {
+      this._roundPlayerRepository.setWinningPointsForPlayer(amount, player.id);
+    })
 
-this._tradeRepository.selectAllTrades().subscribe(trades => {
-  //todo fix me later 
-  // const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
-  // if(!player) return;
-  // this.game.tradeTest().startTrade({
-  //   ...trades[0],
-  //   player,
-  // })
-})
-//!!
+    this._tradeRepository.selectAllTrades().subscribe(trades => {
+      //todo fix me later 
+      // const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
+      // if(!player) return;
+      // this.game.tradeTest().startTrade({
+      //   ...trades[0],
+      //   player,
+      // })
+    })
+    //!!
     this.syncTrades();
     this.syncStates();
     this.simulateGame();
-    this.syncDices();
+    // this.syncDices();
     this._userRepository.selectUser().pipe(
       map((me) => {
         if(me) {
@@ -229,7 +191,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 
     this.game.selectUserInventoryUpdate().pipe(
     ).subscribe((inventory) => {
-      //todo replace by ngneat action
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
         dispatch(
           ActionHistoryActions.addAction({
@@ -302,103 +263,6 @@ this._tradeRepository.selectAllTrades().subscribe(trades => {
 		this.game.mode = mode;
 	})
 }
-
-  private generateGame(): Game {
-    const playground = loadPlayground(this._mapInformation);
-    const round = this.generateRound(usersToPlayers(this._users));
-    const buildingGraph = playground.buildingGraph;
-    const bankInventory = new ResourceInventory({
-      straw: 50,
-      stone: 50,
-      wool: 50,
-      bricks: 50,
-      wood: 50
-    })
-    const buildCostManager = new BuildCostManager(bankInventory);
-    this.mockBuildings(round.players, playground);
-    const buildingFactory = new BuildingFactory();
-    const diceRoller = new DiceRoller();
-    const buildingBuildManager = new BuildingBuildManager(
-      buildingGraph,
-      playground.graph,
-      buildCostManager,
-      buildingFactory
-    );
-    const resourceDistributor = new ResourceDistributor(playground, buildingBuildManager, bankInventory);
-    const game = new Game(
-      {
-        bank: bankInventory,
-        buildingBuildManager,
-        roadBuildManager: new RoadBuildManager(
-          buildingGraph,
-          buildCostManager,
-        ),
-        playground,
-        round,
-        buildCostManager,
-        diceRoller,
-        resourceDistributor,
-        robberManager: new RobberManager(playground),
-        tradeManager: new TradeManager(bankInventory, round)
-      }
-    );
-
-    //TODO FIX ROBTEST
-    // const field = game.playground.gridField.find((f) => (f.polygon.points.find((p) => game.playground.buildingGraph.getNodeByPoint(p))? f : false))
-    // console.log("FIELD", field);
-    // if(field) {
-    //   game.robTest(round.players[0], field)
-    // } 
-
-    // setTimeout(() => {
-    //   trade.cancelTrade("1")
-    // }, 3000)
-
-    
-	  return game;
-  }
-
-  private generateRound(roundPlayers: RoundPlayer[]) {
-    const players: Player[] = roundPlayers.map((p, i) => {
-      return new Player(
-        p,
-        new ResourceInventory({
-          wood: 10,
-          bricks: 10,
-          stone: 10,
-          straw: 10,
-          wool: 10
-        }), 
-        new WinningpointsInventory({
-          points: 0
-        }),
-        new Graph()
-      )
-    });
-
-    return new Round(players);
-  }
-
-  private mockBuildings(players: Player[], playground: Playground) {
-    const buildingFactory = new BuildingFactory();
-
-    for(let i = 0; i < players.length * 2; i++) {
-      try {
-        const activePlayer = players[i % players.length];
-        const randomLocation = playground.graph.nodes[parseInt("" + Math.random() * playground.graph.nodes.length)];
-        playground.buildingGraph.tryAddNode(new GraphBuildingNode(randomLocation.id,randomLocation.position , activePlayer));
-        const buildingNode = playground.buildingGraph.getNodeById(randomLocation.id);
-        buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, activePlayer, buildingNode));
-        activePlayer.winningPointsInventory.setInventory({
-          points: activePlayer.winningPointsAmount + 1,
-        })
-      } catch(e) {}
-    }
-    const loc = playground.graph.nodes[32]
-    playground.buildingGraph.tryAddNode(new GraphBuildingNode("32",loc.position , players[1]));
-    const buildingNode = playground.buildingGraph.getNodeById("32");
-    buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, players[1], buildingNode))
-  }
 
   private openDiceOverlay() {
     this._diceOverlayOpen.next(true);

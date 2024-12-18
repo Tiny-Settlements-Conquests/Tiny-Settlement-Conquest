@@ -6,7 +6,6 @@ import { RoundPlayer } from '../../domain/models/round-player.model';
 import { PlayerWinningPointsComponent } from '../player-winning-points/player-winning-points.component';
 
 
-//todo checken ob das überhaupt sinn ergibt, eig. nicht -> ist ja schon als round-player-card implementiert
 @Component({
   selector: 'app-player-card',
   standalone: true,

@@ -95,6 +95,15 @@ export class CanvasComponent implements AfterViewInit {
     canvas.height = canvasWrapper.clientHeight - 50;
   }
 
+  @HostListener('window:resize')
+  onResize() {
+    const canvas = this.canvas?.nativeElement;
+    const canvasWrapper = this.canvasWrapper?.nativeElement;
+    if (canvas && canvasWrapper) {
+      this.determineCanvasSize(canvasWrapper, canvas);
+    }
+  }
+
   @HostListener('mousedown', ['$event'])
   public mouseDown(event: MouseEvent) {
     const gameMode = this._gameMode();

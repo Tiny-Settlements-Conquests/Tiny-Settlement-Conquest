@@ -15,7 +15,7 @@ export class GameMapGuardService implements CanActivate {
   canActivate(): Observable<GuardResult> {
     return this._lobbyRepository.selectMapData().pipe(
       map((map) => map !== null),
-      map(() => !ENVIRONMENT.prod),
+      map((hasAccess) =>  hasAccess || !ENVIRONMENT.prod),
       tap((hasAccess) => !hasAccess ? this._router.navigate(['/lobby']) : '')
     )
   }

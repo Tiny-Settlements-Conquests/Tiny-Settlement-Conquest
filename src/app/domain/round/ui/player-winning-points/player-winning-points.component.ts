@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { CircleProgressComponent } from '../../../circle-progress/circle-progress/circle-progress.component';
+import { CircleProgressComponent } from '../../../circle-progress/circle-progress.component';
 
 @Component({
   imports: [

@@ -6,7 +6,6 @@ import { ActionHistoryActions } from "../../../action-history/domain/state/actio
 import { MediumBot } from "../../../bot/domain/classes/medium-bot";
 import { DiceOverlayComponent } from "../../../dice/ui/dice-overlay/dice-overlay.component";
 import { resourceTypeToResourceCard, resourcesToResourceCards } from "../../../resources/domain/function/resource-type.function";
-import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 import { RoundCountdownActions } from "../../../round/domain/state/countdown/round-countdown.actions";
 import { TradeActions } from "../../../trade/domain/state/trade.actions";
 import { GameClientDependencies } from "../models/game-client.model";
@@ -24,38 +23,8 @@ export class GameLocalClient extends GameClient {
   //todo define an interface instead
   constructor(deps: GameClientDependencies, private readonly _game: Game) {
     super(deps)
-    //todo das später noch besser machen mit event streams
-    this._eventQueueRepository.selectLatestResponse().subscribe((t) => {
-      if(t && t.type == 'trade-offer-open') {
-        this.game.getTradeManager().startTrade(t.data);
-      } else if(t?.type === 'trade-offer-accept') {
-        this.game.getTradeManager().respondToTrade(t.data)
-      } else if(t?.type === 'trade-offer-deny') {
-        this.game.getTradeManager().respondToTrade(t.data)
-      } else if(t?.type === 'buildBuilding') {
-        this.game.tryBuildBuildingOnGraphNode(t.data);
-      } else if(t?.type === 'buildRoad') {
-        this.game.tryBuildRoadBetweenGraphNodes(t.data.from, t.data.to);
-      } else if(t?.type === 'nextRound') {
-        this.game.nextRound();
-      }
-    })
-    
     //!!remove me later
-    this._game.selectPlayers().subscribe(roundPlayers => {
-      //todo build a mapper
-      const roundplayers = roundPlayers.map((p): RoundPlayer => ({
-        color: p.color,
-        id: p.id,
-        isBot: p.roundPlayer.isBot,
-        name: p.name,
-        profileUrl: p.profileUrl,
-        researchCardCount: p.researchCardCount,
-        winningPoints: p.winningPointsAmount,
-        resourceCardCount: p.resourceCardCount
-      }))
-      this._roundPlayerRepository.setRoundPlayers(roundplayers);
-    });
+
     //this is locally only 
     // dispatch(
     //   TradeActions.addTrade({
@@ -83,10 +52,7 @@ export class GameLocalClient extends GameClient {
     //     typ: TradeType.Player
     //   })
     // )
-    this.game.selectPlayersWinningPoints().subscribe(({amount, player}) => {
-      this._roundPlayerRepository.setWinningPointsForPlayer(amount, player.id);
-    })
-
+    
     this._tradeRepository.selectAllTrades().subscribe(trades => {
       //todo fix me later 
       // const player = this.game.round.players.find((p) => p.id === trades[0].player.id)
@@ -97,7 +63,7 @@ export class GameLocalClient extends GameClient {
       // })
     })
     //!!
-    this.syncTrades();
+    // this.syncTrades();
     this.syncStates();
     this.simulateGame();
     // this.syncDices();
@@ -118,39 +84,6 @@ export class GameLocalClient extends GameClient {
       })
     ).subscribe(({newAmount, type}) => {
       this._inventoryRepository.updateResourceAmount(type, newAmount);
-    })
-  }
-
-  private syncTrades() {
-    const trade = this.game.getTradeManager();
-    trade.selectTradeOfferStarted.subscribe((trade) => {
-      dispatch(
-        TradeActions.addTrade(trade)
-      )
-    })
-
-    trade.selectTradeResponse.subscribe((data) => console.log("JAJAJAAJJAJA" , data))
-    const tradeEvent = merge(
-      trade.selectTradeCompleted,
-      trade.selectTradeCancel
-    )
-    tradeEvent.pipe(
-      delay(2000)
-    ).subscribe((data) =>{
-      this._tradeRepository.removeTrade(data.tradeId)
-    })
-
-    trade.selectTradeCompleted.subscribe((data)=> {
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'trade',
-          id: Math.random().toString(),
-          player: data.acceptedPlayer,
-          playerB: data.trade.player,
-          givenResources: resourcesToResourceCards(data.trade.requestedResources),
-          receivedResources: resourcesToResourceCards(data.trade.offeredResources),
-        })
-      )
     })
   }
 
@@ -246,9 +179,8 @@ export class GameLocalClient extends GameClient {
     })
 
     this.game.selectActiveRoundPlayer().subscribe((player) => {
-      this._gameModeRepository.updateMode('spectate');
+      this._gameModeRepository.updateMode('spectate');//todo as action!!!!!!!!!!!
       if(player) {
-        this._roundPlayerRepository.updateActiveRoundPlayer(player.id)
         if(player.isBot) {
           new MediumBot().makeMove(this.game, player)
         }

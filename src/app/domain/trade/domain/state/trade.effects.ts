@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { createEffect, dispatch, ofType } from '@ngneat/effects';
 import { tap } from 'rxjs';
-import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
 import { TradeState, TradeType } from '../models/trade.model';
 import { TradeActions } from './trade.actions';
 import { TradeRepository } from './trade.repository';
+import { EventQueueActions } from './../../../event-queues/domain/state/event-queue/event-queue.actions'
 
 @Injectable({
     providedIn: 'root'
@@ -55,6 +55,7 @@ export class TradeEffects {
             ofType(TradeActions.denyTrade),
             tap((trade) => {
                 const tradeEvent = {
+                    ...trade,
                     state: TradeState.Declined,
                     tradeId: trade.tradeId,
                 }

@@ -34,8 +34,8 @@ import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core
         [attr.cy]="center"
         [attr.r]="radius"
         fill="none"
-        [attr.stroke]="backgroundColor()"
-        [attr.stroke-width]="strokeWidth()"
+        [attr.stroke]="dividerColor()"
+        [attr.stroke-width]="strokeWidth() + 1"
         [attr.stroke-dasharray]="dividerDasharray"
         [attr.stroke-dashoffset]="dividerDashoffset"
         style="transform: rotate(-90deg); transform-origin: center center;"
@@ -51,7 +51,8 @@ export class CircleProgressComponent implements OnInit{
   public readonly totalSegments = input(5); // Total number of segments
   public readonly filledSegments = input(2); // Number of filled segments
   public readonly offset = input(0); // Segment offset
-  public readonly backgroundColor = input('#EEEEEE'); // Background circle color
+  public readonly backgroundColor = input('#64748b'); // Background circle color
+  public readonly dividerColor = input('#cbd5e1'); //#64748b
   public readonly segmentColor = input('#38bdf8'); // Color of the filled segments
 
   center!: number;

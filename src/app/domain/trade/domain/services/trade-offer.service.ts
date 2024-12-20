@@ -9,9 +9,9 @@ import { RoundPlayerRepository } from '../../../round/domain/state/round-players
 import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
-import { EventQueueRepository } from '../../../response-queue/domain/state/event-queue.repository';
 import { dispatch } from '@ngneat/effects';
-import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
+import { EventQueueRepository } from '../../../event-queues/domain/state/event-queue/event-queue.repository';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Injectable({
   providedIn: 'any'

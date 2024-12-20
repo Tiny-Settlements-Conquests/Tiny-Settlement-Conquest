@@ -3,12 +3,12 @@ import { ActionHistoryRepository } from "../../../action-history/domain/state/ac
 import { BankRepository } from "../../../bank/domain/state/bank.repository";
 import { DiceRepository } from "../../../dice/domain/state/dice.repository";
 import { InventoryRepository } from "../../../inventory/domain/state/inventory.repository";
-import { EventQueueRepository } from "../../../response-queue/domain/state/event-queue.repository";
 import { RoundPlayerRepository } from "../../../round/domain/state/round-players.repository";
 import { TradeRepository } from "../../../trade/domain/state/trade.repository";
 import { UserRepository } from "../../../user/domain/state/user.repository";
 import { GameClientDependencies } from "../models/game-client.model";
 import { GameModeRepository } from "../state/game-mode.repository";
+import { EventQueueRepository } from "../../../event-queues/domain/state/event-queue/event-queue.repository";
 
 export abstract class GameClient {
     protected _gameComponentRef: ViewContainerRef;

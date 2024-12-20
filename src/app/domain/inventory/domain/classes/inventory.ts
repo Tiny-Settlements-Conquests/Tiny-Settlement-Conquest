@@ -22,7 +22,7 @@ export abstract class Inventory<T extends {[key: string | number]: number}> {
     if(newAmount < 0) throw new Error('Cannot add negative amount to inventory');
 
     this._inventoryUpdate.next({
-      type: key,
+      type: key, // todo rename me to dataType
       amount: value,
       newAmount,
       oldAmount

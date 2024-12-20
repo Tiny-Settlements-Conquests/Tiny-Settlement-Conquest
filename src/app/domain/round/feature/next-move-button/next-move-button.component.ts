@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core'
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faForward } from '@fortawesome/free-solid-svg-icons';
 import { dispatch } from '@ngneat/effects';
-import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Component({
   selector: 'app-next-move-button',

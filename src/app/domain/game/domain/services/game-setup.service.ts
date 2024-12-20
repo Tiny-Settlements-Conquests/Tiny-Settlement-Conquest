@@ -26,6 +26,7 @@ import { MapSelectionService } from '../../../map-selection/domain/services/map-
 import { generateRandomLobbyRobot } from '../../../lobby/domain/utils/lobby.utils';
 import { UserRepository } from '../../../user/domain/state/user.repository';
 import { LobbyRepository } from '../../../lobby/domain/state/repository';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,12 @@ export class GameSetupService {
   private readonly _userRepository = inject(UserRepository);
   private readonly _lobbyRepository = inject(LobbyRepository);
 
+  public readonly _game$ = new BehaviorSubject<Game | null>(null);
   private _game: Game | undefined;
+  public get game(): Game | undefined {
+    return this._game;
+  }
+
 
   public loadGame() {
     if(this.isDevMode) {
@@ -49,6 +55,7 @@ export class GameSetupService {
       const mapInformation = this._lobbyRepository.getMapData();
       if(!mapInformation) throw new Error(`No map information provided`);
       this._game = this.generateGame(mapInformation, users)
+      this._game$.next(this._game);
     }
     return this._game;
   }

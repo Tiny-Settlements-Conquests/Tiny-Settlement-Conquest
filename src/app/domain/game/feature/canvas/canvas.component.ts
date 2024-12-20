@@ -12,9 +12,9 @@ import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/pla
 import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
 import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
-import { EventQueueActions } from '../../../response-queue/domain/state/event-queue.actions';
 import { Viewport } from '../../../viewport/classes/viewport';
 import { GameModeRepository } from '../../domain/state/game-mode.repository';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Component({
   selector: 'app-canvas',

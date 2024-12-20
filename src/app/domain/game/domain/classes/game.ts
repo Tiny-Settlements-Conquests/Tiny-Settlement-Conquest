@@ -201,7 +201,7 @@ export class Game {
           map((update) => ({...update, player: p }))
       )))
   }
-
+  //TODO build a proper return type! and use roundplayer instead of player!
   public selectPlayersWinningPoints()  {
     return merge(
       ...this._round.players.map((p) => p.winningPointsInventory.selectInventoryUpdate().pipe(

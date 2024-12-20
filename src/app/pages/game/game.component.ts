@@ -10,6 +10,9 @@ import { ActionHistoryRepository } from '../../domain/action-history/domain/stat
 import { ActionHistoryComponent } from '../../domain/action-history/feature/action-history/action-history.component';
 import { BankRepository } from '../../domain/bank/domain/state/bank.repository';
 import { DiceRepository } from '../../domain/dice/domain/state/dice.repository';
+import { provideEventGateway } from '../../domain/event-queues/domain/providers/event-gateway.provider';
+import { GAME_EVENT_DISPATCHER, provideGameEventDispatcher } from '../../domain/event-queues/domain/providers/game-event-dispatcher.provider';
+import { EventQueueRepository } from '../../domain/event-queues/domain/state/event-queue/event-queue.repository';
 import { Game } from '../../domain/game/domain/classes/game';
 import { GameLocalClient } from '../../domain/game/domain/classes/game-local-client';
 import { GameSetupService } from '../../domain/game/domain/services/game-setup.service';
@@ -18,8 +21,6 @@ import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.compone
 import { BuildingOptionsInventoryComponent } from '../../domain/info/feature/building-options-inventory/building-options-inventory.component';
 import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
 import { InventoryRepository } from '../../domain/inventory/domain/state/inventory.repository';
-import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
-import { EventQueueRepository } from '../../domain/response-queue/domain/state/event-queue.repository';
 import { RoundPlayerRepository } from '../../domain/round/domain/state/round-players.repository';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
 import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
@@ -27,6 +28,8 @@ import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/tr
 import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/trade-dialog.component';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
+import { ClientService } from '../../domain/game/domain/services/client.service';
+import { GameEventDispatcherService } from '../../domain/event-queues/services/game-event-dispatcher.service';
 
 
 @Component({
@@ -45,6 +48,14 @@ import { UserRepository } from '../../domain/user/domain/state/user.repository';
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    provideEventGateway(),
+    provideGameEventDispatcher(),
+    {
+      provide: ClientService,
+      useClass:ClientService // todo make me a provider
+    }
+  ]
 })
 export class GameComponent { 
   private readonly _gameModeRepository = inject(GameModeRepository);
@@ -58,9 +69,11 @@ export class GameComponent {
   private readonly _actionHistoryRepository = inject(ActionHistoryRepository);
   private readonly _tradeRepository = inject(TradeRepository);
   private readonly _eventQueueRepository = inject(EventQueueRepository);
+  private readonly _clientService = inject(ClientService);
   readonly dialog = inject(MatDialog);
-  private readonly _lobbyRepository = inject(LobbyRepository);
   private readonly _gameSetupService = inject(GameSetupService);
+  public readonly eventDispatcher = inject(GameEventDispatcherService);
+  
   public icons = {
     clock: faClock
   }
@@ -107,6 +120,7 @@ export class GameComponent {
       }, 
       game
     );
-    this._game.set(client.game)
+    this._game.set(client.game);
+    this.eventDispatcher.sync(game)
   }
 }

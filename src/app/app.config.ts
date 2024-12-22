@@ -14,6 +14,7 @@ import { provideVersionToken } from './utils/tokens/version.token';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { EventQueueEffects } from './domain/event-queues/domain/state/event-queue/event-queue.effects';
 import { RoundPlayerEffects } from './domain/round/domain/state/round-player.effects';
+import { BankEffects } from './domain/bank/domain/state/bank.effects';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -47,7 +48,8 @@ export const appConfig: ApplicationConfig = {
       ActionHistoryEffects,
       TradeEffects,
       EventQueueEffects,
-      RoundPlayerEffects
+      RoundPlayerEffects,
+      BankEffects
     ),
     provideAnimations(),
     provideAnimationsAsync(),

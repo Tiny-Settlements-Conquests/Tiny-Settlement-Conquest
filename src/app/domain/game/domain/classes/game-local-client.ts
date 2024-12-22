@@ -65,7 +65,6 @@ export class GameLocalClient extends GameClient {
     //!!
     // this.syncTrades();
     this.syncStates();
-    this.simulateGame();
     // this.syncDices();
     this._userRepository.selectUser().pipe(
       map((me) => {
@@ -118,46 +117,7 @@ export class GameLocalClient extends GameClient {
     // robber.playerRobsAtPosition
   }
 
-  private simulateGame() {
-
-    
-
-    this.game.selectUserInventoryUpdate().pipe(
-    ).subscribe((inventory) => {
-      if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
-        dispatch(
-          ActionHistoryActions.addAction({
-            typ: 'resource',
-            id: Math.random().toString(),
-            player: inventory.player.roundPlayer,
-            receivedResources: [resourceTypeToResourceCard(inventory.type)],
-          })
-        )
-      }
-    })
-  }
-
   private syncStates() {
-    this.game.selectCurrentTimer().subscribe((data) => {
-      dispatch(RoundCountdownActions.setRoundCountdown({
-        countdown: data,
-      }))
-    })
-
-    this.game.selectBuildingUpdate().subscribe((data) => {
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'build',
-          id: Math.random().toString(),
-          player: data.owner.roundPlayer,
-          building: data.type,
-        })
-      )
-    })
-
-    this.game.selectBankInventoryUpdate().subscribe(inventory => {
-      this._bankRepository.updateResourceAmount(inventory.type, inventory.amount);
-    });
 
     this._userRepository.selectUser().pipe(
       map((me) => {

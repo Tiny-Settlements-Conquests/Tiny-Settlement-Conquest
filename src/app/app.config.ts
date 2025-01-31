@@ -15,6 +15,9 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { EventQueueEffects } from './domain/event-queues/domain/state/event-queue/event-queue.effects';
 import { RoundPlayerEffects } from './domain/round/domain/state/round-player.effects';
 import { BankEffects } from './domain/bank/domain/state/bank.effects';
+import { DiceEffects } from './domain/dice/domain/state/dice.effects';
+import { GameModeEffects } from './domain/game/domain/state/game-mode.effects';
+import { InventoryEffects } from './domain/inventory/domain/state/inventory.effects';
 
 export function initElfDevTools(actions: Actions) {
   return () => {
@@ -49,7 +52,10 @@ export const appConfig: ApplicationConfig = {
       TradeEffects,
       EventQueueEffects,
       RoundPlayerEffects,
-      BankEffects
+      BankEffects,
+      DiceEffects,
+      GameModeEffects,
+      InventoryEffects
     ),
     provideAnimations(),
     provideAnimationsAsync(),

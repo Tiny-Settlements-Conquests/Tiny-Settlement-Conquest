@@ -54,7 +54,7 @@ export class Round {
   ) {
     this._playersUpdate.next(this.players);
     this._round.next({
-      activePlayer: this._players[0],
+      activePlayer: this._players[1],
       roundNumber: 0
     })
   }

@@ -6,6 +6,7 @@ import { isTradeOfferAcceptEvent, isTradeOfferDenyEvent, isTradeOfferOpenEvent }
 import { isBuildBuildingEvent, isBuildRoadEvent } from '../../buildings/domain/models/building.model';
 import { isNextRoundEvent } from '../../round/domain/models/round.model';
 import { GameSetupService } from '../../game/domain/services/game-setup.service';
+import { isRollDicesEvent } from '../../dice/domain/models/dice.model';
 
 @Injectable({
   providedIn: 'any'
@@ -26,11 +27,13 @@ export class EventGatewayService extends BaseEventGateway {
     } else if(isTradeOfferDenyEvent(event)) {
       game.getTradeManager().respondToTrade(event.data)
     } else if(isBuildBuildingEvent(event)) {
-      game.tryBuildBuildingOnGraphNode(event.data);
+      game.tryBuildBuildingOnGraphNode(event.data.node, event.data.type);
     } else if(isBuildRoadEvent(event)) {
       game.tryBuildRoadBetweenGraphNodes(event.data.from, event.data.to);
     } else if(isNextRoundEvent(event)) {
       game.nextRound();
+    } else if(isRollDicesEvent(event)) {
+      game.rollDice();
     }
   }
 

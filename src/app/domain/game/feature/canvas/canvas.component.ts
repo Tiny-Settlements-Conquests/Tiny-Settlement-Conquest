@@ -15,6 +15,7 @@ import { ResourceFieldRendererService } from '../../../resources/domain/classes/
 import { Viewport } from '../../../viewport/classes/viewport';
 import { GameModeRepository } from '../../domain/state/game-mode.repository';
 import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
+import { BuildingType } from '../../../buildings/domain/models/building.model';
 
 @Component({
   selector: 'app-canvas',
@@ -137,12 +138,16 @@ export class CanvasComponent implements AfterViewInit {
         //todo das ist nicht gut, später über das gateway abbilden!
         this.lastClickedNode = sourceNode;
       }
+    } else {
+      //todo das ist nicht gut, später über das gateway abbilden!
+      dispatch(EventQueueActions.publish({
+        eventType: 'buildBuilding',
+        data: {
+          node: nearbyGraphNode,
+          type: gameMode == 'city' ? BuildingType.CITY : BuildingType.TOWN
+        },
+      }))
     }
-    //todo das ist nicht gut, später über das gateway abbilden!
-    dispatch(EventQueueActions.publish({
-      eventType: 'buildBuilding',
-      data: nearbyGraphNode
-    }))
 
   }
 

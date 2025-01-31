@@ -20,7 +20,6 @@ export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
   private readonly _inventoryRepository = inject(InventoryRepository);
   private readonly _playerRepository = inject(RoundPlayerRepository); 
-  private readonly _eventQueue = inject(EventQueueRepository);
 
   public readonly offerForm = this._fb.group({
     isPlayerTrade: this._fb.control<boolean>(true),

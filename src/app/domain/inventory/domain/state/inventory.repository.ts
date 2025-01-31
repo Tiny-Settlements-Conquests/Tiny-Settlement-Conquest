@@ -40,10 +40,6 @@ export class InventoryRepository {
     return inventoryStore.query(state => state);
   }
 
-  public setInventory(inventory: Resources) {
-    inventoryStore.update(() => ({...inventory }));
-  }
-
   public updateRelativeResourceAmount(resourceType: ResourceType, amount: number) {
     inventoryStore.update(state => ({ ...state, [resourceType]: state[resourceType] += amount }));
   }

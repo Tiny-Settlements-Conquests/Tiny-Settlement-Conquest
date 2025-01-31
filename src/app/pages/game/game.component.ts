@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, Inject, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   MatDialog
@@ -11,12 +11,14 @@ import { ActionHistoryComponent } from '../../domain/action-history/feature/acti
 import { BankRepository } from '../../domain/bank/domain/state/bank.repository';
 import { DiceRepository } from '../../domain/dice/domain/state/dice.repository';
 import { provideEventGateway } from '../../domain/event-queues/domain/providers/event-gateway.provider';
-import { GAME_EVENT_DISPATCHER, provideGameEventDispatcher } from '../../domain/event-queues/domain/providers/game-event-dispatcher.provider';
+import { provideGameEventDispatcher } from '../../domain/event-queues/domain/providers/game-event-dispatcher.provider';
 import { EventQueueRepository } from '../../domain/event-queues/domain/state/event-queue/event-queue.repository';
+import { GameEventDispatcherService } from '../../domain/event-queues/services/game-event-dispatcher.service';
 import { Game } from '../../domain/game/domain/classes/game';
-import { GameLocalClient } from '../../domain/game/domain/classes/game-local-client';
+import { ClientService } from '../../domain/game/domain/services/client.service';
 import { GameSetupService } from '../../domain/game/domain/services/game-setup.service';
 import { GameModeRepository } from '../../domain/game/domain/state/game-mode.repository';
+import { GAME_COMPONENT_REF_TOKEN } from '../../domain/game/domain/tokens/game-component-ref.token';
 import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
 import { BuildingOptionsInventoryComponent } from '../../domain/info/feature/building-options-inventory/building-options-inventory.component';
 import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
@@ -28,8 +30,10 @@ import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/tr
 import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/trade-dialog.component';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 import { UserRepository } from '../../domain/user/domain/state/user.repository';
-import { ClientService } from '../../domain/game/domain/services/client.service';
-import { GameEventDispatcherService } from '../../domain/event-queues/services/game-event-dispatcher.service';
+import { provideGameComponentRef } from '../../domain/game/domain/providers/game-component-ref.provider';
+import { provideGameModeSpecificServices } from '../../domain/game/domain/providers/game-mode-services.provider';
+import { GAME_MODE_SERVICE_LOADER_TOKEN } from '../../domain/game/domain/tokens/game-mode-service-loader.token';
+import { DiceSyncService } from '../../domain/dice/domain/services/dice-sync.service';
 
 
 @Component({
@@ -51,33 +55,27 @@ import { GameEventDispatcherService } from '../../domain/event-queues/services/g
   providers: [
     provideEventGateway(),
     provideGameEventDispatcher(),
-    {
-      provide: ClientService,
-      useClass:ClientService // todo make me a provider
-    }
+    provideGameComponentRef(),
+    provideGameModeSpecificServices(),
+    ClientService,
+    DiceSyncService
   ]
 })
 export class GameComponent { 
-  private readonly _gameModeRepository = inject(GameModeRepository);
-  private readonly _userRepository = inject(UserRepository);
   private readonly _roundPlayerRepository = inject(RoundPlayerRepository);
-  private readonly _destroyRef = inject(DestroyRef);
-  private readonly _app = inject(AppComponent);
-  private readonly _inventoryRepository = inject(InventoryRepository);
-  private readonly _bankRepository = inject(BankRepository);
-  private readonly _diceRepository = inject(DiceRepository);
-  private readonly _actionHistoryRepository = inject(ActionHistoryRepository);
   private readonly _tradeRepository = inject(TradeRepository);
-  private readonly _eventQueueRepository = inject(EventQueueRepository);
-  private readonly _clientService = inject(ClientService);
+  private readonly _clientService = inject(ClientService);  // do not remove
+  private readonly _gameModeServiceLoader = inject(GAME_MODE_SERVICE_LOADER_TOKEN) // do not remove
   readonly dialog = inject(MatDialog);
   private readonly _gameSetupService = inject(GameSetupService);
   public readonly eventDispatcher = inject(GameEventDispatcherService);
+  private readonly _diceSyncService = inject(DiceSyncService); // do not remove
   
   public icons = {
     clock: faClock
   }
-
+  
+  //todo move to own component
   public readonly isMyTurn = toSignal(
     this._roundPlayerRepository.selectIsMyTurn()
   )
@@ -90,7 +88,7 @@ export class GameComponent {
   public readonly me = toSignal(
     this._roundPlayerRepository.selectMe()
   )
-
+  //todo move to own component
   public readonly selectTradeRequests = toSignal(
     this._tradeRepository.selectAllTrades()
   );
@@ -104,23 +102,8 @@ export class GameComponent {
 
   public ngOnInit() {
     const game = this._gameSetupService.loadGame();
-    
-    const client = new GameLocalClient({
-        gameComponentRef: this._app._ref,
-        bankRepository: this._bankRepository,
-        inventoryRepository: this._inventoryRepository,
-        roundPlayerRepository: this._roundPlayerRepository,
-        userRepository: this._userRepository,
-        gameModeRepository: this._gameModeRepository,
-        diceRepository: this._diceRepository,
-        actionHistoryRepository: this._actionHistoryRepository,
-        tradeRepository: this._tradeRepository,
-        eventQueueRepository: this._eventQueueRepository,
-        destroyRef: this._destroyRef,
-      }, 
-      game
-    );
-    this._game.set(client.game);
+
+    this._game.set(game);
     this.eventDispatcher.sync(game)
   }
 }

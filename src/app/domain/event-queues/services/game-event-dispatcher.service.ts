@@ -1,22 +1,30 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Game } from '../../game/domain/classes/game';
 import { dispatch } from '@ngneat/effects';
 import { RoundPlayerActions } from '../../round/domain/state/round-player.actions';
 import { RoundPlayer } from '../../round/domain/models/round-player.model';
 import { TradeActions } from '../../trade/domain/state/trade.actions';
-import { delay, merge } from 'rxjs';
+import { delay, merge, startWith } from 'rxjs';
 import { ActionHistoryActions } from '../../action-history/domain/state/action-history.actions';
 import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
 import { RoundCountdownActions } from '../../round/domain/state/countdown/round-countdown.actions';
 import { BankActions } from '../../bank/domain/state/bank.actions';
+import { DiceActions } from '../../dice/domain/state/dice.actions';
+import { RoundPlayerRepository } from '../../round/domain/state/round-players.repository';
+import { GameModeActions } from '../../game/domain/state/game-mode.actions';
+import { UserRepository } from '../../user/domain/state/user.repository';
+import { InventoryActions } from '../../inventory/domain/state/inventory.actions';
 
 @Injectable({
   providedIn: 'any'
 })
 export class GameEventDispatcherService {
+  private readonly _roundPlayerRepository = inject(RoundPlayerRepository);
+  private readonly _userRepository = inject(UserRepository);
 
-  //todo in den client implementieren 
-  //game soll später ein interface sein, dass sowohl das game als auch ein websocket client sein kann
+  //todo define an interface instead
+    //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
+    // und einmal mit einem websocket, das ist aber diesem service hier egal, hauptsache es kommen daten an
   public sync(game: Game): void {
     console.log("GAME", game)
     this.syncRoundPlayers(game);
@@ -24,10 +32,13 @@ export class GameEventDispatcherService {
     this.syncActiveRoundPlayer(game);
     this.syncTradeResponses(game);
     this.syncTradeOfferStarted(game);
-    this.syncInventoryUpdate(game);
+    this.syncOwnInventoryUpdate(game);
+    this.syncInventoryHistoryUpdate(game);
     this.syncTimer(game);
     this.syncBuildingUpdates(game);
     this.syncBankInventory(game);
+    this.syncDices(game);
+    this.syncDiceOverlayOpenState(game);
   }
 
   private syncRoundPlayers(game: Game): void {
@@ -60,10 +71,12 @@ export class GameEventDispatcherService {
   private syncActiveRoundPlayer(game: Game): void {
     game.selectActiveRoundPlayer().subscribe((player) => {
       dispatch(
+        GameModeActions.updateMode({mode: 'spectate'}),
         RoundPlayerActions.updateActiveRoundPlayer({playerId: player.id})
       )
     })
   }
+
 
   private syncTradeOfferStarted(game: Game): void {
     const trade = game.getTradeManager();
@@ -102,9 +115,26 @@ export class GameEventDispatcherService {
     })
   }
 
-  private syncInventoryUpdate(game: Game): void {
+  private syncOwnInventoryUpdate(game: Game): void {
+    //todo das ist noch ungünstig gelöst
+    const me = this._userRepository.getUser();
+    if(!me) throw new Error('user has not been loaded');
+    const player = game.round.getPlayerById(me.id);
+    if(!player) throw new Error('player has not been found');
+    dispatch(
+      InventoryActions.setResources({resources:player.resourceInventory.resources})
+    )
+
+    game.selectUserInventoryUpdate().pipe(
+    ).subscribe(({newAmount, type}) => {
+      dispatch(InventoryActions.updateResourceAmount({resourceType: type, amount: newAmount}));
+    })
+  }
+
+  private syncInventoryHistoryUpdate(game: Game): void {
     game.selectUserInventoryUpdate().pipe(
     ).subscribe((inventory) => {
+      console.log("inventory update", inventory) // todo old & new amount hier rauslassen -> could be abused
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
         dispatch(
           ActionHistoryActions.addAction({
@@ -148,5 +178,39 @@ export class GameEventDispatcherService {
         })
       )
     });
+  }
+
+  private syncDiceOverlayOpenState(game: Game): void {
+    game.selectRound().pipe(
+    ).subscribe((d) => {
+      dispatch(
+        DiceActions.resetDices()
+      );
+      //todo build this with userRepo
+      if(this._roundPlayerRepository.getMe() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerRepository.getMe()?.id && !d.activePlayer.roundPlayer.isBot) {
+        dispatch(
+          DiceActions.updateDiceOverlayOpenState({isOpen: true})
+        )
+      }
+    })
+  }
+
+  private syncDices(game: Game): void {
+    game.selectRolledDice().pipe(
+    ).subscribe(({dices, player}) => {
+      if(!player) return;
+      dispatch(
+        ActionHistoryActions.addAction({
+          typ: 'dice',
+          id: Math.random().toString(),
+          player: player.roundPlayer,
+          dice: dices
+        })
+      )
+      console.log("SETD")
+      dispatch(
+        DiceActions.setDices({dices})
+      )
+    })
   }
 }

@@ -6,7 +6,7 @@ import { Player } from "../../../player/domain/classes/player";
 export type BuildingEvents = 'buildBuilding' | 'buildRoad';
 
 export type BuildingEventsParamsMap = {
-    'buildBuilding': GraphNode,
+    'buildBuilding': {node: GraphNode, type: BuildingType},
     'buildRoad': {from: GraphNode, to:GraphNode}
 }
 

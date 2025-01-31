@@ -8,6 +8,7 @@ import { LobbyRepository } from '../../../lobby/domain/state/repository';
 import { MapInformation } from '../../domain/models/map-selection.model';
 import { MapSelectionService } from '../../domain/services/map-selection.service';
 import { MapCardComponent } from '../../ui/map-card/map-card.component';
+import { MapSelectionComponent } from '../../../../pages/map-selection';
 
 @Component({
   selector: 'app-map-card-table',
@@ -26,6 +27,7 @@ export class MapCardTableComponent {
   private readonly _lobbyRepository = inject(LobbyRepository);
   private readonly mapSelectionService = inject(MapSelectionService);
   private readonly _fb = inject(FormBuilder);
+  private readonly mapSelectionComponent = inject(MapSelectionComponent);
 
   public readonly search = this._fb.control('');
 
@@ -44,14 +46,8 @@ export class MapCardTableComponent {
   );
 
   public setSelectedMap(map: MapInformation) {
-    this._lobbyRepository.setMapData(map);
+    this.mapSelectionComponent.selectedMapToPreview.set(map);;
   }
 
- public readonly selectedMapId = toSignal(
-  this._lobbyRepository.selectMapData().pipe(
-    map((map) => map ? map.id : null)
-  )
- )
-
-
+ public readonly selectedMapId = this.mapSelectionComponent.selectedMapToPreview
 }

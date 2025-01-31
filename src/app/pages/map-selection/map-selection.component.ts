@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { BackArrowComponent } from '../../domain/layouts/ui/back-arrow/back-arrow.component';
@@ -9,6 +9,7 @@ import { MapCardTableComponent } from '../../domain/map-selection/feature/map-ca
 import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { DatePipe } from '@angular/common';
+import { MapInformation } from '../../domain/map-selection/domain/models/map-selection.model';
 
 @Component({
   selector: 'app-map-selection',
@@ -18,7 +19,6 @@ import { DatePipe } from '@angular/common';
     FaIconComponent,
     BackArrowComponent,
     RouterLink,
-    MapPreviewComponent,
     FaIconComponent,
     MapCardTableComponent,
     DatePipe
@@ -37,9 +37,15 @@ export class MapSelectionComponent {
     size: faMaximize
   }
 
-  public selectedMap = toSignal(
-    this._lobbyRepository.selectMapData()
-  )
+  public selectedMapToPreview = signal<MapInformation |null>(null)
 
+  public setSelectedMap(){
+    const map = this.selectedMapToPreview();
+    if(!map) return;
+    this._lobbyRepository.setMapData(map)
+  }
 
+  ngOnInit() {
+    this.selectedMapToPreview.set(this._lobbyRepository.getMapData())
+  }
 }

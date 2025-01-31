@@ -10,6 +10,7 @@ import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
 import { GameLoaderComponent } from '../../domain/loading/feature/game-loader/game-loader.component';
 import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
 import { LobbyPlayerCardsComponent } from '../../domain/lobby/feature/lobby-player-cards/lobby-player-cards.component';
+import { MatTooltip } from '@angular/material/tooltip';
 
 
 export interface Player {
@@ -32,6 +33,7 @@ export interface Player {
     BackArrowComponent,
     ButtonComponent,
     GameLoaderComponent,
+    MatTooltip
   ],
   templateUrl: './lobby.component.html',
   styleUrl: './lobby.component.scss',

@@ -51,15 +51,18 @@
             </div>
         </div>
         <div class="flex h-full">
-            <app-button
-                color="yellow"
-                [disabled]="!canStart()"
-                (clickEvent)="startGame()"
-                class="mt-auto ml-auto w-28 !flex items-center justify-center gap-2"
-            >
-                <fa-icon [icon]="icons.play" class="text-2xl " />
-                Start
-            </app-button>
+            <div class="mt-auto ml-auto " [matTooltip]="!canStart() ? 'Please select a map first' : 'Start'">
+                <app-button
+                    color="yellow"
+                    [disabled]="!canStart()"
+                    (clickEvent)="startGame()"
+                    
+                    class="w-28 !flex items-center justify-center gap-2"
+                >
+                    <fa-icon [icon]="icons.play" class="text-2xl " />
+                    Start
+                </app-button>
+            </div>
         </div>
     </div>
 } @else {

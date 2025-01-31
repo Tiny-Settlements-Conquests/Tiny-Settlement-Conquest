@@ -24,7 +24,7 @@ export class DiceSyncService {
     this._diceRepository.selectResetDices().subscribe(() => {
       console.log("RESET.", this._diceRef)
       this._diceRef?.destroy();
-      // dispatch(DiceActions.updateDiceOverlayOpenState({isOpen: false}))
+      dispatch(DiceActions.updateDiceOverlayOpenState({isOpen: false}))
     })
 
     this._diceRepository.selectDices().pipe().subscribe((dices) => {

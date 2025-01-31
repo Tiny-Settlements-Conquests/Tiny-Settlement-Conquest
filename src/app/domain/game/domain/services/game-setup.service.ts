@@ -37,7 +37,6 @@ export class GameSetupService {
   private readonly _userRepository = inject(UserRepository);
   private readonly _lobbyRepository = inject(LobbyRepository);
 
-  public readonly _game$ = new BehaviorSubject<Game | null>(null);
   private _game: Game | undefined;
   public get game(): Game | undefined {
     return this._game;
@@ -45,23 +44,14 @@ export class GameSetupService {
 
 
   public loadGame() {
-    if(this.isDevMode) {
-      const users: LobbyUser[] = [generateRandomLobbyRobot(), {isRobot: false,...this._userRepository.getUser() ?? generateRandomLobbyRobot()}];
-      const mapInformation = this._REMOVEMESOON.getMaps()[0];
-      this.generateGame(mapInformation, users)
-      this._game = this.generateGame(mapInformation, users)
-    } else {
-      const users = this._lobbyRepository.getUsers();
-      const mapInformation = this._lobbyRepository.getMapData();
-      if(!mapInformation) throw new Error(`No map information provided`);
-      this._game = this.generateGame(mapInformation, users)
-      this._game$.next(this._game);
-    }
+    let users: LobbyUser[] = this._lobbyRepository.getUsers();
+    let mapInformation = this._lobbyRepository.getMapData();
+    if(!mapInformation && this.isDevMode) {
+      users = [generateRandomLobbyRobot(), {isRobot: false,...this._userRepository.getUser() ?? generateRandomLobbyRobot()}];
+      mapInformation = this._REMOVEMESOON.getMaps()[0];
+    } else if(!mapInformation) throw new Error(`No map information provided`);
+    this._game = this.generateGame(mapInformation, users)
     return this._game;
-  }
-
-  public getMap(): Playground | undefined {
-    return this._game?.playground;
   }
 
   private generateGame(mapInformation: MapInformation, users: LobbyUser[]): Game {
@@ -103,19 +93,6 @@ export class GameSetupService {
           tradeManager: new TradeManager(bankInventory, round)
         }
       );
-  
-      //TODO FIX ROBTEST
-      // const field = game.playground.gridField.find((f) => (f.polygon.points.find((p) => game.playground.buildingGraph.getNodeByPoint(p))? f : false))
-      // console.log("FIELD", field);
-      // if(field) {
-      //   game.robTest(round.players[0], field)
-      // } 
-  
-      // setTimeout(() => {
-      //   trade.cancelTrade("1")
-      // }, 3000)
-  
-      
       return game;
     }
 

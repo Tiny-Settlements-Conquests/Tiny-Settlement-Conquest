@@ -46,7 +46,7 @@ import { ChangeDetectionStrategy, Component, input, OnInit } from '@angular/core
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CircleProgressComponent implements OnInit{
-  public readonly size = input(62); // Size of the SVG
+  public readonly size = input(64); // Size of the SVG
   public readonly strokeWidth = input(2.5); // Width of the circles
   public readonly totalSegments = input(5); // Total number of segments
   public readonly filledSegments = input(2); // Number of filled segments

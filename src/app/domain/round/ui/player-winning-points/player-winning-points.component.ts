@@ -14,4 +14,5 @@ import { CircleProgressComponent } from '../../../circle-progress/circle-progres
 export class PlayerWinningPointsComponent {
   public readonly totalSegments = input.required<number>(); // Gesamtanzahl der Segmente
   public readonly activeSegments = input.required<number>(); // Anzahl der farbigen Segmente
+  public readonly color = input<string>('#38bdf8'); 
 }

@@ -136,8 +136,8 @@ export class GameSetupService {
         } catch(e) {}
       }
       const loc = playground.graph.nodes[32]
-      playground.buildingGraph.tryAddNode(new GraphBuildingNode("32",loc.position , players[1]));
-      const buildingNode = playground.buildingGraph.getNodeById("32");
+      playground.buildingGraph.tryAddNode(new GraphBuildingNode(loc.id,loc.position , players[1]));
+      const buildingNode = playground.buildingGraph.getNodeById(loc.id);
       buildingNode?.tryBuild(buildingFactory.constructBuilding(BuildingType.TOWN, players[1], buildingNode))
     }
 

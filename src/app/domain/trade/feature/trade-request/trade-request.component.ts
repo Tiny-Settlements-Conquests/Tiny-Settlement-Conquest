@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCheck, faCircleDown, faCircleUp, faClose, faHourglass } from '@fortawesome/free-solid-svg-icons';
 import { dispatch } from '@ngneat/effects';
@@ -8,8 +8,9 @@ import { Resources, ResourceType } from '../../../resources/domain/models/resour
 import { excludeEmptyResources } from '../../../resources/domain/utils/resource.utils';
 import { RoundPlayer } from '../../../round/domain/models/round-player.model';
 import { PlayerTrade } from '../../domain/models/trade.model';
-import { TradeActions } from '../../domain/state/trade.actions';
 import { MatTooltip } from '@angular/material/tooltip';
+import { TradeStore } from '../../domain/state/trade.store';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Component({
     selector: 'app-trade-request',
@@ -33,6 +34,9 @@ export class TradeRequestComponent {
     up: faCircleUp,
     down: faCircleDown,
   }
+
+  private readonly _tradeStore = inject(TradeStore);
+
 
   public readonly roundPlayersWithoutHost = computed(() => {
     const hostId = this.tradeOffer().player.id
@@ -60,22 +64,26 @@ export class TradeRequestComponent {
 
   public acceptTrade() {
     dispatch(
-      TradeActions.acceptTrade({
-        accepted: true,
-        respondedPlayer: this.me(),
-        tradeId: this.tradeOffer().id
+      EventQueueActions.publish({
+          eventType: 'trade-offer-accept', 
+          data: {
+            accepted: true,
+            respondedPlayer: this.me(),
+            tradeId: this.tradeOffer().id
+          },
       })
-    )
+    ) 
   }
 
   public denyTrade() {
-    dispatch(
-      TradeActions.denyTrade({
+    EventQueueActions.publish({
+      eventType: 'trade-offer-deny', 
+      data: {
         accepted: false,
         respondedPlayer: this.me(),
         tradeId: this.tradeOffer().id
-      })
-    )
+      },
+    })
   }
 
   private resourcesToActionCardIterable(resources: Partial<Resources>) {

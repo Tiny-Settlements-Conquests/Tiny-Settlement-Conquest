@@ -3,10 +3,10 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GameMode } from '../../../game/domain/models/game-mode.model';
-import { GameModeRepository } from '../../../game/domain/state/game-mode.repository';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
 import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
 import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
+import { GameModeStore } from '../../../game/domain/state/game-mode.store';
 @Component({
     selector: 'app-buildings-selection',
     imports: [
@@ -19,13 +19,11 @@ import { InventoryStore } from '../../../inventory/domain/state/inventory.store'
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuildingsSelectionComponent {
-  private readonly _gameModeRepository = inject(GameModeRepository);
+  private readonly _gameModeStore= inject(GameModeStore);
   private readonly _inventoryStore = inject(InventoryStore);
   private readonly _roundStore = inject(RoundPlayerStore);
 
-  public activeMode = toSignal(
-    this._gameModeRepository.selectMode()
-  );
+  public activeMode = this._gameModeStore.mode
 
   public inventory = this._inventoryStore.resources
 
@@ -60,9 +58,9 @@ export class BuildingsSelectionComponent {
   public updateGameMode(gameMode: GameMode): void {
     const activeMode = this.activeMode();
     if (activeMode === gameMode) {
-      this._gameModeRepository.updateMode('spectate');
+      this._gameModeStore.setMode('spectate');
     } else {
-      this._gameModeRepository.updateMode(gameMode);
+      this._gameModeStore.setMode(gameMode);
     }
   }
 }

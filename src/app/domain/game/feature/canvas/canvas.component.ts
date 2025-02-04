@@ -13,9 +13,9 @@ import { PlaygroundRenderService } from '../../../playground/domain/renderer/pla
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
 import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
-import { GameModeRepository } from '../../domain/state/game-mode.repository';
 import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 import { BuildingType } from '../../../buildings/domain/models/building.model';
+import { GameModeStore } from '../../domain/state/game-mode.store';
 
 @Component({
     selector: 'app-canvas',
@@ -27,11 +27,9 @@ import { BuildingType } from '../../../buildings/domain/models/building.model';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CanvasComponent implements AfterViewInit {
-  private readonly _gameModeRepository = inject(GameModeRepository);
+  private readonly _gameModeStore = inject(GameModeStore);
   private readonly _devMode = inject(DEV_TOKEN);
-  private readonly _gameMode = toSignal(
-    this._gameModeRepository.selectMode()
-  )
+  private readonly _gameMode = this._gameModeStore.mode
 
   @ViewChild('canvas', {
     static: true,

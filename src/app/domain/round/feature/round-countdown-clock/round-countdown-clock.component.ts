@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TimePipe } from '../../../time/domain/pipes/time.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { RoundCountdownRepository } from '../../domain/state/countdown/round-countdown.repository';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { RoundCountdownStore } from '../../domain/state/countdown/round-countdown.store';
 
 @Component({
     selector: 'app-round-countdown-clock',
@@ -16,10 +16,8 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoundCountdownClockComponent { 
-  private readonly _roundCountdownRepository = inject(RoundCountdownRepository);
-  public readonly countdown = toSignal(
-    this._roundCountdownRepository.selectCountdownMiliseconds()
-  )
+  private readonly _roundCountdownRepository = inject(RoundCountdownStore);
+  public readonly countdown = this._roundCountdownRepository.countdownInMS
 
   public readonly icons = {
     clock: faClock

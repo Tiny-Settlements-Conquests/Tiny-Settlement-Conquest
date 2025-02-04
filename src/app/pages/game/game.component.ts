@@ -20,10 +20,10 @@ import { BuildingOptionsInventoryComponent } from '../../domain/info/feature/bui
 import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
 import { RoundPlayerStore } from '../../domain/round/domain/state/round-player.store';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
-import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
 import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/trade-button.component';
 import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/trade-dialog.component';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
+import { TradeStore } from '../../domain/trade/domain/state/trade.store';
 
 
 @Component({
@@ -52,7 +52,7 @@ import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/
 })
 export class GameComponent { 
   private readonly _roundPlayerStore = inject(RoundPlayerStore);
-  private readonly _tradeRepository = inject(TradeRepository);
+  private readonly _tradeStore = inject(TradeStore);
   private readonly _gameModeServiceLoader = inject(GAME_CLIENT_EDITION_SERVICE_TOKEN) // do not remove
   readonly dialog = inject(MatDialog);
   private readonly _gameSetupService = inject(GameSetupService);
@@ -73,9 +73,7 @@ export class GameComponent {
   public readonly me = this._roundPlayerStore.me;
 
   //todo move to own component
-  public readonly selectTradeRequests = toSignal(
-    this._tradeRepository.selectAllTrades()
-  );
+  public readonly selectTradeRequests = this._tradeStore.entities;
   public readonly roundPlayers = this._roundPlayerStore.entities;
 
   openDialog(): void {

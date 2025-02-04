@@ -2,17 +2,17 @@ import { inject, Injectable } from '@angular/core';
 import { dispatch } from '@ngneat/effects';
 import { delay, merge } from 'rxjs';
 import { ActionHistoryActions } from '../../action-history/domain/state/action-history.actions';
-import { BankActions } from '../../bank/domain/state/bank.actions';
 import { DiceStore } from '../../dice/domain/state/dice.store';
 import { Game } from '../../game/domain/classes/game';
-import { GameModeActions } from '../../game/domain/state/game-mode.actions';
 import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
 import { RoundPlayer } from '../../round/domain/models/round-player.model';
-import { RoundCountdownActions } from '../../round/domain/state/countdown/round-countdown.actions';
 import { RoundPlayerStore } from '../../round/domain/state/round-player.store';
-import { TradeActions } from '../../trade/domain/state/trade.actions';
 import { UserRepository } from '../../user/domain/state/user.repository';
 import { InventoryStore } from '../../inventory/domain/state/inventory.store';
+import { GameModeStore } from '../../game/domain/state/game-mode.store';
+import { BankStore } from '../../bank/domain/state/bank.store';
+import { TradeStore } from '../../trade/domain/state/trade.store';
+import { RoundCountdownStore } from '../../round/domain/state/countdown/round-countdown.store';
 
 @Injectable({
   providedIn: 'any'
@@ -22,6 +22,10 @@ export class GameEventDispatcherService {
   private readonly _userRepository = inject(UserRepository);
   private readonly _diceStore = inject(DiceStore);
   private readonly _inventoryStore = inject(InventoryStore);
+  private readonly _gameModeStore = inject(GameModeStore);
+  private readonly _bankStore = inject(BankStore);
+  private readonly _tradeStore = inject(TradeStore);
+  private readonly _roundCountdownStore = inject(RoundCountdownStore);
 
   //todo define an interface instead
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
@@ -67,10 +71,7 @@ export class GameEventDispatcherService {
 
   private syncActiveRoundPlayer(game: Game): void {
     game.selectActiveRoundPlayer().subscribe((player) => {
-      dispatch(
-        GameModeActions.updateMode({mode: 'spectate'}),
-      );
-      console.log("SET", player.id)
+      this._gameModeStore.setMode('spectate');
       this._roundPlayerStore.setActiveRoundPlayerById(player.id);
     })
   }
@@ -79,9 +80,7 @@ export class GameEventDispatcherService {
   private syncTradeOfferStarted(game: Game): void {
     const trade = game.getTradeManager();
       trade.selectTradeOfferStarted.subscribe((trade) => {
-        dispatch(
-          TradeActions.addTrade(trade)
-        )
+        this._tradeStore.addTrade(trade);
     })
   }
 
@@ -94,9 +93,7 @@ export class GameEventDispatcherService {
     tradeEvent.pipe(
       delay(2000)
     ).subscribe((data) =>{
-      dispatch(
-        TradeActions.removeTrade({id: data.tradeId})
-      )
+      this._tradeStore.removeTrade(data.tradeId);
     })
 
     trade.selectTradeCompleted.subscribe((data)=> {
@@ -145,10 +142,8 @@ export class GameEventDispatcherService {
   }
 
   private syncTimer(game: Game): void {
-    game.selectCurrentTimer().subscribe((data) => {
-      dispatch(RoundCountdownActions.setRoundCountdown({
-        countdown: data,
-      }))
+    game.selectCurrentTimer().subscribe((countdown) => {
+      this._roundCountdownStore.startCountdown(countdown)
     })
   }
 
@@ -167,12 +162,7 @@ export class GameEventDispatcherService {
 
   private syncBankInventory(game: Game): void {
     game.selectBankInventoryUpdate().subscribe(inventory => {
-      dispatch(
-        BankActions.updateResourceAmount({
-          resourceType: inventory.type,
-          amount: inventory.amount
-        })
-      )
+      this._bankStore.updateResourceAmount(inventory.type, inventory.amount)
     });
   }
 

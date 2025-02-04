@@ -8,11 +8,7 @@ import { Actions, provideEffects, provideEffectsManager } from '@ngneat/effects-
 import { devTools } from '@ngneat/elf-devtools';
 import { routes } from './app.routes';
 import { ActionHistoryEffects } from './domain/action-history/domain/state/action-history.effects';
-import { BankEffects } from './domain/bank/domain/state/bank.effects';
 import { EventQueueEffects } from './domain/event-queues/domain/state/event-queue/event-queue.effects';
-import { GameModeEffects } from './domain/game/domain/state/game-mode.effects';
-import { RoundCountdownEffects } from './domain/round/domain/state/countdown/round-countdown.effects';
-import { TradeEffects } from './domain/trade/domain/state/trade.effects';
 import { provideDevToken } from './utils/tokens/dev.token';
 import { provideVersionToken } from './utils/tokens/version.token';
 
@@ -44,12 +40,8 @@ export const appConfig: ApplicationConfig = {
     provideElfDevTools(),
     provideEffectsManager(),
     provideEffects(
-      RoundCountdownEffects, 
       ActionHistoryEffects,
-      TradeEffects,
       EventQueueEffects,
-      BankEffects,
-      GameModeEffects,
     ),
     provideAnimations(),
     provideAnimationsAsync(),

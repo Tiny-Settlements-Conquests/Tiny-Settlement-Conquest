@@ -6,7 +6,6 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
 import { TradeOfferService } from '../../domain/services/trade-offer.service';
-import { TradeRepository } from '../../domain/state/trade.repository';
 import { TradeMenuComponent } from '../trade-menu/trade-menu.component';
 
 @Component({
@@ -23,7 +22,6 @@ import { TradeMenuComponent } from '../trade-menu/trade-menu.component';
     templateUrl: './trade-dialog.component.html',
     styleUrl: './trade-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [TradeRepository]
 })
 export class TradeDialogComponent {
   private readonly _matDialogRef = inject(MatDialogRef)

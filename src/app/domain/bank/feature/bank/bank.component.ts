@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
-import { BankRepository } from '../../domain/state/bank.repository';
+import { BankStore } from '../../domain/state/bank.store';
 
 @Component({
   selector: 'app-bank',
@@ -14,10 +14,8 @@ import { BankRepository } from '../../domain/state/bank.repository';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BankComponent { 
-  private readonly _bankRepository = inject(BankRepository);
+  private readonly _bankStore = inject(BankStore);
   
-  public readonly bankInventory = toSignal(
-    this._bankRepository.selectInventory()
-  )
+  public readonly bankInventory = this._bankStore.resources;
 
 }

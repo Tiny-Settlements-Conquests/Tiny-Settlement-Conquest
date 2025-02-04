@@ -5,14 +5,13 @@ import { ActionHistoryRepository } from '../../domain/state/action-history.repos
 import { ActionEventComponent } from '../action-event/action-event.component';
 
 @Component({
-  selector: 'app-action-history',
-  standalone: true,
-  imports: [
-    ActionEventComponent
-  ],
-  templateUrl: './action-history.component.html',
-  styleUrl: './action-history.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-action-history',
+    imports: [
+        ActionEventComponent
+    ],
+    templateUrl: './action-history.component.html',
+    styleUrl: './action-history.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionHistoryComponent{ 
   private readonly _actionHistoryRepository = inject(ActionHistoryRepository);

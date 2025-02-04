@@ -22,22 +22,21 @@ export interface Player {
 }
 
 @Component({
-  selector: 'app-lobby',
-  standalone: true,
-  imports: [
-    FontAwesomeModule,
-    TitleComponent,
-    RouterLink,
-    MapPreviewComponent,
-    LobbyPlayerCardsComponent,
-    BackArrowComponent,
-    ButtonComponent,
-    GameLoaderComponent,
-    MatTooltip
-  ],
-  templateUrl: './lobby.component.html',
-  styleUrl: './lobby.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-lobby',
+    imports: [
+        FontAwesomeModule,
+        TitleComponent,
+        RouterLink,
+        MapPreviewComponent,
+        LobbyPlayerCardsComponent,
+        BackArrowComponent,
+        ButtonComponent,
+        GameLoaderComponent,
+        MatTooltip
+    ],
+    templateUrl: './lobby.component.html',
+    styleUrl: './lobby.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LobbyComponent {
   private readonly _lobbyRepository = inject(LobbyRepository);

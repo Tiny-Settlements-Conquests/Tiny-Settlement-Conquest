@@ -8,15 +8,14 @@ import { RoundPlayerRepository } from '../../domain/state/round-players.reposito
 import { PlayerCardComponent } from '../../ui/player-card/player-card.component';
 
 @Component({
-  selector: 'app-round-player-cards',
-  standalone: true,
-  imports: [
-    PlayerCardComponent,
-    NgClass,
-  ],
-  templateUrl: './round-player-cards.component.html',
-  styleUrl: './round-player-cards.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-round-player-cards',
+    imports: [
+        PlayerCardComponent,
+        NgClass,
+    ],
+    templateUrl: './round-player-cards.component.html',
+    styleUrl: './round-player-cards.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoundPlayerCardsComponent { 
   private readonly _roundPlayerRepository = inject(RoundPlayerRepository);

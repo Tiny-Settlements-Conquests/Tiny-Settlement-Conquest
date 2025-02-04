@@ -2,14 +2,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CircleProgressComponent } from '../../../circle-progress/circle-progress.component';
 
 @Component({
-  imports: [
-    CircleProgressComponent
-  ],
-  selector: 'app-player-winning-points',
-  templateUrl: './player-winning-points.component.html',
-  styleUrls: ['./player-winning-points.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true
+    imports: [
+        CircleProgressComponent
+    ],
+    selector: 'app-player-winning-points',
+    templateUrl: './player-winning-points.component.html',
+    styleUrls: ['./player-winning-points.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlayerWinningPointsComponent {
   public readonly totalSegments = input.required<number>(); // Gesamtanzahl der Segmente

@@ -11,20 +11,18 @@ import { TooltipDirective } from '../../../tooltip/tooltip.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
 @Component({
-  selector: 'app-buildings-selection',
-  standalone: true,
-  imports: [
-    TitleComponent,
-    BlockComponent,
-    NgClass,
-    TooltipDirective,
-    MatTooltipModule,
-    ResourceCardComponent
-  ],
-
-  templateUrl: './buildings-selection.component.html',
-  styleUrl: './buildings-selection.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-buildings-selection',
+    imports: [
+        TitleComponent,
+        BlockComponent,
+        NgClass,
+        TooltipDirective,
+        MatTooltipModule,
+        ResourceCardComponent
+    ],
+    templateUrl: './buildings-selection.component.html',
+    styleUrl: './buildings-selection.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuildingsSelectionComponent {
   private readonly _gameModeRepository = inject(GameModeRepository);

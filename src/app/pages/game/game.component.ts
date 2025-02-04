@@ -27,28 +27,27 @@ import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/
 
 
 @Component({
-  selector: 'app-game',
-  standalone: true,
-  imports: [
-    CanvasComponent,
-    FontAwesomeModule,
-    NextMoveButtonComponent,
-    ActionHistoryComponent,
-    GameInformationBarComponent,
-    BuildingOptionsInventoryComponent,
-    TradeButtonComponent,
-    TradeRequestComponent
-  ],
-  templateUrl: './game.component.html',
-  styleUrl: './game.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    provideEventGateway(),
-    provideGameComponentRef(),
-    provideGameModeSpecificServices(),
-    ClientService,
-    DiceSyncService
-  ]
+    selector: 'app-game',
+    imports: [
+        CanvasComponent,
+        FontAwesomeModule,
+        NextMoveButtonComponent,
+        ActionHistoryComponent,
+        GameInformationBarComponent,
+        BuildingOptionsInventoryComponent,
+        TradeButtonComponent,
+        TradeRequestComponent
+    ],
+    templateUrl: './game.component.html',
+    styleUrl: './game.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+        provideEventGateway(),
+        provideGameComponentRef(),
+        provideGameModeSpecificServices(),
+        ClientService,
+        DiceSyncService
+    ]
 })
 export class GameComponent { 
   private readonly _roundPlayerRepository = inject(RoundPlayerRepository);

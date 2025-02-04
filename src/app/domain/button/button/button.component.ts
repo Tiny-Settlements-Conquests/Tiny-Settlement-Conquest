@@ -4,14 +4,13 @@ import { ChangeDetectionStrategy, Component, HostBinding, HostListener, input, o
 export type colors = 'yellow' | 'red' | 'brown';
 
 @Component({
-  selector: 'app-button',
-  standalone: true,
-  imports: [
-    CommonModule,
-  ],
-  templateUrl: './button.component.html',
-  styleUrl: './button.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-button',
+    imports: [
+        CommonModule,
+    ],
+    templateUrl: './button.component.html',
+    styleUrl: './button.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ButtonComponent { 
   public readonly color = input.required<colors>()

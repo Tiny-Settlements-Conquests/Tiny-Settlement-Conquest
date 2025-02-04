@@ -11,17 +11,16 @@ import { MapCardComponent } from '../../ui/map-card/map-card.component';
 import { MapSelectionComponent } from '../../../../pages/map-selection';
 
 @Component({
-  selector: 'app-map-card-table',
-  standalone: true,
-  imports: [
-    MapCardComponent,
-    ReactiveFormsModule,
-    FormsModule,
-    FaIconComponent,
-  ],
-  templateUrl: './map-card-table.component.html',
-  styleUrl: './map-card-table.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-map-card-table',
+    imports: [
+        MapCardComponent,
+        ReactiveFormsModule,
+        FormsModule,
+        FaIconComponent,
+    ],
+    templateUrl: './map-card-table.component.html',
+    styleUrl: './map-card-table.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapCardTableComponent {
   private readonly _lobbyRepository = inject(LobbyRepository);

@@ -5,14 +5,13 @@ import { dispatch } from '@ngneat/effects';
 import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Component({
-  selector: 'app-next-move-button',
-  standalone: true,
-  imports: [
-    FontAwesomeModule,
-  ],
-  templateUrl: './next-move-button.component.html',
-  styleUrl: './next-move-button.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-next-move-button',
+    imports: [
+        FontAwesomeModule,
+    ],
+    templateUrl: './next-move-button.component.html',
+    styleUrl: './next-move-button.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NextMoveButtonComponent { 
   public icons = {

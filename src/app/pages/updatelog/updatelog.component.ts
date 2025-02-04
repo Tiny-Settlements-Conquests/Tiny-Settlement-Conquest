@@ -10,18 +10,17 @@ import { extractHeadings } from '../../domain/updatelog/domain/utils/heading-par
 import { MarkdownViewerComponent } from '../../domain/markdown/markdown-viewer/markdown-viewer.component';
 
 @Component({
-  selector: 'app-updatelog',
-  standalone: true,
-  imports: [
-    BackArrowComponent,
-    TitleComponent,
-    RouterLink,
-    TreeComponent,
-    MarkdownViewerComponent
-  ],
-  templateUrl: './updatelog.component.html',
-  styleUrl: './updatelog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-updatelog',
+    imports: [
+        BackArrowComponent,
+        TitleComponent,
+        RouterLink,
+        TreeComponent,
+        MarkdownViewerComponent
+    ],
+    templateUrl: './updatelog.component.html',
+    styleUrl: './updatelog.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UpdatelogComponent { 
   private readonly _updateLogLoader = inject(UpdatelogLoaderService);

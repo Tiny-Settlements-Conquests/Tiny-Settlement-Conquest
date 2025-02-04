@@ -12,16 +12,15 @@ import { TradeActions } from '../../domain/state/trade.actions';
 import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
-  selector: 'app-trade-request',
-  standalone: true,
-  imports: [
-    FaIconComponent,
-    ActionCardStackComponent,
-    MatTooltip
-  ],
-  templateUrl: './trade-request.component.html',
-  styleUrl: './trade-request.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-trade-request',
+    imports: [
+        FaIconComponent,
+        ActionCardStackComponent,
+        MatTooltip
+    ],
+    templateUrl: './trade-request.component.html',
+    styleUrl: './trade-request.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TradeRequestComponent {
   public readonly tradeOffer = input.required<PlayerTrade>();

@@ -8,15 +8,14 @@ import { ActionCardSideStackComponent } from '../../../cards/feature/action-card
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
 
 @Component({
-  selector: 'app-resource-inventory',
-  standalone: true,
-  imports: [
-    BlockComponent,
-    ActionCardStackComponent
-  ],
-  templateUrl: './resource-inventory.component.html',
-  styleUrl: './resource-inventory.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-resource-inventory',
+    imports: [
+        BlockComponent,
+        ActionCardStackComponent
+    ],
+    templateUrl: './resource-inventory.component.html',
+    styleUrl: './resource-inventory.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResourceInventoryComponent {
   private readonly _inventoryRepository = inject(InventoryRepository);

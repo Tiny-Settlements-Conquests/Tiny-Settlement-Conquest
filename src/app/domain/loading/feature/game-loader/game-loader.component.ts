@@ -7,14 +7,13 @@ import { preloadImageItems } from '../../domain/utils/image-preloader.utils';
 import { LoadingBarComponent } from '../../ui/loading-bar/loading-bar.component';
 
 @Component({
-  selector: 'app-game-loader',
-  standalone: true,
-  imports: [
-    LoadingBarComponent,
-  ],
-  templateUrl: './game-loader.component.html',
-  styleUrl: './game-loader.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-game-loader',
+    imports: [
+        LoadingBarComponent,
+    ],
+    templateUrl: './game-loader.component.html',
+    styleUrl: './game-loader.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameLoaderComponent {
   private readonly router = inject(Router)

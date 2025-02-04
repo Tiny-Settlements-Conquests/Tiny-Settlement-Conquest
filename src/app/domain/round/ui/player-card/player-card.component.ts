@@ -7,16 +7,15 @@ import { PlayerWinningPointsComponent } from '../player-winning-points/player-wi
 
 
 @Component({
-  selector: 'app-player-card',
-  standalone: true,
-  imports: [
-    ActionCardComponent,
-    NgStyle,
-    PlayerWinningPointsComponent,
-  ],
-  templateUrl: './player-card.component.html',
-  styleUrl: './player-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-player-card',
+    imports: [
+        ActionCardComponent,
+        NgStyle,
+        PlayerWinningPointsComponent,
+    ],
+    templateUrl: './player-card.component.html',
+    styleUrl: './player-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlayerCardComponent {
   public icons = {

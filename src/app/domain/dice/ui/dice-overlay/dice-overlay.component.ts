@@ -4,14 +4,13 @@ import { DiceRandomNumberComponent } from '../dice-random-number/dice-random-num
 import { DiceRepository } from '../../domain/state/dice.repository';
 
 @Component({
-  selector: 'app-dice-overlay',
-  standalone: true,
-  imports: [
-    DiceRandomNumberComponent
-  ],
-  templateUrl: './dice-overlay.component.html',
-  styleUrl: './dice-overlay.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-dice-overlay',
+    imports: [
+        DiceRandomNumberComponent
+    ],
+    templateUrl: './dice-overlay.component.html',
+    styleUrl: './dice-overlay.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DiceOverlayComponent{ 
   public readonly diceRepository = inject(DiceRepository);

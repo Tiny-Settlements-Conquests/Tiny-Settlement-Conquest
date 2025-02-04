@@ -19,14 +19,13 @@ import { ResourceFieldPreviewRenderer } from '../../../resources/domain/classes/
 import { Viewport } from '../../../viewport/classes/viewport';
 
 @Component({
-  selector: 'app-map-preview',
-  standalone: true,
-  imports: [
-    CommonModule,
-  ],
-  templateUrl: './map-preview.component.html',
-  styleUrl: './map-preview.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-map-preview',
+    imports: [
+        CommonModule,
+    ],
+    templateUrl: './map-preview.component.html',
+    styleUrl: './map-preview.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapPreviewComponent implements AfterViewInit {
   private readonly hostEl = inject(ElementRef)

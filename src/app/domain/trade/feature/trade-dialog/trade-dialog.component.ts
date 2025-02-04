@@ -11,21 +11,20 @@ import { TradeRepository } from '../../domain/state/trade.repository';
 import { TradeMenuComponent } from '../trade-menu/trade-menu.component';
 
 @Component({
-  selector: 'app-trade-dialog',
-  standalone: true,
-  imports: [
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogTitle,
-    TradeMenuComponent,
-    FaIconComponent,
-    MatDialogClose,
-    NgClass
-  ],
-  templateUrl: './trade-dialog.component.html',
-  styleUrl: './trade-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [TradeRepository]
+    selector: 'app-trade-dialog',
+    imports: [
+        MatDialogContent,
+        MatDialogActions,
+        MatDialogTitle,
+        TradeMenuComponent,
+        FaIconComponent,
+        MatDialogClose,
+        NgClass
+    ],
+    templateUrl: './trade-dialog.component.html',
+    styleUrl: './trade-dialog.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [TradeRepository]
 })
 export class TradeDialogComponent {
   private readonly _matDialogRef = inject(MatDialogRef)

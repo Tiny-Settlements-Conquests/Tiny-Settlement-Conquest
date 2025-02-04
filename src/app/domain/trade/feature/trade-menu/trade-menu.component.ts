@@ -10,17 +10,16 @@ import { ResourceCardComponent } from '../../../resources/ui/resource-card/resou
 import { TradeOfferService } from '../../domain/services/trade-offer.service';
 
 @Component({
-  selector: 'app-trade-menu',
-  standalone: true,
-  imports: [
-    BlockComponent,
-    ResourceCardComponent,
-    FontAwesomeModule,
-    ActionCardStackComponent
-  ],
-  templateUrl: './trade-menu.component.html',
-  styleUrl: './trade-menu.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-trade-menu',
+    imports: [
+        BlockComponent,
+        ResourceCardComponent,
+        FontAwesomeModule,
+        ActionCardStackComponent
+    ],
+    templateUrl: './trade-menu.component.html',
+    styleUrl: './trade-menu.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TradeMenuComponent implements OnInit{ 
   public readonly _tradeOfferService = inject(TradeOfferService);

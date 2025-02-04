@@ -4,14 +4,13 @@ import { faMaximize, faUser } from '@fortawesome/free-solid-svg-icons';
 import { MapInformation } from '../../domain/models/map-selection.model';
 
 @Component({
-  selector: 'app-map-card',
-  standalone: true,
-  imports: [
-    FaIconComponent,
-  ],
-  templateUrl: './map-card.component.html',
-  styleUrl: './map-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-map-card',
+    imports: [
+        FaIconComponent,
+    ],
+    templateUrl: './map-card.component.html',
+    styleUrl: './map-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapCardComponent { 
   public icons = {

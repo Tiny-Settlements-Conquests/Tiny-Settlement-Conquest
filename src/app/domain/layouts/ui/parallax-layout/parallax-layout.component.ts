@@ -7,17 +7,16 @@ import { ParallaxComponent } from '../../../menu/feature/parallax/parallax.compo
 import { CreditsComponent } from '../../../credits/credits/credits.component';
 
 @Component({
-  selector: 'app-parallax-layout',
-  standalone: true,
-  imports: [
-    RouterOutlet,
-    CloudSpawnerComponent,
-    ParallaxComponent,
-    CreditsComponent
-  ],
-  templateUrl: './parallax-layout.component.html',
-  styleUrl: './parallax-layout.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-parallax-layout',
+    imports: [
+        RouterOutlet,
+        CloudSpawnerComponent,
+        ParallaxComponent,
+        CreditsComponent
+    ],
+    templateUrl: './parallax-layout.component.html',
+    styleUrl: './parallax-layout.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ParallaxLayoutComponent {
   public readonly versionToken = inject(VERSION_TOKEN);

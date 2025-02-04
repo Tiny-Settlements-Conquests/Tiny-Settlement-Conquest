@@ -18,14 +18,13 @@ import { EventQueueActions } from '../../../event-queues/domain/state/event-queu
 import { BuildingType } from '../../../buildings/domain/models/building.model';
 
 @Component({
-  selector: 'app-canvas',
-  standalone: true,
-  imports: [
-    CommonModule,
-  ],
-  templateUrl: './canvas.component.html',
-  styleUrl: './canvas.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-canvas',
+    imports: [
+        CommonModule,
+    ],
+    templateUrl: './canvas.component.html',
+    styleUrl: './canvas.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CanvasComponent implements AfterViewInit {
   private readonly _gameModeRepository = inject(GameModeRepository);

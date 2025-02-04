@@ -7,18 +7,17 @@ import { ResourceEventComponent } from '../../ui/resource-event/resource-event.c
 import { NgStyle } from '@angular/common';
 
 @Component({
-  selector: 'app-action-event',
-  standalone: true,
-  imports: [
-    BuildEventComponent,
-    DiceEventComponent,
-    TradeEventComponent,
-    ResourceEventComponent,
-    NgStyle
-],
-  templateUrl: './action-event.component.html',
-  styleUrl: './action-event.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-action-event',
+    imports: [
+        BuildEventComponent,
+        DiceEventComponent,
+        TradeEventComponent,
+        ResourceEventComponent,
+        NgStyle
+    ],
+    templateUrl: './action-event.component.html',
+    styleUrl: './action-event.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionEventComponent {
   public readonly historyAction = input.required<HistoryAction>();

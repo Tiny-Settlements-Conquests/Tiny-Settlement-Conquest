@@ -13,16 +13,15 @@ import { DEFAULT_WINNING_POINTS, MAX_PLAYER_COUNT } from '../../domain/models/lo
 
 
 @Component({
-  selector: 'app-lobby-player-cards',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FaIconComponent,
-    ButtonComponent
-  ],
-  templateUrl: './lobby-player-cards.component.html',
-  styleUrl: './lobby-player-cards.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-lobby-player-cards',
+    imports: [
+        CommonModule,
+        FaIconComponent,
+        ButtonComponent
+    ],
+    templateUrl: './lobby-player-cards.component.html',
+    styleUrl: './lobby-player-cards.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LobbyPlayerCardsComponent {
   private readonly _lobbyRepository = inject(LobbyRepository)

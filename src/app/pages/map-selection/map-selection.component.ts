@@ -12,20 +12,19 @@ import { DatePipe } from '@angular/common';
 import { MapInformation } from '../../domain/map-selection/domain/models/map-selection.model';
 
 @Component({
-  selector: 'app-map-selection',
-  standalone: true,
-  imports: [
-    TitleComponent,
-    FaIconComponent,
-    BackArrowComponent,
-    RouterLink,
-    FaIconComponent,
-    MapCardTableComponent,
-    DatePipe
-  ],
-  templateUrl: './map-selection.component.html',
-  styleUrl: './map-selection.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-map-selection',
+    imports: [
+        TitleComponent,
+        FaIconComponent,
+        BackArrowComponent,
+        RouterLink,
+        FaIconComponent,
+        MapCardTableComponent,
+        DatePipe
+    ],
+    templateUrl: './map-selection.component.html',
+    styleUrl: './map-selection.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapSelectionComponent { 
   private readonly _lobbyRepository = inject(LobbyRepository);

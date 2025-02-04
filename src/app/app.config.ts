@@ -11,7 +11,6 @@ import { ActionHistoryEffects } from './domain/action-history/domain/state/actio
 import { BankEffects } from './domain/bank/domain/state/bank.effects';
 import { EventQueueEffects } from './domain/event-queues/domain/state/event-queue/event-queue.effects';
 import { GameModeEffects } from './domain/game/domain/state/game-mode.effects';
-import { InventoryEffects } from './domain/inventory/domain/state/inventory.effects';
 import { RoundCountdownEffects } from './domain/round/domain/state/countdown/round-countdown.effects';
 import { TradeEffects } from './domain/trade/domain/state/trade.effects';
 import { provideDevToken } from './utils/tokens/dev.token';
@@ -51,7 +50,6 @@ export const appConfig: ApplicationConfig = {
       EventQueueEffects,
       BankEffects,
       GameModeEffects,
-      InventoryEffects
     ),
     provideAnimations(),
     provideAnimationsAsync(),

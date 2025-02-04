@@ -4,20 +4,20 @@ import { dispatch } from '@ngneat/effects';
 import { combineLatest, filter, map, Observable, startWith, switchMap } from 'rxjs';
 import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
-import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
 import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
 import { ResourceType } from '../../../resources/domain/models/resources.model';
 import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
 import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
+import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
 
 @Injectable({
   providedIn: 'any'
 })
 export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
-  private readonly _inventoryRepository = inject(InventoryRepository);
+  private readonly _inventoryStore = inject(InventoryStore);
   private readonly _playerStore = inject(RoundPlayerStore); 
 
   public readonly offerForm = this._fb.group({
@@ -56,7 +56,7 @@ export class TradeOfferService {
 
   public syncMyInventory() {
     this.offerForm.controls.myInventory.value?.setInventory(
-      this._inventoryRepository.getResources()
+      this._inventoryStore.resources()
     )
   }
 

@@ -32,6 +32,7 @@ export class DiceSyncService {
         this.openDiceOverlay();
       }
     })
+
     this.diceRollStart.pipe(
     ).subscribe(() => {
       console.log("Hi")
@@ -63,7 +64,7 @@ export class DiceSyncService {
     diceRef.instance.rollDices()
     diceRef.instance.result.pipe(
       take(1),
-      delay(1000)
+      delay(1000),
     ).subscribe(() => diceRef.destroy())
   }
 

@@ -4,9 +4,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GameMode } from '../../../game/domain/models/game-mode.model';
 import { GameModeRepository } from '../../../game/domain/state/game-mode.repository';
-import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
 import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
+import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
 @Component({
     selector: 'app-buildings-selection',
     imports: [
@@ -20,16 +20,14 @@ import { RoundPlayerStore } from '../../../round/domain/state/round-player.store
 })
 export class BuildingsSelectionComponent {
   private readonly _gameModeRepository = inject(GameModeRepository);
-  private readonly _inventoryRepository = inject(InventoryRepository);
+  private readonly _inventoryStore = inject(InventoryStore);
   private readonly _roundStore = inject(RoundPlayerStore);
 
   public activeMode = toSignal(
     this._gameModeRepository.selectMode()
   );
 
-  public inventory = toSignal(
-    this._inventoryRepository.selectInventory()
-  );
+  public inventory = this._inventoryStore.resources
 
   public readonly isMyTurn = this._roundStore.isMyTurn;
 

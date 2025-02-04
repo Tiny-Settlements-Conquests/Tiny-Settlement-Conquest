@@ -14,9 +14,10 @@ export class BotSyncService {
     effect(() => {
       const player = this._roundPlayerStore.activeRoundPlayer();
       if(player?.isBot) {
+        console.log("Ja..")
         const game = this._gameSetupService.game;
         if(!game) throw new Error(`Invalid game`);
-        new MediumBot().makeMove(game, player)
+        // new MediumBot().makeMove(game, player)
         
       }
     })

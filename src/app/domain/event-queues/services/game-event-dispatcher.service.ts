@@ -6,13 +6,13 @@ import { BankActions } from '../../bank/domain/state/bank.actions';
 import { DiceStore } from '../../dice/domain/state/dice.store';
 import { Game } from '../../game/domain/classes/game';
 import { GameModeActions } from '../../game/domain/state/game-mode.actions';
-import { InventoryActions } from '../../inventory/domain/state/inventory.actions';
 import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
 import { RoundPlayer } from '../../round/domain/models/round-player.model';
 import { RoundCountdownActions } from '../../round/domain/state/countdown/round-countdown.actions';
 import { RoundPlayerStore } from '../../round/domain/state/round-player.store';
 import { TradeActions } from '../../trade/domain/state/trade.actions';
 import { UserRepository } from '../../user/domain/state/user.repository';
+import { InventoryStore } from '../../inventory/domain/state/inventory.store';
 
 @Injectable({
   providedIn: 'any'
@@ -21,6 +21,7 @@ export class GameEventDispatcherService {
   private readonly _roundPlayerStore = inject(RoundPlayerStore);
   private readonly _userRepository = inject(UserRepository);
   private readonly _diceStore = inject(DiceStore);
+  private readonly _inventoryStore = inject(InventoryStore);
 
   //todo define an interface instead
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
@@ -69,6 +70,7 @@ export class GameEventDispatcherService {
       dispatch(
         GameModeActions.updateMode({mode: 'spectate'}),
       );
+      console.log("SET", player.id)
       this._roundPlayerStore.setActiveRoundPlayerById(player.id);
     })
   }
@@ -117,13 +119,11 @@ export class GameEventDispatcherService {
     if(!me) throw new Error('user has not been loaded');
     const player = game.round.getPlayerById(me.id);
     if(!player) throw new Error('player has not been found');
-    dispatch(
-      InventoryActions.setResources({resources:player.resourceInventory.resources})
-    )
+    this._inventoryStore.setResources(player.resourceInventory.resources)
 
     game.selectUserInventoryUpdate().pipe(
     ).subscribe(({newAmount, type}) => {
-      dispatch(InventoryActions.updateResourceAmount({resourceType: type, amount: newAmount}));
+      this._inventoryStore.updateResourceAmount(type, newAmount);
     })
   }
 
@@ -180,9 +180,12 @@ export class GameEventDispatcherService {
     game.selectRound().pipe(
     ).subscribe((d) => {
       this._diceStore.setDices(undefined);
+      this._diceStore.setIsOverlayOpen(false);
       //todo build this with userRepo
+      console.log("RESET CAUSE NEW ROUND!")
       if(this._roundPlayerStore.me() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerStore.me()?.id && !d.activePlayer.roundPlayer.isBot) {
         this._diceStore.setIsOverlayOpen(true);
+        console.log("OPEN !")
       }
     })
   }

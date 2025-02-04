@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
-import { InventoryRepository } from '../../domain/state/inventory.repository';
+import { InventoryStore } from '../../domain/state/inventory.store';
 
 @Component({
     selector: 'app-resource-inventory',
@@ -13,15 +13,7 @@ import { InventoryRepository } from '../../domain/state/inventory.repository';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResourceInventoryComponent {
-  private readonly _inventoryRepository = inject(InventoryRepository);
+  private readonly _inventoryStore = inject(InventoryStore);
   
-  public readonly _inventory = toSignal(
-    this._inventoryRepository.selectInventory()
-  )
-
-  public get inventory() {
-    return this._inventory();
-  }
-
-  
+  public readonly inventory = this._inventoryStore.resources()
 }

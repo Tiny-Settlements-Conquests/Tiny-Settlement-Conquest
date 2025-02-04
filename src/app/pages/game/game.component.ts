@@ -11,23 +11,21 @@ import { DiceStore } from '../../domain/dice/domain/state/dice.store';
 import { provideEventGateway } from '../../domain/event-queues/domain/providers/event-gateway.provider';
 import { GameEventDispatcherService } from '../../domain/event-queues/services/game-event-dispatcher.service';
 import { Game } from '../../domain/game/domain/classes/game';
+import { provideGameClientEditionService } from '../../domain/game/domain/providers/game-client-edition-service.provider';
 import { provideGameComponentRef } from '../../domain/game/domain/providers/game-component-ref.provider';
-import { provideGameModeSpecificServices } from '../../domain/game/domain/providers/game-mode-services.provider';
-import { ClientService } from '../../domain/game/domain/services/client.service';
 import { GameSetupService } from '../../domain/game/domain/services/game-setup.service';
-import { GAME_MODE_SERVICE_LOADER_TOKEN } from '../../domain/game/domain/tokens/game-mode-service-loader.token';
+import { GAME_CLIENT_EDITION_SERVICE_TOKEN } from '../../domain/game/domain/tokens/game-client-edition-service.token';
 import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
 import { BuildingOptionsInventoryComponent } from '../../domain/info/feature/building-options-inventory/building-options-inventory.component';
 import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
+import { InventoryStore } from '../../domain/inventory/domain/state/inventory.store';
 import { RoundPlayerStore } from '../../domain/round/domain/state/round-player.store';
 import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
 import { TradeRepository } from '../../domain/trade/domain/state/trade.repository';
 import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/trade-button.component';
 import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/trade-dialog.component';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
-import { BotSyncService } from '../../domain/bot/domain/services/bot-sync.service';
-import { GAME_COMPONENT_REF_TOKEN } from '../../domain/game/domain/tokens/game-component-ref.token';
-import { AppComponent } from '../../app.component';
+import { provideGameEventStores } from '../../domain/game/domain/providers/game-event-stores.provider';
 
 
 @Component({
@@ -47,21 +45,17 @@ import { AppComponent } from '../../app.component';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
       provideGameComponentRef(),
-      DiceStore,
-      RoundPlayerStore,
       GameEventDispatcherService,
+      provideGameEventStores(),
       provideEventGateway(),
-      provideGameModeSpecificServices(),
-      ClientService,
-      BotSyncService,
+      provideGameClientEditionService(),
       DiceSyncService,
     ]
 })
 export class GameComponent { 
   private readonly _roundPlayerStore = inject(RoundPlayerStore);
   private readonly _tradeRepository = inject(TradeRepository);
-  private readonly _clientService = inject(ClientService);  // do not remove
-  private readonly _gameModeServiceLoader = inject(GAME_MODE_SERVICE_LOADER_TOKEN) // do not remove
+  private readonly _gameModeServiceLoader = inject(GAME_CLIENT_EDITION_SERVICE_TOKEN) // do not remove
   readonly dialog = inject(MatDialog);
   private readonly _gameSetupService = inject(GameSetupService);
   public readonly eventDispatcher = inject(GameEventDispatcherService);

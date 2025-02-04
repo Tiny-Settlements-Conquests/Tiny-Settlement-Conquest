@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { dispatch } from '@ngneat/effects';
 import { delay, merge } from 'rxjs';
-import { ActionHistoryActions } from '../../action-history/domain/state/action-history.actions';
 import { DiceStore } from '../../dice/domain/state/dice.store';
 import { Game } from '../../game/domain/classes/game';
 import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
@@ -13,6 +12,7 @@ import { GameModeStore } from '../../game/domain/state/game-mode.store';
 import { BankStore } from '../../bank/domain/state/bank.store';
 import { TradeStore } from '../../trade/domain/state/trade.store';
 import { RoundCountdownStore } from '../../round/domain/state/countdown/round-countdown.store';
+import { ActionHistoryStore } from '../../action-history/domain/state/action-history.store';
 
 @Injectable({
   providedIn: 'any'
@@ -26,6 +26,7 @@ export class GameEventDispatcherService {
   private readonly _bankStore = inject(BankStore);
   private readonly _tradeStore = inject(TradeStore);
   private readonly _roundCountdownStore = inject(RoundCountdownStore);
+  private readonly _actionHistoryStore = inject(ActionHistoryStore)
 
   //todo define an interface instead
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
@@ -97,16 +98,14 @@ export class GameEventDispatcherService {
     })
 
     trade.selectTradeCompleted.subscribe((data)=> {
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'trade',
-          id: Math.random().toString(),
-          player: data.acceptedPlayer,
-          playerB: data.trade.player,
-          givenResources: resourcesToResourceCards(data.trade.requestedResources),
-          receivedResources: resourcesToResourceCards(data.trade.offeredResources),
-        })
-      )
+      this._actionHistoryStore.addAction({
+        typ: 'trade',
+        id: Math.random().toString(),
+        player: data.acceptedPlayer,
+        playerB: data.trade.player,
+        givenResources: resourcesToResourceCards(data.trade.requestedResources),
+        receivedResources: resourcesToResourceCards(data.trade.offeredResources),
+      })
     })
   }
 
@@ -129,14 +128,12 @@ export class GameEventDispatcherService {
     ).subscribe((inventory) => {
       console.log("inventory update", inventory) // todo old & new amount hier rauslassen -> could be abused
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
-        dispatch(
-          ActionHistoryActions.addAction({
+        this._actionHistoryStore.addAction({
             typ: 'resource',
             id: Math.random().toString(),
             player: inventory.player.roundPlayer,
             receivedResources: [resourceTypeToResourceCard(inventory.type)],
           })
-        )
       }
     })
   }
@@ -149,14 +146,12 @@ export class GameEventDispatcherService {
 
   private syncBuildingUpdates(game: Game): void {
     game.selectBuildingUpdate().subscribe((data) => {
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'build',
-          id: Math.random().toString(),
-          player: data.owner.roundPlayer,
-          building: data.type,
-        })
-      )
+      this._actionHistoryStore.addAction({
+        typ: 'build',
+        id: Math.random().toString(),
+        player: data.owner.roundPlayer,
+        building: data.type,
+      })
     })
   }
 
@@ -184,14 +179,12 @@ export class GameEventDispatcherService {
     game.selectRolledDice().pipe(
     ).subscribe(({dices, player}) => {
       if(!player) return;
-      dispatch(
-        ActionHistoryActions.addAction({
-          typ: 'dice',
-          id: Math.random().toString(),
-          player: player.roundPlayer,
-          dice: dices
-        })
-      )
+      this._actionHistoryStore.addAction({
+        typ: 'dice',
+        id: Math.random().toString(),
+        player: player.roundPlayer,
+        dice: dices
+      })
       console.log("SETD")
       this._diceStore.setDices(dices);
     })

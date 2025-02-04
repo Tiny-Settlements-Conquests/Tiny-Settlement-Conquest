@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { asapScheduler } from 'rxjs';
-import { ActionHistoryRepository } from '../../domain/state/action-history.repository';
 import { ActionEventComponent } from '../action-event/action-event.component';
+import { ActionHistoryStore } from '../../domain/state/action-history.store';
+import { HistoryAction } from '../../domain/models/action.model';
 
 @Component({
     selector: 'app-action-history',
@@ -14,13 +15,11 @@ import { ActionEventComponent } from '../action-event/action-event.component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionHistoryComponent{ 
-  private readonly _actionHistoryRepository = inject(ActionHistoryRepository);
+  private readonly _actionHistoryStore = inject(ActionHistoryStore);
 
-  public readonly actions = toSignal(
-    this._actionHistoryRepository.selectAllActions()
-  )
+  public readonly actions = this._actionHistoryStore.entities;
 
-  private readonly _scrollGuard = effect(() => {
+  public readonly _scrollGuard = effect(() => {
     const actions = this.actions();
     if(actions && actions.length > 0) {
       asapScheduler.schedule(() => this.scrollToBottom(), 100);
@@ -35,5 +34,12 @@ export class ActionHistoryComponent{
     if(this.scrollContainerEl) {
       this.scrollContainerEl.nativeElement.scrollTop = this.scrollContainerEl.nativeElement.scrollHeight;
     }
+  }
+
+  public isFollowUp(index: number, currentAction: HistoryAction): boolean {
+    const _actions = this.actions();
+    return _actions[index - 1]?.player?.id === currentAction.player.id;
+    
+
   }
 }

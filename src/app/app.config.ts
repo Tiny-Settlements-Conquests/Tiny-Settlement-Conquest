@@ -7,7 +7,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { Actions, provideEffects, provideEffectsManager } from '@ngneat/effects-ng';
 import { devTools } from '@ngneat/elf-devtools';
 import { routes } from './app.routes';
-import { ActionHistoryEffects } from './domain/action-history/domain/state/action-history.effects';
 import { EventQueueEffects } from './domain/event-queues/domain/state/event-queue/event-queue.effects';
 import { provideDevToken } from './utils/tokens/dev.token';
 import { provideVersionToken } from './utils/tokens/version.token';
@@ -40,8 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideElfDevTools(),
     provideEffectsManager(),
     provideEffects(
-      ActionHistoryEffects,
-      EventQueueEffects,
+      EventQueueEffects, //todo replace me 
     ),
     provideAnimations(),
     provideAnimationsAsync(),

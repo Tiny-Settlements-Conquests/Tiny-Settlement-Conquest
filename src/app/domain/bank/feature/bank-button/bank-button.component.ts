@@ -1,5 +1,5 @@
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay';
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, signal, ViewContainerRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, ElementRef, HostListener, inject, signal, ViewContainerRef } from '@angular/core';
 import { BankStore } from '../../domain/state/bank.store';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
 
@@ -29,4 +29,5 @@ export class BankButtonComponent {
     toggle() {
       this.isOpen.set(!this.isOpen());
     }
+
 }

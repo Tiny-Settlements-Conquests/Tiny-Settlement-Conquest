@@ -35,7 +35,6 @@ export class DiceSyncService {
 
     this.diceRollStart.pipe(
     ).subscribe(() => {
-      console.log("Hi")
       dispatch(
         EventQueueActions.publish({
           eventType: 'rollDices',

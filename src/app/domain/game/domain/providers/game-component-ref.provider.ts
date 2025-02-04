@@ -8,7 +8,6 @@ export function provideGameComponentRef(): Provider{
         useFactory: () => {
 
             const component = inject(AppComponent);
-            console.log("REF", component);
             return component._ref;
         }
     }

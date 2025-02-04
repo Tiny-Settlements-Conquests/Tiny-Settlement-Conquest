@@ -38,9 +38,7 @@ export class DiceOverlayComponent{
   }
 
   public rollDices() {
-    console.log("ROLL");
     if(this.hasRolled() || this.diceComponent === undefined) return;
-    console.log("PASS")
     this.hasRolled.set(true);
     this.diceComponent.dices = this.dices;
     this.diceComponent?.result.subscribe(() => {

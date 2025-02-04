@@ -32,7 +32,7 @@ export class GameEventDispatcherService {
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
     // und einmal mit einem websocket, das ist aber diesem service hier egal, hauptsache es kommen daten an
   public sync(game: Game): void {
-    console.log("GAME", game)
+    console.log("GAME", game.selectBankInventory())
     this.syncRoundPlayers(game);
     // this.syncPlayersWinningPoints(game);
     this.syncActiveRoundPlayer(game);
@@ -156,8 +156,8 @@ export class GameEventDispatcherService {
   }
 
   private syncBankInventory(game: Game): void {
-    game.selectBankInventoryUpdate().subscribe(inventory => {
-      this._bankStore.updateResourceAmount(inventory.type, inventory.amount)
+    game.selectBankInventory().subscribe(inventory => {
+      this._bankStore.setResources(inventory)
     });
   }
 

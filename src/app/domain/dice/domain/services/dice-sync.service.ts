@@ -1,6 +1,6 @@
 import { ComponentRef, effect, inject, Injectable, Injector } from '@angular/core';
 import { dispatch } from '@ngneat/effects';
-import { delay, Subject, take } from 'rxjs';
+import { delay, Subject, take, tap } from 'rxjs';
 import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 import { GAME_COMPONENT_REF_TOKEN } from '../../../game/domain/tokens/game-component-ref.token';
 import { DiceOverlayComponent } from '../../ui/dice-overlay/dice-overlay.component';
@@ -64,6 +64,7 @@ export class DiceSyncService {
     diceRef.instance.result.pipe(
       take(1),
       delay(1000),
+      tap(() => this._diceStore.setIsOverlayOpen(false))
     ).subscribe(() => diceRef.destroy())
   }
 

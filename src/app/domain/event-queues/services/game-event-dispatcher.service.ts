@@ -185,7 +185,6 @@ export class GameEventDispatcherService {
         player: player.roundPlayer,
         dice: dices
       })
-      console.log("SETD")
       this._diceStore.setDices(dices);
     })
   }

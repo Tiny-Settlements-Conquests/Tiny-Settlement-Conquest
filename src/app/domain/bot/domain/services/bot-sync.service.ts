@@ -16,7 +16,9 @@ export class BotSyncService {
       if(player?.isBot) {
         const game = this._gameSetupService.game;
         if(!game) throw new Error(`Invalid game`);
-        // new MediumBot().makeMove(game, player)
+        // setTimeout(() => {
+          new MediumBot().makeMove(game, player)
+        // }, 1000);
         
       }
     })

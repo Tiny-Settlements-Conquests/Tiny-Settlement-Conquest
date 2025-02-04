@@ -42,8 +42,8 @@ export class Game {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
       maxRollTimer: 5_000,
-      // maxRoundTimer: 1_000_000,
-      maxRoundTimer: 5_000,
+      maxRoundTimer: 1_000_000,
+      // maxRoundTimer: 5_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
       resourceMultiplier: 1

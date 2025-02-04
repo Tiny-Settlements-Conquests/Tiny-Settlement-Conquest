@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MatTooltip } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowRightToBracket, faCheckCircle, faCircleXmark, faCrown, faGear, faMap, faPlay } from '@fortawesome/free-solid-svg-icons';
@@ -10,7 +11,6 @@ import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
 import { GameLoaderComponent } from '../../domain/loading/feature/game-loader/game-loader.component';
 import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
 import { LobbyPlayerCardsComponent } from '../../domain/lobby/feature/lobby-player-cards/lobby-player-cards.component';
-import { MatTooltip } from '@angular/material/tooltip';
 
 
 export interface Player {

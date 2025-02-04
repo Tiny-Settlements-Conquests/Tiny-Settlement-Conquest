@@ -16,11 +16,10 @@ export class PlaygroundRenderService {
 
   public render(playground: Playground) {
     const resources = playground.resourceFields;
-    const fields = playground.fields
+    const fields = playground.fields;
     fields.forEach((field) => {
       this.renderFieldOrResource(field, resources);
     });
-
     this.buildingGraphRenderer.render(playground.buildingGraph);
   }
 

@@ -10,7 +10,6 @@ import { PlayerWinningPointsComponent } from '../player-winning-points/player-wi
     selector: 'app-player-card',
     imports: [
         ActionCardComponent,
-        NgStyle,
         PlayerWinningPointsComponent,
     ],
     templateUrl: './player-card.component.html',

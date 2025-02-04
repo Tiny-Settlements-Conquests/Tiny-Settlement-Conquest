@@ -6,8 +6,10 @@ export function provideGameComponentRef(): Provider{
     return {
         provide: GAME_COMPONENT_REF_TOKEN,
         useFactory: () => {
-        const component = inject(AppComponent);
-        return component._ref;
+
+            const component = inject(AppComponent);
+            console.log("REF", component);
+            return component._ref;
         }
     }
 }

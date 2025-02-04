@@ -4,8 +4,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogRef, MatDialogTitle } from '@angular/material/dialog';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { dispatch } from '@ngneat/effects';
-import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
+import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
 import { TradeOfferService } from '../../domain/services/trade-offer.service';
 import { TradeRepository } from '../../domain/state/trade.repository';
 import { TradeMenuComponent } from '../trade-menu/trade-menu.component';
@@ -28,7 +27,7 @@ import { TradeMenuComponent } from '../trade-menu/trade-menu.component';
 })
 export class TradeDialogComponent {
   private readonly _matDialogRef = inject(MatDialogRef)
-  private readonly _playerRepository = inject(RoundPlayerRepository); 
+  private readonly _playerStore = inject(RoundPlayerStore); 
   public readonly _tradeOfferService = inject(TradeOfferService);
 
   public readonly icons = {
@@ -36,9 +35,7 @@ export class TradeDialogComponent {
     close: faXmark
   }
 
-  public players = toSignal(
-    this._playerRepository.selectRoundPlayersExceptMe()
-  )
+  public players = this._playerStore.roundPlayersExceptMe()
 
   public readonly isPlayerTrade = toSignal(
     this._tradeOfferService.selectIsPlayerTrade()

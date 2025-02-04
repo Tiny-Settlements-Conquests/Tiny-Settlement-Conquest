@@ -1,45 +1,38 @@
-import { ComponentRef, inject, Injectable } from '@angular/core';
+import { ComponentRef, effect, inject, Injectable, Injector } from '@angular/core';
 import { dispatch } from '@ngneat/effects';
-import { delay, filter, take, takeUntil, tap } from 'rxjs';
+import { delay, Subject, take } from 'rxjs';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 import { GAME_COMPONENT_REF_TOKEN } from '../../../game/domain/tokens/game-component-ref.token';
 import { DiceOverlayComponent } from '../../ui/dice-overlay/dice-overlay.component';
 import { Dices } from '../models/dice.model';
-import { DiceRepository } from '../state/dice.repository';
-import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
-import { DiceActions } from '../state/dice.actions';
+import { DiceStore } from '../state/dice.store';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'any'
 })
 export class DiceSyncService {
-  private readonly _diceRepository = inject(DiceRepository);
+  public readonly diceRollStart = new Subject();
+
+  private readonly _diceStore = inject(DiceStore);
   private readonly _hostRef = inject(GAME_COMPONENT_REF_TOKEN);
   private _diceRef: undefined | ComponentRef<DiceOverlayComponent> = undefined;
+  private readonly _injector = inject(Injector);
 
   constructor() {
-    this.sync();
-  }
-
-  private sync(): void {
-    this._diceRepository.selectResetDices().subscribe(() => {
-      console.log("RESET.", this._diceRef)
-      this._diceRef?.destroy();
-      dispatch(DiceActions.updateDiceOverlayOpenState({isOpen: false}))
+    effect(() => {
+      const dices = this._diceStore.dices();
+      if(dices !== undefined) {
+        this.rollDice(dices)
+      }
     })
 
-    this._diceRepository.selectDices().pipe().subscribe((dices) => {
-      if(typeof dices === 'undefined') return;
-      this.rollDice(dices);
+    effect(() => {
+      const isOpen = this._diceStore.isOverlayOpen();
+      if(isOpen) {
+        this.openDiceOverlay();
+      }
     })
-
-    this._diceRepository.selectIsOpen().pipe(
-      filter((isOpen) => isOpen === true)
-    ).subscribe(() => {
-      console.log("IS OPEN?!?")
-      this.openDiceOverlay();
-    })
-
-    this._diceRepository.diceRollStart.pipe(
+    this.diceRollStart.pipe(
     ).subscribe(() => {
       console.log("Hi")
       dispatch(
@@ -51,8 +44,11 @@ export class DiceSyncService {
     });
   }
 
+
   private openDiceOverlay() {
-    const component = this._hostRef.createComponent(DiceOverlayComponent);
+    const component = this._hostRef.createComponent(DiceOverlayComponent, {
+      injector: this._injector
+    });
     this._diceRef = component;
     console.log("Opened Overlay", this._diceRef)
     

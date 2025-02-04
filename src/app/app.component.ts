@@ -8,7 +8,7 @@ import { UserRepository } from './domain/user/domain/state/user.repository';
         RouterOutlet,
     ],
     templateUrl: './app.component.html',
-    styleUrl: './app.component.scss'
+    styleUrl: './app.component.scss',
 })
 export class AppComponent {
   public readonly _ref = inject(ViewContainerRef)

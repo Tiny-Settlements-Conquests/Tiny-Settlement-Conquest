@@ -12,7 +12,6 @@ import { TradeOfferService } from '../../domain/services/trade-offer.service';
 @Component({
     selector: 'app-trade-menu',
     imports: [
-        BlockComponent,
         ResourceCardComponent,
         FontAwesomeModule,
         ActionCardStackComponent

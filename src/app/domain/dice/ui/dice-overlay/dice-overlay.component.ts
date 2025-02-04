@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, InjectionToken, Input, ViewChild, effect, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
 import { DiceRandomNumberComponent } from '../dice-random-number/dice-random-number.component';
-import { DiceRepository } from '../../domain/state/dice.repository';
+import { DiceStore } from '../../domain/state/dice.store';
+import { DiceSyncService } from '../../domain/services/dice-sync.service';
 
 @Component({
     selector: 'app-dice-overlay',
@@ -13,7 +14,8 @@ import { DiceRepository } from '../../domain/state/dice.repository';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DiceOverlayComponent{ 
-  public readonly diceRepository = inject(DiceRepository);
+  public readonly diceStore = inject(DiceStore);
+  public readonly diceSyncService = inject(DiceSyncService);
   public readonly hasRolled = signal(false);
   public readonly cd = inject(ChangeDetectorRef)
 

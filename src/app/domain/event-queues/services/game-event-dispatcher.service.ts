@@ -3,15 +3,14 @@ import { dispatch } from '@ngneat/effects';
 import { delay, merge } from 'rxjs';
 import { ActionHistoryActions } from '../../action-history/domain/state/action-history.actions';
 import { BankActions } from '../../bank/domain/state/bank.actions';
-import { DiceActions } from '../../dice/domain/state/dice.actions';
+import { DiceStore } from '../../dice/domain/state/dice.store';
 import { Game } from '../../game/domain/classes/game';
 import { GameModeActions } from '../../game/domain/state/game-mode.actions';
 import { InventoryActions } from '../../inventory/domain/state/inventory.actions';
 import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
 import { RoundPlayer } from '../../round/domain/models/round-player.model';
 import { RoundCountdownActions } from '../../round/domain/state/countdown/round-countdown.actions';
-import { RoundPlayerActions } from '../../round/domain/state/round-player.actions';
-import { RoundPlayerRepository } from '../../round/domain/state/round-players.repository';
+import { RoundPlayerStore } from '../../round/domain/state/round-player.store';
 import { TradeActions } from '../../trade/domain/state/trade.actions';
 import { UserRepository } from '../../user/domain/state/user.repository';
 
@@ -19,8 +18,9 @@ import { UserRepository } from '../../user/domain/state/user.repository';
   providedIn: 'any'
 })
 export class GameEventDispatcherService {
-  private readonly _roundPlayerRepository = inject(RoundPlayerRepository);
+  private readonly _roundPlayerStore = inject(RoundPlayerStore);
   private readonly _userRepository = inject(UserRepository);
+  private readonly _diceStore = inject(DiceStore);
 
   //todo define an interface instead
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
@@ -54,17 +54,13 @@ export class GameEventDispatcherService {
           winningPoints: p.winningPointsAmount,
           resourceCardCount: p.resourceCardCount
         }));
-        dispatch(
-          RoundPlayerActions.setRoundPlayers({players: roundplayers})
-        )
+        this._roundPlayerStore.setRoundPlayers(roundplayers);
       });
   }
 
   private syncPlayersWinningPoints(game: Game): void {
     game.selectPlayersWinningPoints().subscribe(({amount, player}) => {
-      dispatch(
-        RoundPlayerActions.setWinningPointsForPlayer({amount, playerId: player.id})
-      )
+      this._roundPlayerStore.setWinningPointsForPlayer(amount, player.id);
     })
   }
 
@@ -72,8 +68,8 @@ export class GameEventDispatcherService {
     game.selectActiveRoundPlayer().subscribe((player) => {
       dispatch(
         GameModeActions.updateMode({mode: 'spectate'}),
-        RoundPlayerActions.updateActiveRoundPlayer({playerId: player.id})
-      )
+      );
+      this._roundPlayerStore.setActiveRoundPlayerById(player.id);
     })
   }
 
@@ -183,14 +179,10 @@ export class GameEventDispatcherService {
   private syncDiceOverlayOpenState(game: Game): void {
     game.selectRound().pipe(
     ).subscribe((d) => {
-      dispatch(
-        DiceActions.resetDices()
-      );
+      this._diceStore.setDices(undefined);
       //todo build this with userRepo
-      if(this._roundPlayerRepository.getMe() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerRepository.getMe()?.id && !d.activePlayer.roundPlayer.isBot) {
-        dispatch(
-          DiceActions.updateDiceOverlayOpenState({isOpen: true})
-        )
+      if(this._roundPlayerStore.me() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerStore.me()?.id && !d.activePlayer.roundPlayer.isBot) {
+        this._diceStore.setIsOverlayOpen(true);
       }
     })
   }
@@ -208,9 +200,7 @@ export class GameEventDispatcherService {
         })
       )
       console.log("SETD")
-      dispatch(
-        DiceActions.setDices({dices})
-      )
+      this._diceStore.setDices(dices);
     })
   }
 }

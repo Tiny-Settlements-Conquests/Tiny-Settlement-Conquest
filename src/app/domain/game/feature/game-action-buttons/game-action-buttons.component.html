@@ -1,0 +1,5 @@
+@if (isMyTurn()) {
+    <app-next-move-button class="h-full" />
+    <app-trade-button (click)="openDialog()" class="h-full" />
+}
+<app-bank-button />

@@ -42,7 +42,7 @@ export class GameEventDispatcherService {
     // this.syncInventoryHistoryUpdate(game);
     this.syncTimer(game);
     // this.syncBuildingUpdates(game);
-    // this.syncBankInventory(game);
+    this.syncBankInventory(game);
     this.syncDices(game);
     this.syncDiceOverlayOpenState(game);
   }

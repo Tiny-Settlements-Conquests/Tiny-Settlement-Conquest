@@ -5,17 +5,10 @@
     <app-canvas class="m-3" [playground]="playgroundRef" />
 }
 <div class="absolute flex flex-col top-[130px] right-4 flex gap-2 w-[400px]">
-    
     <app-action-history />
     <app-building-options-inventory />
-    
 </div>
-<div class="absolute bottom-4 flex flex-row right-4 gap-4">
-    @if (isMyTurn()) {
-        <app-trade-button (click)="openDialog()" class="h-full" />
-        <app-next-move-button class="h-full" />
-    }
-</div>
+<app-game-action-buttons class="absolute bottom-4 right-4" />
 <div class="absolute top-[200px] left-4 flex flex-col gap-2">
     @if(mySelf !== undefined){
         @for (item of selectTradeRequests(); track $index) {

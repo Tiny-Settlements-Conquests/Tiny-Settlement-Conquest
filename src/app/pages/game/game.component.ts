@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import {
   MatDialog
 } from '@angular/material/dialog';
@@ -16,14 +15,12 @@ import { provideGameEventStores } from '../../domain/game/domain/providers/game-
 import { GameSetupService } from '../../domain/game/domain/services/game-setup.service';
 import { GAME_CLIENT_EDITION_SERVICE_TOKEN } from '../../domain/game/domain/tokens/game-client-edition-service.token';
 import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
+import { GameActionButtonsComponent } from '../../domain/game/feature/game-action-buttons/game-action-buttons.component';
 import { BuildingOptionsInventoryComponent } from '../../domain/info/feature/building-options-inventory/building-options-inventory.component';
 import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
 import { RoundPlayerStore } from '../../domain/round/domain/state/round-player.store';
-import { NextMoveButtonComponent } from '../../domain/round/feature/next-move-button/next-move-button.component';
-import { TradeButtonComponent } from '../../domain/trade/feature/trade-button/trade-button.component';
-import { TradeDialogComponent } from '../../domain/trade/feature/trade-dialog/trade-dialog.component';
-import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 import { TradeStore } from '../../domain/trade/domain/state/trade.store';
+import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
 
 
 @Component({
@@ -31,11 +28,10 @@ import { TradeStore } from '../../domain/trade/domain/state/trade.store';
     imports: [
         CanvasComponent,
         FontAwesomeModule,
-        NextMoveButtonComponent,
         ActionHistoryComponent,
         GameInformationBarComponent,
         BuildingOptionsInventoryComponent,
-        TradeButtonComponent,
+        GameActionButtonsComponent,
         TradeRequestComponent
     ],
     templateUrl: './game.component.html',
@@ -63,7 +59,6 @@ export class GameComponent {
     clock: faClock
   }
   
-  public readonly isMyTurn = this._roundPlayerStore.isMyTurn;
 
   private readonly _game = signal<Game | undefined>(undefined)
   public readonly playground = computed(() => {
@@ -76,9 +71,7 @@ export class GameComponent {
   public readonly selectTradeRequests = this._tradeStore.entities;
   public readonly roundPlayers = this._roundPlayerStore.entities;
 
-  openDialog(): void {
-   this.dialog.open(TradeDialogComponent);
-  }
+
 
   public ngOnInit() {
     const game = this._gameSetupService.loadGame();

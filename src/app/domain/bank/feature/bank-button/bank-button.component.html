@@ -1,0 +1,25 @@
+
+@let _bankInventory = bankInventory();
+<img src="assets/buildings/bank.png" class="h-14 w-full" />
+<ng-template
+cdkConnectedOverlay
+[cdkConnectedOverlayOrigin]="elementRef"
+[cdkConnectedOverlayOpen]="isOpen()"
+(detach)="isOpen.set(false)"
+>
+    <app-action-card-stack mode="darkGreen" [count]="_bankInventory.wood">
+        <img src="/assets/resources/wood.png" class="absolute w-8 h-8" />
+    </app-action-card-stack>
+    <app-action-card-stack mode="lightGreen" [count]="_bankInventory.wool">
+        <img src="/assets/resources/sheep.png" class="absolute w-8 h-8" />
+    </app-action-card-stack>
+    <app-action-card-stack mode="yellow" [count]="_bankInventory.straw">
+        <img src="/assets/resources/wheat.png" class="absolute w-10 h-10" />
+    </app-action-card-stack>
+    <app-action-card-stack mode="gray" [count]="_bankInventory.stone">
+        <img src="/assets/resources/stone.png" class="absolute w-10 h-10" />
+    </app-action-card-stack>
+    <app-action-card-stack mode="red" [count]="_bankInventory.bricks">
+        <img src="/assets/resources/brick.png" class="absolute w-10 h-8" />
+    </app-action-card-stack>
+</ng-template>

@@ -1,41 +1,29 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { DiceRepository } from '../../../dice/domain/state/dice.repository';
-import { DiceRandomNumberComponent } from '../../../dice/ui/dice-random-number/dice-random-number.component';
+import { DiceStore } from '../../../dice/domain/state/dice.store';
 import { UserRepository } from '../../../user/domain/state/user.repository';
-import { RoundPlayerRepository } from '../../domain/state/round-players.repository';
+import { RoundPlayerStore } from '../../domain/state/round-player.store';
 import { PlayerCardComponent } from '../../ui/player-card/player-card.component';
 
 @Component({
-  selector: 'app-round-player-cards',
-  standalone: true,
-  imports: [
-    PlayerCardComponent,
-    NgClass,
-  ],
-  templateUrl: './round-player-cards.component.html',
-  styleUrl: './round-player-cards.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-round-player-cards',
+    imports: [
+        PlayerCardComponent,
+        NgClass,
+    ],
+    templateUrl: './round-player-cards.component.html',
+    styleUrl: './round-player-cards.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoundPlayerCardsComponent { 
-  private readonly _roundPlayerRepository = inject(RoundPlayerRepository);
-  private readonly _userRepository = inject(UserRepository);
-  private readonly _diceRepository = inject(DiceRepository);
+  private readonly _roundPlayerStore= inject(RoundPlayerStore);
+  private readonly _diceStore = inject(DiceStore);
   
-  public readonly players = toSignal(
-    this._roundPlayerRepository.selectRoundPlayers()
-  );
+  public readonly players = this._roundPlayerStore.entities
 
-  public readonly activePlayer = toSignal(
-    this._roundPlayerRepository.selectActiveRoundPlayer()
-  );
+  public readonly activePlayer = this._roundPlayerStore.activeRoundPlayer
 
-  public readonly me = toSignal(
-    this._roundPlayerRepository.selectMe()
-  )
+  public readonly me = this._roundPlayerStore.me
 
-  public readonly dices = toSignal(
-    this._diceRepository.selectDices()
-  )
+  public readonly dices = this._diceStore.dices
 }

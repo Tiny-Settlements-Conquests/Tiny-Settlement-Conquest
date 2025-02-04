@@ -1,29 +1,30 @@
-import { ChangeDetectionStrategy, Component, HostListener, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faForward } from '@fortawesome/free-solid-svg-icons';
-import { RoundPlayerRepository } from '../../domain/state/round-players.repository';
-import { GameComponent } from '../../../../pages/game';
+import { dispatch } from '@ngneat/effects';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Component({
-  selector: 'app-next-move-button',
-  standalone: true,
-  imports: [
-    FontAwesomeModule,
-  ],
-  templateUrl: './next-move-button.component.html',
-  styleUrl: './next-move-button.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-next-move-button',
+    imports: [
+        FontAwesomeModule,
+    ],
+    templateUrl: './next-move-button.component.html',
+    styleUrl: './next-move-button.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NextMoveButtonComponent { 
-  public readonly gameComponent = inject(GameComponent);
-  
   public icons = {
     next: faForward
   }
 
   @HostListener('click')
   public endMove() {
-    // todo hier muss noch ne abstraktion rein da sonst nur lokale matches funktionieren würden!
-    this.gameComponent.game?.nextRound();
+    dispatch(
+      EventQueueActions.publish({
+        eventType: 'nextRound',
+        data: null
+      })
+    )
   }
 }

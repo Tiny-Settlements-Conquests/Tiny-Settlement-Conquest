@@ -1,22 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
-import { TitleComponent } from '../../../layouts/ui/title/title.component';
-import { LoadingBarComponent } from '../../ui/loading-bar/loading-bar.component';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { preloadImageItems } from '../../domain/utils/image-preloader.utils';
-import { GAME_PRELOAD_IMAGE_MAP } from '../../domain/models/image-preloader.model';
 import { Router } from '@angular/router';
-import { asapScheduler, timeout } from 'rxjs';
+import { asapScheduler } from 'rxjs';
+import { GAME_PRELOAD_IMAGE_MAP } from '../../domain/models/image-preloader.model';
+import { preloadImageItems } from '../../domain/utils/image-preloader.utils';
+import { LoadingBarComponent } from '../../ui/loading-bar/loading-bar.component';
 
 @Component({
-  selector: 'app-game-loader',
-  standalone: true,
-  imports: [
-    LoadingBarComponent,
-    TitleComponent
-  ],
-  templateUrl: './game-loader.component.html',
-  styleUrl: './game-loader.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-game-loader',
+    imports: [
+        LoadingBarComponent,
+    ],
+    templateUrl: './game-loader.component.html',
+    styleUrl: './game-loader.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameLoaderComponent {
   private readonly router = inject(Router)
@@ -25,7 +22,7 @@ export class GameLoaderComponent {
     preloadImageItems(GAME_PRELOAD_IMAGE_MAP) // todo besser als repo dann kann man auch einfacher prüfen ob bereits geladen wurde
   )
 
-  private _progressWatch = effect(() => {
+  public readonly _progressWatch = effect(() => {
     const progress = this.progress();
     if(progress?.progress !== undefined && progress.progress === 100) {
       asapScheduler.schedule(() => {

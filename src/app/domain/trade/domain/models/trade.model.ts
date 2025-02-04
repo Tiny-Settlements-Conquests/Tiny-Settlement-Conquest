@@ -1,5 +1,26 @@
+import { EventQueueItem, GatewayEventsParamsMap } from "../../../event-queues/domain/models/event-queue.model";
+import { isTypeofEvent, QueueItem } from "../../../event-queues/domain/models/queue.model";
 import { Resources } from "../../../resources/domain/models/resources.model";
 import { RoundPlayer } from "../../../round/domain/models/round-player.model";
+
+export type TradeEvents = 'trade-offer-open' | 'trade-offer-accept' | 'trade-offer-deny'
+
+export type TradeEventsParamsMap = {
+  'trade-offer-open': TradeRequest,
+  'trade-offer-accept': TradeResponse,
+  'trade-offer-deny': TradeResponse,
+}
+
+export function isTradeOfferOpenEvent(event: EventQueueItem): event is QueueItem<GatewayEventsParamsMap, 'trade-offer-open'> {
+  return isTypeofEvent<GatewayEventsParamsMap>('trade-offer-open', event)
+}
+export function isTradeOfferAcceptEvent(event: EventQueueItem): event is QueueItem<GatewayEventsParamsMap, 'trade-offer-accept'> {
+  return isTypeofEvent<GatewayEventsParamsMap>('trade-offer-accept', event)
+}
+
+export function isTradeOfferDenyEvent(event: EventQueueItem): event is QueueItem<GatewayEventsParamsMap, 'trade-offer-deny'> {
+  return isTypeofEvent<GatewayEventsParamsMap>('trade-offer-deny', event)
+}
 
 export enum TradeState {
   Open,
@@ -12,7 +33,6 @@ export enum TradeType {
   Player,
 }
 
-type id  =  string;
 interface TradeInformation {
   id: string;
   player: RoundPlayer;

@@ -3,14 +3,13 @@ import { ActionCardComponent } from '../action-card/action-card.component';
 import { ActionCardMode } from '../../domain/models/action-card.model';
 
 @Component({
-  selector: 'app-action-card-stack',
-  standalone: true,
-  imports: [
-    ActionCardComponent
-  ],
-  templateUrl: './action-card-stack.component.html',
-  styleUrl: './action-card-stack.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-action-card-stack',
+    imports: [
+        ActionCardComponent
+    ],
+    templateUrl: './action-card-stack.component.html',
+    styleUrl: './action-card-stack.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionCardStackComponent { 
   private readonly _count = signal(0);

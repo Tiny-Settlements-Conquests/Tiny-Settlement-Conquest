@@ -1,4 +1,4 @@
-@let map = selectedMap();
+@let map = selectedMapToPreview();
 <div class="host">
     <div class="flex gap-4 items-center">
         <app-back-arrow routerLink="/lobby" color="yellow" />
@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div class="h-full flex">
-                    <button class="mt-auto ml-auto flex items-center justify-center w-20 h-12">Select</button>
+                    <button class="mt-auto ml-auto flex items-center justify-center w-20 h-12" (click)="setSelectedMap()" routerLink="/lobby">Select</button>
                 </div>
             </div>
         }

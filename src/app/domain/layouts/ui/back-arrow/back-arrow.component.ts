@@ -4,15 +4,14 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { ButtonComponent, colors } from '../../../button/button/button.component';
 
 @Component({
-  selector: 'app-back-arrow',
-  standalone: true,
-  imports: [
-    FaIconComponent,
-    ButtonComponent
-  ],
-  templateUrl: './back-arrow.component.html',
-  styleUrl: './back-arrow.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-back-arrow',
+    imports: [
+        FaIconComponent,
+        ButtonComponent
+    ],
+    templateUrl: './back-arrow.component.html',
+    styleUrl: './back-arrow.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BackArrowComponent { 
   public readonly arrowLeft = faArrowLeft;

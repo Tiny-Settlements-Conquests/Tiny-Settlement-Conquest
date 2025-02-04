@@ -1,47 +1,33 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { GameMode } from '../../../game/domain/models/game-mode.model';
-import { GameModeRepository } from '../../../game/domain/state/game-mode.repository';
-import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
-import { BlockComponent } from '../../../layouts/ui/block/block.component';
-import { TitleComponent } from '../../../layouts/ui/title/title.component';
-import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
-import { TooltipDirective } from '../../../tooltip/tooltip.directive';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { GameMode } from '../../../game/domain/models/game-mode.model';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
+import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
+import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
+import { GameModeStore } from '../../../game/domain/state/game-mode.store';
 @Component({
-  selector: 'app-buildings-selection',
-  standalone: true,
-  imports: [
-    TitleComponent,
-    BlockComponent,
-    NgClass,
-    TooltipDirective,
-    MatTooltipModule,
-    ResourceCardComponent
-  ],
-
-  templateUrl: './buildings-selection.component.html',
-  styleUrl: './buildings-selection.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-buildings-selection',
+    imports: [
+        NgClass,
+        MatTooltipModule,
+        ResourceCardComponent
+    ],
+    templateUrl: './buildings-selection.component.html',
+    styleUrl: './buildings-selection.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuildingsSelectionComponent {
-  private readonly _gameModeRepository = inject(GameModeRepository);
-  private readonly _inventoryRepository = inject(InventoryRepository);
-  private readonly _roundRepository = inject(RoundPlayerRepository);
+  private readonly _gameModeStore= inject(GameModeStore);
+  private readonly _inventoryStore = inject(InventoryStore);
+  private readonly _roundStore = inject(RoundPlayerStore);
 
-  public activeMode = toSignal(
-    this._gameModeRepository.selectMode()
-  );
+  public activeMode = this._gameModeStore.mode
 
-  public inventory = toSignal(
-    this._inventoryRepository.selectInventory()
-  );
+  public inventory = this._inventoryStore.resources
 
-  public readonly isMyTurn = toSignal(
-    this._roundRepository.selectIsMyTurn()
-  )
+  public readonly isMyTurn = this._roundStore.isMyTurn;
 
   public readonly activateRoad = computed(() => {
     const inventory = this.inventory();
@@ -72,9 +58,9 @@ export class BuildingsSelectionComponent {
   public updateGameMode(gameMode: GameMode): void {
     const activeMode = this.activeMode();
     if (activeMode === gameMode) {
-      this._gameModeRepository.updateMode('spectate');
+      this._gameModeStore.setMode('spectate');
     } else {
-      this._gameModeRepository.updateMode(gameMode);
+      this._gameModeStore.setMode(gameMode);
     }
   }
 }

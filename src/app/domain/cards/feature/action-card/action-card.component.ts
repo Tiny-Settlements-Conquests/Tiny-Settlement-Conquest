@@ -5,15 +5,14 @@ import { ActionCardMode } from '../../domain/models/action-card.model';
 
 
 @Component({
-  selector: 'app-action-card',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FontAwesomeModule
-  ],
-  templateUrl: './action-card.component.html',
-  styleUrl: './action-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-action-card',
+    imports: [
+        CommonModule,
+        FontAwesomeModule
+    ],
+    templateUrl: './action-card.component.html',
+    styleUrl: './action-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionCardComponent { 
 

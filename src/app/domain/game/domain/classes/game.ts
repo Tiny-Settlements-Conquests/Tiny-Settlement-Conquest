@@ -29,8 +29,6 @@ export class Game {
   private readonly _robberManager: RobberManager;
   private readonly _tradeManager: TradeManager;
 
-  private _mode: GameMode = 'city';
-  
   private readonly _buildingSignal = new Subject<PathBuilding | Building>();
 
   private readonly _state = new BehaviorSubject<'roll' | 'round' | 'rob'>('roll');
@@ -169,10 +167,6 @@ export class Game {
     return this._costManager.buildingCosts
   }
 
-  public set mode(mode: GameMode ) {
-    this._mode = mode;
-  }
-
   public get round() {
     return this._round;
   }
@@ -201,7 +195,7 @@ export class Game {
           map((update) => ({...update, player: p }))
       )))
   }
-
+  //TODO build a proper return type! and use roundplayer instead of player!
   public selectPlayersWinningPoints()  {
     return merge(
       ...this._round.players.map((p) => p.winningPointsInventory.selectInventoryUpdate().pipe(
@@ -227,13 +221,12 @@ export class Game {
     this._resourceDistributor.distributeResources(rolledDices.sum);
   }
 
-  public tryBuildBuildingOnGraphNode(node: GraphNode) {
-    if(this._mode === 'spectate') return;
+  public tryBuildBuildingOnGraphNode(node: GraphNode, typ: BuildingType) {
     const player = this._round.getActivePlayer();
     if(!player) return;
 
     try {
-      if(this._mode === 'city') {
+      if(typ === BuildingType.CITY) {
         this._buildingBuildManager.buildBuilding(player, BuildingType.CITY, node);
         player.winningPointsInventory.addToInventory('points', 1)
         this._buildingSignal.next({
@@ -242,7 +235,7 @@ export class Game {
           owner: player,
           winningPoints: 2
         })
-      } else if(this._mode === 'town') {
+      } else if(typ === BuildingType.TOWN) {
         this._buildingBuildManager.buildBuilding(player, BuildingType.TOWN, node);
         player.winningPointsInventory.addToInventory('points', 1)
         this._buildingSignal.next({

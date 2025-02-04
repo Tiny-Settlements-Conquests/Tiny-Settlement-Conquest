@@ -4,15 +4,14 @@ import { ActionCardMode } from '../../domain/models/action-card.model';
 import { ActionCardComponent } from '../action-card/action-card.component';
 
 @Component({
-  selector: 'app-action-card-side-stack',
-  standalone: true,
-  imports: [
-    ActionCardComponent,
-    NgStyle
-  ],
-  templateUrl: './action-card-side-stack.component.html',
-  styleUrl: './action-card-side-stack.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-action-card-side-stack',
+    imports: [
+        ActionCardComponent,
+        NgStyle
+    ],
+    templateUrl: './action-card-side-stack.component.html',
+    styleUrl: './action-card-side-stack.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionCardSideStackComponent { 
   private readonly _count = signal(0);

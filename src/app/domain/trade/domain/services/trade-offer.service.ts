@@ -1,24 +1,24 @@
 import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { dispatch } from '@ngneat/effects';
 import { combineLatest, filter, map, Observable, startWith, switchMap } from 'rxjs';
-import { GATEWAY_TOKEN } from '../../../gateway/domain/token/gateway.token';
+import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
-import { InventoryRepository } from '../../../inventory/domain/state/inventory.repository';
 import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
 import { ResourceType } from '../../../resources/domain/models/resources.model';
-import { RoundPlayerRepository } from '../../../round/domain/state/round-players.repository';
+import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
 import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
+import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
 
 @Injectable({
   providedIn: 'any'
 })
 export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
-  private readonly _inventoryRepository = inject(InventoryRepository);
-  private readonly _playerRepository = inject(RoundPlayerRepository); 
-  private readonly _eventQueue = inject(GATEWAY_TOKEN);
+  private readonly _inventoryStore = inject(InventoryStore);
+  private readonly _playerStore = inject(RoundPlayerStore); 
 
   public readonly offerForm = this._fb.group({
     isPlayerTrade: this._fb.control<boolean>(true),
@@ -56,7 +56,7 @@ export class TradeOfferService {
 
   public syncMyInventory() {
     this.offerForm.controls.myInventory.value?.setInventory(
-      this._inventoryRepository.getResources()
+      this._inventoryStore.resources()
     )
   }
 
@@ -146,17 +146,22 @@ export class TradeOfferService {
   }
 
   public addTrade() {
-    const me = this._playerRepository.getMe();
+    const me = this._playerStore.me();
     const offeredResources = this.offerForm.controls.offerInventory.value;
     const requestedResources = this.offerForm.controls.requestInventory.value;
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
     if(!me || !offeredResources || !requestedResources) return;
-    this._eventQueue.publish('trade-offer-open', {
-      typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
-      player: me,
-      offeredResources: offeredResources.resources,
-      requestedResources: requestedResources.resources,
-    })
+    dispatch(
+      EventQueueActions.publish({
+        eventType: 'trade-offer-open',
+        data: {
+          typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
+          player: me,
+          offeredResources: offeredResources.resources,
+          requestedResources: requestedResources.resources,
+        }
+      })
+    )
   }
 }

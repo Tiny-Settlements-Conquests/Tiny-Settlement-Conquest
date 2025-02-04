@@ -7,28 +7,27 @@ import { rollDice } from '../../domain/functions/roll-dice.function';
 import { Dices } from '../../domain/models/dice.model';
 
 @Component({
-  selector: 'app-dice-random-number',
-  standalone: true,
-  imports: [
-    FontAwesomeModule
-  ],
-  templateUrl: './dice-random-number.component.html',
-  styleUrls: ['./dice-random-number.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('center', [
-      state('centered', style({
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        fontSize: '200px'
-      })),
-      transition('void <=> centered', [
-        animate('4s')
-      ]),
-    ])
-  ]
+    selector: 'app-dice-random-number',
+    imports: [
+        FontAwesomeModule
+    ],
+    templateUrl: './dice-random-number.component.html',
+    styleUrls: ['./dice-random-number.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('center', [
+            state('centered', style({
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                fontSize: '200px'
+            })),
+            transition('void <=> centered', [
+                animate('4s')
+            ]),
+        ])
+    ]
 })
 export class DiceRandomNumberComponent {
 

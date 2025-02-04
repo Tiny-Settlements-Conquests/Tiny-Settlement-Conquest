@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, Component, effect, ElementRef, HostListener, i
 import { VERSION_TOKEN } from '../../../../utils/tokens/version.token';
 
 @Component({
-  selector: 'app-parallax',
-  standalone: true,
-  imports: [],
-  templateUrl: './parallax.component.html',
-  styleUrl: './parallax.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-parallax',
+    imports: [],
+    templateUrl: './parallax.component.html',
+    styleUrl: './parallax.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ParallaxComponent { 
   private readonly forest = viewChild<ElementRef<HTMLImageElement>>('forest');

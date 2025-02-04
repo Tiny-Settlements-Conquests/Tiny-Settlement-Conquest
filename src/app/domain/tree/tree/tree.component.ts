@@ -5,10 +5,9 @@ import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { TreeNode } from '../heading.model';
 
 @Component({
-  selector: 'app-tree',
-  standalone: true,
-  imports: [NgFor, NgIf, NgClass, FaIconComponent],
-  template: `
+    selector: 'app-tree',
+    imports: [NgFor, NgIf, NgClass, FaIconComponent],
+    template: `
     <ul>
         <li *ngFor="let node of nodes()">
           @if(node.children.length > 0) {
@@ -25,8 +24,8 @@ import { TreeNode } from '../heading.model';
         </li>
     </ul>
   `,
-  styleUrl: './tree.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: './tree.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeComponent {
   private readonly _location = inject(Location);

@@ -4,14 +4,13 @@ import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../
 import { ResourceType } from '../../domain/models/resources.model';
 
 @Component({
-  selector: 'app-resource-card',
-  standalone: true,
-  imports: [
-    ActionCardComponent
-  ],
-  templateUrl: './resource-card.component.html',
-  styleUrl: './resource-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-resource-card',
+    imports: [
+        ActionCardComponent
+    ],
+    templateUrl: './resource-card.component.html',
+    styleUrl: './resource-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResourceCardComponent { 
   public readonly resourceType = input<ResourceType | undefined>(undefined);

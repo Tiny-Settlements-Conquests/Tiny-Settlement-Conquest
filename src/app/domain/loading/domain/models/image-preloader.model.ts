@@ -10,10 +10,6 @@ export interface PreloadProgress {
 
 export const GAME_PRELOAD_IMAGE_MAP = [
     {
-        url: 'assets/bg.jpg',
-        name: 'Background',
-    },
-    {
         url: 'assets/resources/brick.png',
         name: 'Resource Brick',
     },

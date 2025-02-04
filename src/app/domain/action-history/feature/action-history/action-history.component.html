@@ -1,4 +1,5 @@
-@for (action of actions() ?? []; track $index) {
-    @let isFollowUp = actions()?.[$index - 1]?.player?.id === action.player.id;
-    <app-action-event [historyAction]="action" [isFollowUp]="isFollowUp" />
+@let _actions = actions();
+@for (action of _actions; track $index) {
+    @let _isFollowUp = isFollowUp($index, action);
+    <app-action-event [historyAction]="action" [isFollowUp]="_isFollowUp" />
 }

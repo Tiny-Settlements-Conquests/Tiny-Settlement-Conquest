@@ -6,18 +6,15 @@ import { RoundPlayer } from '../../domain/models/round-player.model';
 import { PlayerWinningPointsComponent } from '../player-winning-points/player-winning-points.component';
 
 
-//todo checken ob das überhaupt sinn ergibt, eig. nicht -> ist ja schon als round-player-card implementiert
 @Component({
-  selector: 'app-player-card',
-  standalone: true,
-  imports: [
-    ActionCardComponent,
-    NgStyle,
-    PlayerWinningPointsComponent,
-  ],
-  templateUrl: './player-card.component.html',
-  styleUrl: './player-card.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-player-card',
+    imports: [
+        ActionCardComponent,
+        PlayerWinningPointsComponent,
+    ],
+    templateUrl: './player-card.component.html',
+    styleUrl: './player-card.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlayerCardComponent {
   public icons = {

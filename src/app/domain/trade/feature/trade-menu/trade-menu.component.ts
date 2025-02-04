@@ -10,17 +10,15 @@ import { ResourceCardComponent } from '../../../resources/ui/resource-card/resou
 import { TradeOfferService } from '../../domain/services/trade-offer.service';
 
 @Component({
-  selector: 'app-trade-menu',
-  standalone: true,
-  imports: [
-    BlockComponent,
-    ResourceCardComponent,
-    FontAwesomeModule,
-    ActionCardStackComponent
-  ],
-  templateUrl: './trade-menu.component.html',
-  styleUrl: './trade-menu.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-trade-menu',
+    imports: [
+        ResourceCardComponent,
+        FontAwesomeModule,
+        ActionCardStackComponent
+    ],
+    templateUrl: './trade-menu.component.html',
+    styleUrl: './trade-menu.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TradeMenuComponent implements OnInit{ 
   public readonly _tradeOfferService = inject(TradeOfferService);
@@ -38,15 +36,12 @@ export class TradeMenuComponent implements OnInit{
     close: faXmark
   }
 
-  //todo outsource in service
   public resources = toSignal(this._tradeOfferService.selectMyInventoryResources)
 
-  //todo outsource in service
   public requestedResources = toSignal(
     this._tradeOfferService.selectRequestedResources
   )
 
-  //todo outsource in service
   public offeredResources = toSignal(
     this._tradeOfferService.selectOfferedResources
   )

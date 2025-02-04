@@ -16,7 +16,7 @@ export class MapSelectionService {
   private readonly maps: MapInformation[] = [{
     name: 'Hell\'s Paradise',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
     id: 'map-1',
     seed: '12345',
@@ -24,7 +24,7 @@ export class MapSelectionService {
   }, {
     name: 'Abyss Palace',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
     playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
     id: 'map-2',
@@ -33,52 +33,52 @@ export class MapSelectionService {
   {
     name: 'Gumbas Log',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
     playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
     id: 'map-3',
     seed: '52356'
   },
   {
-    name: 'Hell\'s Paradise',
+    name: 'Test Map',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
     playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
     id: 'map-4',
     seed: '68756'
   },{
-    name: 'Hell\'s Paradise',
+    name: 'Test Map 2',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
     playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
     id: 'map-5',
     seed: '135235'
   },{
-    name: 'Hell\'s Paradise',
+    name: 'Test Map 3',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
-    playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
+    playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 10, playgroundWidth: 10 }),
     id: 'map-6',
     seed: '634547'
   },{
-    name: 'Hell\'s Paradise',
+    name: 'Test Map 4',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
-    playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
+    playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 8, playgroundWidth: 8 }),
     id: 'map-7',
     seed: '74522'
   }, {
-    name: 'Hell\'s Paradise',
+    name: 'Test Map 5',
     createdAt: new Date(),
-    creator: { id: '1', name: 'xScodayx', profileUrl: 'assets/robot.png' },
+    creator: { id: '1', name: 'System', profileUrl: 'assets/robot.png' },
     previewUrl: 'assets/maps/default.png',
-    id: 'map-7',
-    seed: '74522',
-    playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 9, playgroundWidth: 9 }),
+    id: 'map-8',
+    seed: '523235',
+    playgroundInformation: this.generateMapPlaygroundInformation({ playgroundHeight: 15, playgroundWidth: 15 }),
   }];
 
   public getMaps(): MapInformation[] {

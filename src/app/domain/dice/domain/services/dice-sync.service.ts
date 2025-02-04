@@ -40,7 +40,6 @@ export class DiceSyncService {
     })
 
     this._diceRepository.diceRollStart.pipe(
-      tap(() => console.log("1424124124124")),
     ).subscribe(() => {
       console.log("Hi")
       dispatch(
@@ -55,7 +54,7 @@ export class DiceSyncService {
   private openDiceOverlay() {
     const component = this._hostRef.createComponent(DiceOverlayComponent);
     this._diceRef = component;
-    console.log("Indw", this._diceRef)
+    console.log("Opened Overlay", this._diceRef)
     
 
   }

@@ -1,19 +1,19 @@
 import { inject, Injectable } from '@angular/core';
-import { Game } from '../../game/domain/classes/game';
 import { dispatch } from '@ngneat/effects';
-import { RoundPlayerActions } from '../../round/domain/state/round-player.actions';
-import { RoundPlayer } from '../../round/domain/models/round-player.model';
-import { TradeActions } from '../../trade/domain/state/trade.actions';
-import { delay, merge, startWith } from 'rxjs';
+import { delay, merge } from 'rxjs';
 import { ActionHistoryActions } from '../../action-history/domain/state/action-history.actions';
-import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
-import { RoundCountdownActions } from '../../round/domain/state/countdown/round-countdown.actions';
 import { BankActions } from '../../bank/domain/state/bank.actions';
 import { DiceActions } from '../../dice/domain/state/dice.actions';
-import { RoundPlayerRepository } from '../../round/domain/state/round-players.repository';
+import { Game } from '../../game/domain/classes/game';
 import { GameModeActions } from '../../game/domain/state/game-mode.actions';
-import { UserRepository } from '../../user/domain/state/user.repository';
 import { InventoryActions } from '../../inventory/domain/state/inventory.actions';
+import { resourcesToResourceCards, resourceTypeToResourceCard } from '../../resources/domain/function/resource-type.function';
+import { RoundPlayer } from '../../round/domain/models/round-player.model';
+import { RoundCountdownActions } from '../../round/domain/state/countdown/round-countdown.actions';
+import { RoundPlayerActions } from '../../round/domain/state/round-player.actions';
+import { RoundPlayerRepository } from '../../round/domain/state/round-players.repository';
+import { TradeActions } from '../../trade/domain/state/trade.actions';
+import { UserRepository } from '../../user/domain/state/user.repository';
 
 @Injectable({
   providedIn: 'any'
@@ -28,15 +28,15 @@ export class GameEventDispatcherService {
   public sync(game: Game): void {
     console.log("GAME", game)
     this.syncRoundPlayers(game);
-    this.syncPlayersWinningPoints(game);
+    // this.syncPlayersWinningPoints(game);
     this.syncActiveRoundPlayer(game);
-    this.syncTradeResponses(game);
-    this.syncTradeOfferStarted(game);
-    this.syncOwnInventoryUpdate(game);
-    this.syncInventoryHistoryUpdate(game);
+    // this.syncTradeResponses(game);
+    // this.syncTradeOfferStarted(game);
+    // this.syncOwnInventoryUpdate(game);
+    // this.syncInventoryHistoryUpdate(game);
     this.syncTimer(game);
-    this.syncBuildingUpdates(game);
-    this.syncBankInventory(game);
+    // this.syncBuildingUpdates(game);
+    // this.syncBankInventory(game);
     this.syncDices(game);
     this.syncDiceOverlayOpenState(game);
   }

@@ -25,7 +25,7 @@ export class DiceRepository {
 
     public selectResetDices(): Observable<boolean> {
         return diceStore.pipe(
-            distinctUntilChanged(isEqual),
+            distinctUntilChanged((a, b) => isEqual(a.dices,b.dices)),
             filter(({dices}) => dices === undefined),
             map(state => {
                 return true
@@ -33,6 +33,7 @@ export class DiceRepository {
         );
     }
     public resetDices() {
+        console.log("TRUE RESET")
         diceStore.update(state => ({...state, dices: undefined}))
     }
 
@@ -48,6 +49,7 @@ export class DiceRepository {
     }
 
     public setDices(dices: Dices) {
+        console.log("SET")
         diceStore.update(state => ({...state, dices} ));
     }
 
@@ -59,6 +61,8 @@ export class DiceRepository {
     }
 
     public setIsOpen(isOpen: boolean) {
+        console.log("SET")
+
         return diceStore.update(state => ({...state, isOpen}));
     }
 

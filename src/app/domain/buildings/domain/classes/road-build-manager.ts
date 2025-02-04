@@ -21,7 +21,6 @@ export class RoadBuildManager {
   }
 
   private checkNodesValidForRoad(player:Player, nodeA: GraphNode, nodeB: GraphNode): void {
-    console.log("BUILDINGGRAPH", this.buildingGraph);
     const nodeARealRef = this.buildingGraph.getNodeById(nodeA.id);
     const nodeBRealRef = this.buildingGraph.getNodeById(nodeB.id);
     if (

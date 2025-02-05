@@ -34,14 +34,14 @@ export class GameEventDispatcherService {
   public sync(game: Game): void {
     console.log("GAME", game.selectBankInventory())
     this.syncRoundPlayers(game);
-    // this.syncPlayersWinningPoints(game);
+    this.syncPlayersWinningPoints(game);
     this.syncActiveRoundPlayer(game);
-    // this.syncTradeResponses(game);
-    // this.syncTradeOfferStarted(game);
-    // this.syncOwnInventoryUpdate(game);
-    // this.syncInventoryHistoryUpdate(game);
+    this.syncTradeResponses(game);
+    this.syncTradeOfferStarted(game);
+    this.syncOwnInventoryUpdate(game);
+    this.syncInventoryHistoryUpdate(game);
     this.syncTimer(game);
-    // this.syncBuildingUpdates(game);
+    this.syncBuildingUpdates(game);
     this.syncBankInventory(game);
     this.syncDices(game);
     this.syncDiceOverlayOpenState(game);

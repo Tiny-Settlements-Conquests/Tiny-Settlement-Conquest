@@ -1,27 +1,28 @@
-@if(inventory && inventory.wood > 0) {
-    <app-action-card-stack mode="darkGreen" [count]="inventory.wood">
+@let _inventory = inventory();
+@if(_inventory && _inventory.wood > 0) {
+    <app-action-card-stack mode="darkGreen" [count]="_inventory.wood">
         <img src="/assets/resources/wood.png" class="absolute w-8 h-8" />
     </app-action-card-stack>
 }
-@if(inventory && inventory.wool > 0) {
-    <app-action-card-stack mode="lightGreen" [count]="inventory.wool">
+@if(_inventory && _inventory.wool > 0) {
+    <app-action-card-stack mode="lightGreen" [count]="_inventory.wool">
         <img src="/assets/resources/sheep.png" class="absolute w-8 h-8" />
     </app-action-card-stack>
 }
-@if(inventory && inventory.straw > 0) {
-    <app-action-card-stack mode="yellow" [count]="inventory.straw">
+@if(_inventory && _inventory.straw > 0) {
+    <app-action-card-stack mode="yellow" [count]="_inventory.straw">
         <img src="/assets/resources/wheat.png" class="absolute w-10 h-10" />
 
     </app-action-card-stack>
 }
-@if(inventory && inventory.stone > 0) {
-    <app-action-card-stack mode="gray" [count]="inventory.stone">
+@if(_inventory && _inventory.stone > 0) {
+    <app-action-card-stack mode="gray" [count]="_inventory.stone">
         <img src="/assets/resources/stone.png" class="absolute w-10 h-10" />
 
     </app-action-card-stack>
 }
-@if(inventory && inventory.bricks > 0) {
-    <app-action-card-stack mode="red" [count]="inventory.bricks">
+@if(_inventory && _inventory.bricks > 0) {
+    <app-action-card-stack mode="red" [count]="_inventory.bricks">
         <img src="/assets/resources/brick.png" class="absolute w-10 h-8" />
     </app-action-card-stack>
 }

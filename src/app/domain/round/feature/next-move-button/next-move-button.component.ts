@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, inject } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faForward } from '@fortawesome/free-solid-svg-icons';
-import { dispatch } from '@ngneat/effects';
-import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
+import { GameSetupService } from '../../../game/domain/services/game-setup.service';
 
 @Component({
     selector: 'app-next-move-button',
@@ -13,18 +12,14 @@ import { EventQueueActions } from '../../../event-queues/domain/state/event-queu
     styleUrl: './next-move-button.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NextMoveButtonComponent { 
+export class NextMoveButtonComponent {
+  private readonly setupService = inject(GameSetupService)
   public icons = {
     next: faForward
   }
 
   @HostListener('click')
   public endMove() {
-    dispatch(
-      EventQueueActions.publish({
-        eventType: 'nextRound',
-        data: null
-      })
-    )
+    this.setupService.eventGateway?.nextRound();
   }
 }

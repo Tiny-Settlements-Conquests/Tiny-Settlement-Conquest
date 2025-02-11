@@ -4,11 +4,11 @@ import { provideRouter } from '@angular/router';
 
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { Actions, provideEffects, provideEffectsManager } from '@ngneat/effects-ng';
+import { Actions, provideEffectsManager } from '@ngneat/effects-ng';
 import { devTools } from '@ngneat/elf-devtools';
 import { routes } from './app.routes';
-import { EventQueueEffects } from './domain/event-queues/domain/state/event-queue/event-queue.effects';
 import { provideDevToken } from './utils/tokens/dev.token';
+import { provideEditionToken } from './utils/tokens/edition.token';
 import { provideVersionToken } from './utils/tokens/version.token';
 
 export function initElfDevTools(actions: Actions) {
@@ -38,12 +38,10 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideElfDevTools(),
     provideEffectsManager(),
-    provideEffects(
-      EventQueueEffects, //todo replace me 
-    ),
     provideAnimations(),
     provideAnimationsAsync(),
     provideDevToken(),
+    provideEditionToken(),
     provideVersionToken(),
     provideHttpClient(withInterceptorsFromDi())
   ]

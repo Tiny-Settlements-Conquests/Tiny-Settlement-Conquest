@@ -1,7 +1,6 @@
 import { ComponentRef, effect, inject, Injectable, Injector } from '@angular/core';
-import { dispatch } from '@ngneat/effects';
 import { delay, Subject, take, tap } from 'rxjs';
-import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
+import { GameSetupService } from '../../../game/domain/services/game-setup.service';
 import { GAME_COMPONENT_REF_TOKEN } from '../../../game/domain/tokens/game-component-ref.token';
 import { DiceOverlayComponent } from '../../ui/dice-overlay/dice-overlay.component';
 import { Dices } from '../models/dice.model';
@@ -13,6 +12,7 @@ import { DiceStore } from '../state/dice.store';
 export class DiceSyncService {
   public readonly diceRollStart = new Subject();
 
+  private readonly gameSetupService = inject(GameSetupService);
   private readonly _diceStore = inject(DiceStore);
   private readonly _hostRef = inject(GAME_COMPONENT_REF_TOKEN);
   private _diceRef: undefined | ComponentRef<DiceOverlayComponent> = undefined;
@@ -35,12 +35,7 @@ export class DiceSyncService {
 
     this.diceRollStart.pipe(
     ).subscribe(() => {
-      dispatch(
-        EventQueueActions.publish({
-          eventType: 'rollDices',
-          data: null
-        })
-      )
+      this.gameSetupService.eventGateway?.rollDice();
     });
   }
 

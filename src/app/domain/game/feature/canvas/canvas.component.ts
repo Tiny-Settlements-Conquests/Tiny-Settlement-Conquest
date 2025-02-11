@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, ViewChild } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { dispatch } from '@ngneat/effects';
 import { DEV_TOKEN } from '../../../../utils/tokens/dev.token';
+import { BuildingType } from '../../../buildings/domain/models/building.model';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
 import { GraphNode } from '../../../graph/domain/classes/graph-node';
@@ -13,8 +12,7 @@ import { PlaygroundRenderService } from '../../../playground/domain/renderer/pla
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
 import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
-import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
-import { BuildingType } from '../../../buildings/domain/models/building.model';
+import { GameSetupService } from '../../domain/services/game-setup.service';
 import { GameModeStore } from '../../domain/state/game-mode.store';
 
 @Component({
@@ -28,8 +26,10 @@ import { GameModeStore } from '../../domain/state/game-mode.store';
 })
 export class CanvasComponent implements AfterViewInit {
   private readonly _gameModeStore = inject(GameModeStore);
+  private readonly gameSetupService = inject(GameSetupService);
+  
   private readonly _devMode = inject(DEV_TOKEN);
-  private readonly _gameMode = this._gameModeStore.mode
+  private readonly _gameMode = this._gameModeStore.mode;
 
   @ViewChild('canvas', {
     static: true,
@@ -123,29 +123,20 @@ export class CanvasComponent implements AfterViewInit {
       let lastClickedNode = this.lastClickedNode
       const sourceNode = nearbyGraphNode;
       if(sourceNode && lastClickedNode){
-        dispatch(EventQueueActions.publish({
-          eventType: 'buildRoad',
-          data: {
-            from: sourceNode,
-            to: lastClickedNode
-          }
-        }))
+        this.gameSetupService.eventGateway?.tryBuildRoadBetweenGraphNodes(
+          sourceNode,
+          lastClickedNode
+        )
         this.lastClickedNode = null;
       } else {
-        //todo das ist nicht gut, später über das gateway abbilden!
         this.lastClickedNode = sourceNode;
       }
     } else {
-      //todo das ist nicht gut, später über das gateway abbilden!
-      dispatch(EventQueueActions.publish({
-        eventType: 'buildBuilding',
-        data: {
-          node: nearbyGraphNode,
-          type: gameMode == 'city' ? BuildingType.CITY : BuildingType.TOWN
-        },
-      }))
+      this.gameSetupService.eventGateway?.tryBuildBuildingOnGraphNode(
+        nearbyGraphNode,
+        gameMode == 'city' ? BuildingType.CITY : BuildingType.TOWN
+      )
     }
-
   }
 
   // auslagern in ne directive

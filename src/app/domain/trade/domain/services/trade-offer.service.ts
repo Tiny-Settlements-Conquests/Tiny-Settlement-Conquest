@@ -1,16 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { dispatch } from '@ngneat/effects';
 import { combineLatest, filter, map, Observable, startWith, switchMap } from 'rxjs';
-import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
+import { GameSetupService } from '../../../game/domain/services/game-setup.service';
 import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
+import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
 import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
 import { ResourceType } from '../../../resources/domain/models/resources.model';
 import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
 import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
-import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
 
 @Injectable({
   providedIn: 'any'
@@ -19,6 +18,7 @@ export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
   private readonly _inventoryStore = inject(InventoryStore);
   private readonly _playerStore = inject(RoundPlayerStore); 
+  private readonly _gameSetupService = inject(GameSetupService);
 
   public readonly offerForm = this._fb.group({
     isPlayerTrade: this._fb.control<boolean>(true),
@@ -146,22 +146,20 @@ export class TradeOfferService {
   }
 
   public addTrade() {
+
     const me = this._playerStore.me();
     const offeredResources = this.offerForm.controls.offerInventory.value;
     const requestedResources = this.offerForm.controls.requestInventory.value;
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
+    console.log("YYYYYYYYYYYYYYY")
     if(!me || !offeredResources || !requestedResources) return;
-    dispatch(
-      EventQueueActions.publish({
-        eventType: 'trade-offer-open',
-        data: {
-          typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
-          player: me,
-          offeredResources: offeredResources.resources,
-          requestedResources: requestedResources.resources,
-        }
-      })
-    )
+    console.log("DWWDAWDAD", this._gameSetupService)
+    this._gameSetupService.eventGateway?.startTrade({
+      typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
+      player: me,
+      offeredResources: offeredResources.resources,
+      requestedResources: requestedResources.resources,
+    })
   }
 }

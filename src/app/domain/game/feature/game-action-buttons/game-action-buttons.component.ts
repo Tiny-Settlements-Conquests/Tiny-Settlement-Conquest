@@ -26,7 +26,7 @@ export class GameActionButtonsComponent {
 
   openDialog(): void {
     this.dialog.open(TradeDialogComponent, {
-      injector: this._injector
+      injector: this._injector,
     });
   }
 }

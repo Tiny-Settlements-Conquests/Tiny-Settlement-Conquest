@@ -6,8 +6,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { ActionHistoryComponent } from '../../domain/action-history/feature/action-history/action-history.component';
 import { DiceSyncService } from '../../domain/dice/domain/services/dice-sync.service';
-import { provideEventGateway } from '../../domain/event-queues/domain/providers/event-gateway.provider';
-import { GameEventDispatcherService } from '../../domain/event-queues/services/game-event-dispatcher.service';
+import { GameEventDispatcherService } from '../../domain/event-dispatcher/game-event-dispatcher.service';
 import { Game } from '../../domain/game/domain/classes/game';
 import { provideGameClientEditionService } from '../../domain/game/domain/providers/game-client-edition-service.provider';
 import { provideGameComponentRef } from '../../domain/game/domain/providers/game-component-ref.provider';
@@ -41,9 +40,9 @@ import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/
       provideGameComponentRef(),
       GameEventDispatcherService,
       provideGameEventStores(),
-      provideEventGateway(),
       provideGameClientEditionService(),
       DiceSyncService,
+      GameSetupService
     ]
 })
 export class GameComponent { 
@@ -76,6 +75,7 @@ export class GameComponent {
   public ngOnInit() {
     const game = this._gameSetupService.loadGame();
 
+    console.log('game', this._gameSetupService)
     this._game.set(game);
     this.eventDispatcher.sync(game)
   }

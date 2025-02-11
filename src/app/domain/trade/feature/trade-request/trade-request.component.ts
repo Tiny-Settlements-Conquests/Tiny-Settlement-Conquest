@@ -1,16 +1,15 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { MatTooltip } from '@angular/material/tooltip';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCheck, faCircleDown, faCircleUp, faClose, faHourglass } from '@fortawesome/free-solid-svg-icons';
-import { dispatch } from '@ngneat/effects';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
+import { GameSetupService } from '../../../game/domain/services/game-setup.service';
 import { resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
 import { Resources, ResourceType } from '../../../resources/domain/models/resources.model';
 import { excludeEmptyResources } from '../../../resources/domain/utils/resource.utils';
 import { RoundPlayer } from '../../../round/domain/models/round-player.model';
 import { PlayerTrade } from '../../domain/models/trade.model';
-import { MatTooltip } from '@angular/material/tooltip';
 import { TradeStore } from '../../domain/state/trade.store';
-import { EventQueueActions } from '../../../event-queues/domain/state/event-queue/event-queue.actions';
 
 @Component({
     selector: 'app-trade-request',
@@ -24,6 +23,8 @@ import { EventQueueActions } from '../../../event-queues/domain/state/event-queu
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TradeRequestComponent {
+  private readonly gameSetupService = inject(GameSetupService);
+
   public readonly tradeOffer = input.required<PlayerTrade>();
   public readonly roundPlayers = input.required<RoundPlayer[]>();
   public readonly me = input.required<RoundPlayer>();
@@ -63,26 +64,18 @@ export class TradeRequestComponent {
   }
 
   public acceptTrade() {
-    dispatch(
-      EventQueueActions.publish({
-          eventType: 'trade-offer-accept', 
-          data: {
-            accepted: true,
-            respondedPlayer: this.me(),
-            tradeId: this.tradeOffer().id
-          },
-      })
-    ) 
+    this.gameSetupService.eventGateway?.respondToTrade({
+      accepted: true,
+      respondedPlayer: this.me(),
+      tradeId: this.tradeOffer().id
+    })
   }
 
   public denyTrade() {
-    EventQueueActions.publish({
-      eventType: 'trade-offer-deny', 
-      data: {
-        accepted: false,
-        respondedPlayer: this.me(),
-        tradeId: this.tradeOffer().id
-      },
+    this.gameSetupService.eventGateway?.respondToTrade({
+      accepted: false,
+      respondedPlayer: this.me(),
+      tradeId: this.tradeOffer().id
     })
   }
 

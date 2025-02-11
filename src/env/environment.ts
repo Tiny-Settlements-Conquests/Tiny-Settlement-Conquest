@@ -11,7 +11,7 @@ export interface ENVIRONMENT {
 }
 
 export const ENVIRONMENT: ENVIRONMENT = {
-    prod: true,
+    prod: false,
     edition: Edition.SINGLEPLAYER,
     version: '0.1.0',
 }

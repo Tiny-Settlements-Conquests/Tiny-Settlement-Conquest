@@ -7,6 +7,7 @@ import { BankStore } from "../../../bank/domain/state/bank.store";
 import { TradeStore } from "../../../trade/domain/state/trade.store";
 import { RoundCountdownStore } from "../../../round/domain/state/countdown/round-countdown.store";
 import { ActionHistoryStore } from "../../../action-history/domain/state/action-history.store";
+import { GameStateStore } from "../state/game-state.store";
 
 export function provideGameEventStores(): Provider[] {
     return [
@@ -17,6 +18,7 @@ export function provideGameEventStores(): Provider[] {
       BankStore,
       TradeStore,
       RoundCountdownStore,
-      ActionHistoryStore
+      ActionHistoryStore,
+      GameStateStore
     ]
 }

@@ -35,6 +35,10 @@ export const routes: Routes = [
                 path: '', loadComponent : () => import('./pages/game/').then(m => m.GameComponent),
                 canActivate: [GameMapGuardService],
             },
+            { 
+                path: 'leaderboard', loadComponent : () => import('./pages/leaderboard/').then(m => m.LeaderboardComponent),
+                canActivate: [GameMapGuardService],
+            },
         ],
     },
     {

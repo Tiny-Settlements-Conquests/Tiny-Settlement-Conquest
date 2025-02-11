@@ -1,0 +1,9 @@
+@use 'colors' as color;
+
+:host {
+  @apply flex flex-row w-full justify-center gap-[200px] h-[400px] relative overflow-hidden;
+  perspective: 400px;
+  perspective-origin: top;
+  border: 1px solid red;
+}
+

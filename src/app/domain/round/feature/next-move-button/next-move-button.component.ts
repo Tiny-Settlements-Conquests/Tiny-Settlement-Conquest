@@ -13,7 +13,7 @@ import { GameSetupService } from '../../../game/domain/services/game-setup.servi
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NextMoveButtonComponent {
-  private readonly setupService = inject(GameSetupService)
+  private readonly setupService = inject(GameSetupService);
   public icons = {
     next: faForward
   }

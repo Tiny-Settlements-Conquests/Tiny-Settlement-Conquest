@@ -29,4 +29,12 @@ export class LocalEventGateway implements EventGateway {
             ...trade
         });
     }
+
+    pause(): void {
+        this.game.pause();
+    }
+    
+    resume(): void {
+        this.game.resume();
+    }
 }

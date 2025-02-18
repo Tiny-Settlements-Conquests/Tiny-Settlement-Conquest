@@ -9,4 +9,6 @@ export interface EventGateway {
     tryBuildBuildingOnGraphNode(node: GraphNode, typ: BuildingType): void;
     respondToTrade(trade: TradeResponse): void;
     startTrade(trade: TradeRequest): void;
+    pause(): void;
+    resume(): void;
 }

@@ -45,7 +45,7 @@ export class DiceSyncService {
       injector: this._injector
     });
     this._diceRef = component;
-    console.log("Opened Overlay", this._diceRef)
+    // console.log("Opened Overlay", this._diceRef)
     
 
   }

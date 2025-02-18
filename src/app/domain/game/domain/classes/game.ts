@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subject, combineLatest, map, merge, race, switchMap, takeUntil, tap, timer } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, map, merge, race, switchMap, take, takeUntil, tap } from "rxjs";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
@@ -10,11 +10,11 @@ import { Playground } from "../../../playground/domain/classes/playground";
 import { ResourceDistributor } from "../../../resources/domain/classes/resources/resource-distributor";
 import { RobberManager } from "../../../robber/domain/classes/robber-manager";
 import { Round } from "../../../round/domain/classes/round";
+import { RoundPlayer } from "../../../round/domain/models/round-player.model";
 import { defaultOrderStrategy } from "../../../round/domain/strategies/default-round-order.strategy";
 import { TradeManager } from "../../../trade/domain/classes/trade-manager";
-import { GameMode } from "../models/game-mode.model";
 import { GameConfig, GameDependencies } from "../models/game.model";
-import { RoundPlayer } from "../../../round/domain/models/round-player.model";
+import { StopableTimer, stopableTimer } from "../utils/stopable-timer.utils";
 
 
 export class Game {
@@ -32,9 +32,13 @@ export class Game {
   private readonly _buildingSignal = new Subject<PathBuilding | Building>();
 
   private readonly _state = new BehaviorSubject<'roll' | 'round' | 'rob'>('roll');
+  private readonly _gameState = new BehaviorSubject<'paused' | 'running' | 'end'>('running');
   private readonly _nextRoundSignal = new Subject();
   private readonly _pauseSignal = new Subject();
+  private readonly _resumeSignal = new Subject();
   private readonly _endSignal = new Subject();
+
+  private _watch: StopableTimer | undefined = undefined;
 
   constructor(
     dependencies: GameDependencies,
@@ -42,8 +46,8 @@ export class Game {
       maxCitiesPerPlayer: 5,
       maxRoadsPerPlayer: 15,
       maxRollTimer: 5_000,
-      maxRoundTimer: 1_000_000,
-      // maxRoundTimer: 5_000,
+      // maxRoundTimer: 1_000_000,
+      maxRoundTimer: 15_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
       resourceMultiplier: 1
@@ -59,9 +63,10 @@ export class Game {
     this._resourceDistributor = dependencies.resourceDistributor;
     this._robberManager = dependencies.robberManager;
     this._tradeManager = dependencies.tradeManager;
-    this.startGame();
+    // this.startGame();
   }
 
+  //TODO timesHandler for the game
   private startGame() {
     this.startRoundTimers();
     const defaultOrder = defaultOrderStrategy(this._round);
@@ -74,14 +79,37 @@ export class Game {
       this.startRoundTimers();
       defaultOrder.nextRound();
     })
-  
+
+    this._endSignal.pipe(
+      take(1)
+    ).subscribe(() => {
+      this._gameState.next('end');
+    })
+    
+    this._pauseSignal.pipe(
+      takeUntil(this._endSignal)
+    ).subscribe(() => {
+      this._gameState.next('paused');
+      this._watch?.control$.next('STOP');
+      console.log("STOPPED.")
+      console.log(this._watch)
+    })
+
+    this._resumeSignal.pipe(
+      takeUntil(this._endSignal)
+    ).subscribe(() => {
+      this._gameState.next('running');
+      console.log("START", this._watch)
+      this._watch?.control$.next('START');
+    })
   }
 
   public pause() {
     this._pauseSignal.next(true);
   }
 
-  private resume() {
+  public resume() {
+    this._resumeSignal.next(true);
   }
 
   public get buildingBuildManager(): BuildingBuildManager {
@@ -98,12 +126,10 @@ export class Game {
 
   private startRoundTimers() {
     this.startRollTimer().pipe(
-      takeUntil(this._pauseSignal),
       switchMap(() => {
         console.log('roll timer end');
         return this.startRoundTimer()
       }),
-      takeUntil(this._pauseSignal),
     ).subscribe(() => {
       this._nextRoundSignal.next(true);
       console.log("round end...")
@@ -115,8 +141,10 @@ export class Game {
    */
   private startRollTimer() {
     this._state.next('roll');
+    const watch = stopableTimer(this.gameConfig.maxRollTimer + 1000);
+    this._watch = watch;
     return race(
-      timer(this.gameConfig.maxRollTimer).pipe(
+      watch.display$.pipe(
         takeUntil(this._nextRoundSignal),
         tap(() => {
           this.rollDice();
@@ -130,13 +158,12 @@ export class Game {
 
   private startRoundTimer() {
     this._state.next('round');
-    return race(
-      timer(this.gameConfig.maxRoundTimer).pipe(
-        takeUntil(this._nextRoundSignal),
-      ),
-    ).pipe(
-      takeUntil(this._nextRoundSignal)
-    )
+    const watch = stopableTimer(this.gameConfig.maxRoundTimer + 1000);
+    this._watch = watch;
+    return watch.display$.pipe(
+      takeUntil(this._nextRoundSignal),
+      tap(() => console.log("ROUND TIMER END")),
+    );
   }
 
   public selectActiveRoundPlayer(): Observable<RoundPlayer> {

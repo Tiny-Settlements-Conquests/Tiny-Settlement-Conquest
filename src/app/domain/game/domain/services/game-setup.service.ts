@@ -47,10 +47,6 @@ export class GameSetupService {
     return this._eventGateway;
   }
 
-  constructor() {
-    console.log("HALLo14222222222222222222222222222222222222222222222222222222222222.")
-  }
-
   private _game: Game | undefined;
   public get game(): Game | undefined {
     return this._game;

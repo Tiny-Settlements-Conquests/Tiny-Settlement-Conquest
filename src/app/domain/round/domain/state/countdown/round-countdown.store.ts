@@ -22,16 +22,21 @@ export const RoundCountdownStore = signalStore(
         })
     })),
     withMethods((store) => ({
+        stopCountdown() {
+            const _intervalRef = untracked(() => store._intervalRef());
+            if(_intervalRef.value !== undefined) {
+                _intervalRef.value.unsubscribe()
+            }
+        }
+    })),
+    withMethods((store) => ({
         setRoundTimers(countdownInMS: number) {
             patchState(store, {
                 countdownInMS
             })
         },
         _resetCountdown() {
-            const _intervalRef = untracked(() => store._intervalRef());
-            if(_intervalRef.value !== undefined) {
-                _intervalRef.value.unsubscribe()
-            }
+            store.stopCountdown();
             patchState(store, { countdownInMS: 0 });
         }
         
@@ -55,7 +60,7 @@ export const RoundCountdownStore = signalStore(
                 })
             ).subscribe()
             _originalIntervalRef.next(intervalRef);
-        }
+        },
     })),
     withHooks((store) => ({
         onInit() {
@@ -69,3 +74,9 @@ export const RoundCountdownStore = signalStore(
         },
     }))
 );
+
+// game sets mode
+// client subscribes to mode
+// if mode is stopped, update gameMode store and client stops timer
+// if mode is started, update gameMode
+// select timer (changes on gameMode update or if the round ends/starts) and start timer

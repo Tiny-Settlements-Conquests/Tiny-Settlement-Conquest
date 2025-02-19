@@ -20,7 +20,6 @@ import { GameInformationBarComponent } from '../../domain/info/feature/game-info
 import { RoundPlayerStore } from '../../domain/round/domain/state/round-player.store';
 import { TradeStore } from '../../domain/trade/domain/state/trade.store';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
-import { stopableTimer } from '../../domain/game/domain/utils/stopable-timer.utils';
 
 
 @Component({
@@ -81,19 +80,19 @@ export class GameComponent {
     this.eventDispatcher.sync(game)
 
     console.log("DWAD")
-    const watch = stopableTimer(6000);
-    watch.display$.subscribe((time) => {
-      console.log("HELLO FINISHED", time);
-    });
-    setTimeout(() => {
-      watch.control$.next("STOP");
-      console.log("STOOOOOOOPP");
-    }, 3000);
+    // const watch = stopableTimer(6000);
+    // watch.display$.subscribe((time) => {
+    //   console.log("HELLO FINISHED", time);
+    // });
+    // setTimeout(() => {
+    //   watch.control$.next("STOP");
+    //   console.log("STOOOOOOOPP");
+    // }, 3000);
 
-    setTimeout(() => {
-      console.log("START AGAIN");
-      watch.control$.next("START");
-    }, 9000);
+    // setTimeout(() => {
+    //   console.log("START AGAIN");
+    //   watch.control$.next("START");
+    // }, 9000);
     // watch.control$.next("START");
     // watch.control$.next("RESET");
     // Completing the control cleans up everything

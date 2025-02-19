@@ -13,6 +13,7 @@ import { BankStore } from '../bank/domain/state/bank.store';
 import { TradeStore } from '../trade/domain/state/trade.store';
 import { RoundCountdownStore } from '../round/domain/state/countdown/round-countdown.store';
 import { ActionHistoryStore } from '../action-history/domain/state/action-history.store';
+import { GAME_STATE } from '../game/domain/models/game-state.model';
 
 @Injectable({
   providedIn: 'any'
@@ -34,6 +35,7 @@ export class GameEventDispatcherService {
   public sync(game: Game): void {
     console.log("GAME", game.selectBankInventory())
     this.syncRoundPlayers(game);
+    this.syncGameStates(game);
     this.syncPlayersWinningPoints(game);
     this.syncActiveRoundPlayer(game);
     this.syncTradeResponses(game);
@@ -45,6 +47,16 @@ export class GameEventDispatcherService {
     this.syncBankInventory(game);
     this.syncDices(game);
     this.syncDiceOverlayOpenState(game);
+  }
+
+  private syncGameStates(game: Game): void {
+    game.selectGameState().subscribe((state) => {
+      console.log(state)
+      if(state === GAME_STATE.PAUSE) {
+        this._roundCountdownStore.stopCountdown();
+        console.log("STOP")
+      }
+    })
   }
 
   private syncRoundPlayers(game: Game): void {

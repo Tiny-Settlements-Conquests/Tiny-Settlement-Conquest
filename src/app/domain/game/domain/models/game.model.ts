@@ -15,6 +15,7 @@ export interface GameConfig {
     maxCitiesPerPlayer: number,
     maxRoadsPerPlayer: number,
     winPoints: number,
+    winningPointsMultiplier: number,
     maxRoundTimer: number,
     maxRollTimer: number,
   }

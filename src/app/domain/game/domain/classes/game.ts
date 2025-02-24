@@ -16,6 +16,10 @@ import { TradeManager } from "../../../trade/domain/classes/trade-manager";
 import { GameConfig, GameDependencies } from "../models/game.model";
 import { createStopableTimer, StoppableTimer } from "../utils/stopable-timer.utils";
 import { GAME_STATE } from "../models/game-state.model";
+import { GAME_PHASE } from "../models/game-phase.model";
+import { GamePhaseController  } from "./game-phase.class";
+import { GameTimeController } from "./game-timer.class";
+import { GameRoundController } from "./game-round.class";
 
 
 export class Game {
@@ -29,15 +33,16 @@ export class Game {
   private readonly _resourceDistributor: ResourceDistributor;
   private readonly _robberManager: RobberManager;
   private readonly _tradeManager: TradeManager;
+  private readonly _gameRoundController: GameRoundController;
 
-  private readonly _buildingSignal = new Subject<PathBuilding | Building>();
+  private readonly _buildingNotifier = new Subject<PathBuilding | Building>();
 
-  private readonly _state = new BehaviorSubject<'roll' | 'round' | 'rob'>('roll');
+  private readonly _gamePhase = new BehaviorSubject<GAME_PHASE>(GAME_PHASE.ROUND);
   private readonly _gameState = new BehaviorSubject<GAME_STATE>(GAME_STATE.PLAY);
-  private readonly _nextRoundSignal = new Subject();
-  private readonly _pauseSignal = new Subject();
-  private readonly _resumeSignal = new Subject();
-  private readonly _endSignal = new Subject();
+  private readonly _nextRoundNotifier = new Subject();
+  private readonly _pauseNotifier = new Subject();
+  private readonly _resumeNotifier = new Subject();
+  private readonly _endNotifier = new Subject();
 
   private _watch: StoppableTimer | undefined = undefined;
 
@@ -51,9 +56,11 @@ export class Game {
       maxRoundTimer: 15_000,
       maxTownsPerPlayer: 5,
       winPoints: 10,
-      resourceMultiplier: 1
+      resourceMultiplier: 1,
+      winningPointsMultiplier: 1
     },
   ) { 
+    this._gameRoundController = new GameRoundController();
     this.playground = dependencies.playground;
     this._round = dependencies.round;
     this._bank = dependencies.bank;
@@ -69,26 +76,27 @@ export class Game {
 
   //TODO timesHandler for the game
   private startGame() {
+
     this.startRoundTimers();
     const defaultOrder = defaultOrderStrategy(this._round);
     
-    this._nextRoundSignal.pipe(
+    this._nextRoundNotifier.pipe(
       tap(() => this.getTradeManager().cancelAllTrades()),
-      takeUntil(this._endSignal)
+      takeUntil(this._endNotifier)
     ).subscribe(() => {
       this._diceRoller.resetRoll()
       this.startRoundTimers();
       defaultOrder.nextRound();
     })
 
-    this._endSignal.pipe(
+    this._endNotifier.pipe(
       take(1)
     ).subscribe(() => {
       this._gameState.next(GAME_STATE.END);
     })
     
-    this._pauseSignal.pipe(
-      takeUntil(this._endSignal)
+    this._pauseNotifier.pipe(
+      takeUntil(this._endNotifier)
     ).subscribe(() => {
       this._gameState.next(GAME_STATE.PAUSE);
       this._watch?.stop();
@@ -96,8 +104,8 @@ export class Game {
       console.log(this._watch)
     })
 
-    this._resumeSignal.pipe(
-      takeUntil(this._endSignal)
+    this._resumeNotifier.pipe(
+      takeUntil(this._endNotifier)
     ).subscribe(() => {
       this._gameState.next(GAME_STATE.PLAY);
       console.log("START", this._watch)
@@ -106,11 +114,11 @@ export class Game {
   }
 
   public pause() {
-    this._pauseSignal.next(true);
+    this._pauseNotifier.next(true);
   }
 
   public resume() {
-    this._resumeSignal.next(true);
+    this._resumeNotifier.next(true);
   }
 
   public get buildingBuildManager(): BuildingBuildManager {
@@ -134,7 +142,7 @@ export class Game {
         return this.startRoundTimer()
       }),
     ).subscribe(() => {
-      this._nextRoundSignal.next(true);
+      this._nextRoundNotifier.next(true);
       console.log("round end...")
     })
   }
@@ -145,26 +153,26 @@ export class Game {
   private startRollTimer() {
     const watch = createStopableTimer(this.gameConfig.maxRollTimer);
     this._watch = watch;
-    this._state.next('roll');
+    this._gamePhase.next(GAME_PHASE.ROLL);
     return race(
       watch.display$.pipe(
-        takeUntil(this._nextRoundSignal),
+        takeUntil(this._nextRoundNotifier),
         tap(() => {
           this.rollDice();
         })
       ),
       this._diceRoller.selectRolledDice()
     ).pipe(
-      takeUntil(this._nextRoundSignal)
+      takeUntil(this._nextRoundNotifier)
     )
   }
 
   private startRoundTimer() {
     const watch = createStopableTimer(this.gameConfig.maxRoundTimer);
     this._watch = watch;
-    this._state.next('round');
+    this._gamePhase.next(GAME_PHASE.ROUND);
     return watch.display$.pipe(
-      takeUntil(this._nextRoundSignal),
+      takeUntil(this._nextRoundNotifier),
       tap(() => console.log("ROUND TIMER END")),
     );
   }
@@ -182,7 +190,7 @@ export class Game {
   public selectCurrentTimer() {
     return combineLatest({
       player: this.selectActiveRoundPlayer(),
-      typ: this._state,
+      typ: this._gamePhase,
       gameState: this._gameState
     }).pipe(
       filter(({gameState}) => gameState === GAME_STATE.PLAY),
@@ -222,7 +230,7 @@ export class Game {
   }
 
   public selectBuildingUpdate() {
-    return this._buildingSignal;
+    return this._buildingNotifier;
   }
 
   public selectUserInventoryUpdate() {
@@ -251,7 +259,7 @@ export class Game {
 
   public nextRound() {
     console.log("next ROUND")
-    this._nextRoundSignal.next(true);
+    this._nextRoundNotifier.next(true);
     
   }
 
@@ -269,20 +277,20 @@ export class Game {
       if(typ === BuildingType.CITY) {
         this._buildingBuildManager.buildBuilding(player, BuildingType.CITY, node);
         player.winningPointsInventory.addToInventory('points', 1)
-        this._buildingSignal.next({
+        this._buildingNotifier.next({
           type: BuildingType.CITY,
           graphNode: node,
           owner: player,
-          winningPoints: 2
+          winningPoints: 2 * this.gameConfig.winningPointsMultiplier
         })
       } else if(typ === BuildingType.TOWN) {
         this._buildingBuildManager.buildBuilding(player, BuildingType.TOWN, node);
         player.winningPointsInventory.addToInventory('points', 1)
-        this._buildingSignal.next({
+        this._buildingNotifier.next({
           type: BuildingType.TOWN,
           graphNode: node,
           owner: player,
-          winningPoints: 1
+          winningPoints: 1 * this.gameConfig.winningPointsMultiplier
         })
         
       }
@@ -296,7 +304,7 @@ export class Game {
       const player = this._round.getActivePlayer();
       if(!player) return;
       this._roadBuildManager.buildRoadBetween(player, nodeA, nodeB);
-      this._buildingSignal.next({
+      this._buildingNotifier.next({
         type: PathType.ROAD,
         graphNodeA: nodeA,
         graphNodeB: nodeB,

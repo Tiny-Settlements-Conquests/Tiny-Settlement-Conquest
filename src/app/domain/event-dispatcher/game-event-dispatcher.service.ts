@@ -33,7 +33,6 @@ export class GameEventDispatcherService {
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
     // und einmal mit einem websocket, das ist aber diesem service hier egal, hauptsache es kommen daten an
   public sync(game: Game): void {
-    console.log("GAME", game.selectBankInventory())
     this.syncRoundPlayers(game);
     this.syncGameStates(game);
     this.syncPlayersWinningPoints(game);
@@ -51,10 +50,8 @@ export class GameEventDispatcherService {
 
   private syncGameStates(game: Game): void {
     game.selectGameState().subscribe((state) => {
-      console.log(state)
       if(state === GAME_STATE.PAUSE) {
         this._roundCountdownStore.stopCountdown();
-        console.log("STOP")
       }
     })
   }
@@ -138,7 +135,6 @@ export class GameEventDispatcherService {
   private syncInventoryHistoryUpdate(game: Game): void {
     game.selectUserInventoryUpdate().pipe(
     ).subscribe((inventory) => {
-      console.log("inventory update", inventory) // todo old & new amount hier rauslassen -> could be abused
       if(inventory.oldAmount < inventory.newAmount) { // old amount darf nicht größer als der neue sein, sonst wurde etwas abgezogen
         this._actionHistoryStore.addAction({
             typ: 'resource',
@@ -179,10 +175,8 @@ export class GameEventDispatcherService {
       this._diceStore.setDices(undefined);
       this._diceStore.setIsOverlayOpen(false);
       //todo build this with userRepo
-      console.log("RESET CAUSE NEW ROUND!")
       if(this._roundPlayerStore.me() !== undefined && d.activePlayer?.roundPlayer.id === this._roundPlayerStore.me()?.id && !d.activePlayer.roundPlayer.isBot) {
         this._diceStore.setIsOverlayOpen(true);
-        console.log("OPEN !")
       }
     })
   }

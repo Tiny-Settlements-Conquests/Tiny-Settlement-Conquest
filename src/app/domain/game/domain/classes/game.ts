@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subject, combineLatest, filter, map, merge, race, switchMap, take, takeUntil, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, filter, forkJoin, map, merge, race, switchMap, take, takeUntil, tap, zip } from "rxjs";
 import { BuildCostManager } from "../../../buildings/domain/classes/build-cost-manager";
 import { BuildingBuildManager } from "../../../buildings/domain/classes/building-build-manager";
 import { RoadBuildManager } from "../../../buildings/domain/classes/road-build-manager";
@@ -20,6 +20,7 @@ import { GAME_PHASE } from "../models/game-phase.model";
 import { GamePhaseController  } from "./game-phase.class";
 import { GameTimeController } from "./game-timer.class";
 import { GameRoundController } from "./game-round.class";
+import { GameStateController } from "./game-state.class";
 
 
 export class Game {
@@ -34,17 +35,10 @@ export class Game {
   private readonly _robberManager: RobberManager;
   private readonly _tradeManager: TradeManager;
   private readonly _gameRoundController: GameRoundController;
-
+  private readonly _gameTimeController: GameTimeController;
+  private readonly _gamePhaseController: GamePhaseController;
+  private readonly _gameStateController: GameStateController;
   private readonly _buildingNotifier = new Subject<PathBuilding | Building>();
-
-  private readonly _gamePhase = new BehaviorSubject<GAME_PHASE>(GAME_PHASE.ROUND);
-  private readonly _gameState = new BehaviorSubject<GAME_STATE>(GAME_STATE.PLAY);
-  private readonly _nextRoundNotifier = new Subject();
-  private readonly _pauseNotifier = new Subject();
-  private readonly _resumeNotifier = new Subject();
-  private readonly _endNotifier = new Subject();
-
-  private _watch: StoppableTimer | undefined = undefined;
 
   constructor(
     dependencies: GameDependencies,
@@ -59,8 +53,14 @@ export class Game {
       resourceMultiplier: 1,
       winningPointsMultiplier: 1
     },
-  ) { 
-    this._gameRoundController = new GameRoundController();
+  ) {
+    this._gameStateController = new GameStateController();
+    this._gameTimeController = new GameTimeController();
+    this._gamePhaseController = new GamePhaseController();
+    this._gameRoundController = new GameRoundController(
+      this._gameTimeController,
+      this._gamePhaseController
+    );
     this.playground = dependencies.playground;
     this._round = dependencies.round;
     this._bank = dependencies.bank;
@@ -77,48 +77,43 @@ export class Game {
   //TODO timesHandler for the game
   private startGame() {
 
-    this.startRoundTimers();
+    // this.startRoundTimers();
     const defaultOrder = defaultOrderStrategy(this._round);
     
-    this._nextRoundNotifier.pipe(
-      tap(() => this.getTradeManager().cancelAllTrades()),
-      takeUntil(this._endNotifier)
+    this._gameRoundController._rollDiceNotifierOut.pipe(
+      takeUntil(this._gameStateController.endNotifier)
     ).subscribe(() => {
-      this._diceRoller.resetRoll()
-      this.startRoundTimers();
+      this.rollDice();
+    })
+
+    this._gameRoundController._nextRoundNotifier.pipe(
+      tap(() => this.getTradeManager().cancelAllTrades()),
+      takeUntil(this._gameStateController.endNotifier)
+    ).subscribe(() => {
+      this._diceRoller.resetRoll();
       defaultOrder.nextRound();
     })
 
-    this._endNotifier.pipe(
-      take(1)
+    this._gameStateController.pauseNotifier.pipe(
+      takeUntil(this._gameStateController.endNotifier)
     ).subscribe(() => {
-      this._gameState.next(GAME_STATE.END);
-    })
-    
-    this._pauseNotifier.pipe(
-      takeUntil(this._endNotifier)
-    ).subscribe(() => {
-      this._gameState.next(GAME_STATE.PAUSE);
-      this._watch?.stop();
-      console.log("STOPPED.")
-      console.log(this._watch)
+      this._gameTimeController.watch?.stop();
     })
 
-    this._resumeNotifier.pipe(
-      takeUntil(this._endNotifier)
+    this._gameStateController.resumeNotifier.pipe(
+      takeUntil(this._gameStateController.endNotifier)
     ).subscribe(() => {
-      this._gameState.next(GAME_STATE.PLAY);
-      console.log("START", this._watch)
-      this._watch?.start();
+      this._gameTimeController.watch?.start();
     })
+
   }
 
   public pause() {
-    this._pauseNotifier.next(true);
+    this._gameStateController.updateGameState(GAME_STATE.PAUSE);
   }
 
   public resume() {
-    this._resumeNotifier.next(true);
+    this._gameStateController.updateGameState(GAME_STATE.PLAY);
   }
 
   public get buildingBuildManager(): BuildingBuildManager {
@@ -133,50 +128,6 @@ export class Game {
     return this._costManager;
   }
 
-  private startRoundTimers() {
-    this._watch?.end();
-    this._watch = undefined;
-    this.startRollTimer().pipe(
-      switchMap(() => {
-        console.log('roll timer end');
-        return this.startRoundTimer()
-      }),
-    ).subscribe(() => {
-      this._nextRoundNotifier.next(true);
-      console.log("round end...")
-    })
-  }
-
-  /**
-   * @returns sobald der timer abgelaufen oder der nutzer die roll funktion ausgeführt hat
-   */
-  private startRollTimer() {
-    const watch = createStopableTimer(this.gameConfig.maxRollTimer);
-    this._watch = watch;
-    this._gamePhase.next(GAME_PHASE.ROLL);
-    return race(
-      watch.display$.pipe(
-        takeUntil(this._nextRoundNotifier),
-        tap(() => {
-          this.rollDice();
-        })
-      ),
-      this._diceRoller.selectRolledDice()
-    ).pipe(
-      takeUntil(this._nextRoundNotifier)
-    )
-  }
-
-  private startRoundTimer() {
-    const watch = createStopableTimer(this.gameConfig.maxRoundTimer);
-    this._watch = watch;
-    this._gamePhase.next(GAME_PHASE.ROUND);
-    return watch.display$.pipe(
-      takeUntil(this._nextRoundNotifier),
-      tap(() => console.log("ROUND TIMER END")),
-    );
-  }
-
   public selectActiveRoundPlayer(): Observable<RoundPlayer> {
     return this._round.selectActivePlayer().pipe(
       map((player) => player.roundPlayer)
@@ -189,21 +140,18 @@ export class Game {
 
   public selectCurrentTimer() {
     return combineLatest({
-      player: this.selectActiveRoundPlayer(),
-      typ: this._gamePhase,
-      gameState: this._gameState
+      not: this._gameRoundController._updateCurrentTimerNotifier, 
+      gameState: this._gameStateController.selectGameState(),
+      typ: this._gameRoundController._gamePhaseController.selectGamePhase(),
     }).pipe(
       filter(({gameState}) => gameState === GAME_STATE.PLAY),
+      switchMap(() => combineLatest({
+        player: this.selectActiveRoundPlayer(),
+      }).pipe(take(1))
+      ),
       map(() => {
-        console.log("TIMER IS ", this._watch?.timeoutLeft ?? 0)
-        return this._watch?.timeoutLeft ?? 0;
+        return this._gameTimeController.watch?.timeoutLeft ?? 0;
       })
-      // map(({ typ }) => {
-      //   if (typ === 'roll') {
-      //     return this.gameConfig.maxRollTimer;
-      //   }
-      //   return this.gameConfig.maxRoundTimer;
-      // })
     )
   }
 
@@ -253,18 +201,19 @@ export class Game {
     );
   }
 
-  public selectGameState(): BehaviorSubject<GAME_STATE> {
-    return this._gameState;
+  public selectGameState(): Observable<GAME_STATE> {
+    return this._gameStateController.selectGameState();
   }
 
   public nextRound() {
     console.log("next ROUND")
-    this._nextRoundNotifier.next(true);
+    this._gameRoundController._nextRoundNotifier.next(true);
     
   }
 
   public rollDice() {
     if(this._diceRoller.hasRolledThisRound) throw new Error();
+    this._gameRoundController._rollDiceByUserNotifierIn.next();
     const rolledDices = this._diceRoller.rollDices();
     this._resourceDistributor.distributeResources(rolledDices.sum);
   }

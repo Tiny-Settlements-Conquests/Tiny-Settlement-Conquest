@@ -19,7 +19,7 @@ export class GameTimeController {
   constructor(
     private readonly gameConfig: GameTimerConfig = {
       // maxRoundTimer: 1_000_000,
-      maxRoundTimer: 15_000,
+      maxRoundTimer: 5_000,
       maxRollTimer: 5_000,
     }
   ) {}

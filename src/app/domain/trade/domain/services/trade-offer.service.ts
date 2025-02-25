@@ -152,9 +152,7 @@ export class TradeOfferService {
     const requestedResources = this.offerForm.controls.requestInventory.value;
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
-    console.log("YYYYYYYYYYYYYYY")
     if(!me || !offeredResources || !requestedResources) return;
-    console.log("DWWDAWDAD", this._gameSetupService)
     this._gameSetupService.eventGateway?.startTrade({
       typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
       player: me,

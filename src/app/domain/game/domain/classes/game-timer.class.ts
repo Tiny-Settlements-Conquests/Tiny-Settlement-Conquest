@@ -17,11 +17,7 @@ export class GameTimeController {
   }
 
   constructor(
-    private readonly gameConfig: GameTimerConfig = {
-      // maxRoundTimer: 1_000_000,
-      maxRoundTimer: 5_000,
-      maxRollTimer: 5_000,
-    }
+    private readonly gameConfig: GameTimerConfig
   ) {}
 
   public setAndGetWatchByGamePhase(gamePhase: GAME_PHASE): StoppableTimer {

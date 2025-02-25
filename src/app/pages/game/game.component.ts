@@ -20,6 +20,7 @@ import { GameInformationBarComponent } from '../../domain/info/feature/game-info
 import { RoundPlayerStore } from '../../domain/round/domain/state/round-player.store';
 import { TradeStore } from '../../domain/trade/domain/state/trade.store';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
+import { PauseOverlaySyncService } from '../../domain/pause/domain/pause-overlay-sync.service';
 
 
 @Component({
@@ -42,7 +43,8 @@ import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/
       provideGameEventStores(),
       provideGameClientEditionService(),
       DiceSyncService,
-      GameSetupService
+      GameSetupService,
+      PauseOverlaySyncService
     ]
 })
 export class GameComponent { 
@@ -53,6 +55,7 @@ export class GameComponent {
   private readonly _gameSetupService = inject(GameSetupService);
   public readonly eventDispatcher = inject(GameEventDispatcherService);
   private readonly _diceSyncService = inject(DiceSyncService); // do not remove
+  private readonly _pauseOverlaySyncService = inject(PauseOverlaySyncService);
   
   public icons = {
     clock: faClock
@@ -78,9 +81,5 @@ export class GameComponent {
     console.log('game', this._gameSetupService)
     this._game.set(game);
     this.eventDispatcher.sync(game)
-
-
-
-
   }
 }

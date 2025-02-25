@@ -10,7 +10,7 @@ import { GameSetupService } from '../../../game/domain/services/game-setup.servi
   selector: 'app-pause-resume-button',
   imports: [
     FaIconComponent,
-    MatTooltip
+    MatTooltip,
   ],
   templateUrl: './pause-resume-button.component.html',
   styleUrl: './pause-resume-button.component.scss',
@@ -36,6 +36,5 @@ export class PauseResumeButtonComponent {
     } else {
       this.setupService.eventGateway?.pause();
     }
-    this._gameStateStore.setMode(this.isPaused() ? GAME_STATE.PLAY : GAME_STATE.PAUSE);
   }
 }

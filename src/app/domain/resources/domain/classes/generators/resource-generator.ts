@@ -48,7 +48,11 @@ export class ResourceGenerator {
   }
 
   private generateRandomNumber(min: number = 2, max: number = 12): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    let randomNumber: number | undefined = undefined;
+    while(randomNumber === undefined || randomNumber === 7) {
+      randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    return randomNumber
 }
 
   public getResourceByType(type: ResourceType, field: Field, value: number): ResourceField {

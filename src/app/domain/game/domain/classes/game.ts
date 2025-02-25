@@ -55,7 +55,10 @@ export class Game {
     },
   ) {
     this._gameStateController = new GameStateController();
-    this._gameTimeController = new GameTimeController();
+    this._gameTimeController = new GameTimeController({
+      maxRollTimer: this.gameConfig.maxRollTimer,
+      maxRoundTimer: this.gameConfig.maxRoundTimer
+    });
     this._gamePhaseController = new GamePhaseController();
     this._gameRoundController = new GameRoundController(
       this._gameTimeController,
@@ -74,10 +77,7 @@ export class Game {
     this.startGame();
   }
 
-  //TODO timesHandler for the game
   private startGame() {
-
-    // this.startRoundTimers();
     const defaultOrder = defaultOrderStrategy(this._round);
     
     this._gameRoundController._rollDiceNotifierOut.pipe(

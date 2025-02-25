@@ -1,3 +1,9 @@
 :host {
-  display: block;
+  @apply top-0 absolute flex flex-col gap-10 items-center justify-center h-full w-full;
+}
+
+button {
+  @apply py-2 px-6 bg-zinc-800 rounded;
+  color: rgb(50, 50, 50);
+  background-image: linear-gradient(to bottom, #fcfaf5, #e2d7c4);
 }

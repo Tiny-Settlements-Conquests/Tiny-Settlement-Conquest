@@ -29,7 +29,6 @@ export class GameRoundController {
         ).subscribe((phase) => {
           const watch = this._gameTimeController.setAndGetWatchByGamePhase(phase);
           this._resetNotifier.next(true);
-          console.log("PHASE: ", phase)
           if(phase === GAME_PHASE.ROLL) {
             this.startRollTimer(watch);
           } else {

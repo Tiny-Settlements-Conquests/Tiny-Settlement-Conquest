@@ -14,6 +14,7 @@ import { TradeStore } from '../trade/domain/state/trade.store';
 import { RoundCountdownStore } from '../round/domain/state/countdown/round-countdown.store';
 import { ActionHistoryStore } from '../action-history/domain/state/action-history.store';
 import { GAME_STATE } from '../game/domain/models/game-state.model';
+import { GameStateStore } from '../game/domain/state/game-state.store';
 
 @Injectable({
   providedIn: 'any'
@@ -28,6 +29,7 @@ export class GameEventDispatcherService {
   private readonly _tradeStore = inject(TradeStore);
   private readonly _roundCountdownStore = inject(RoundCountdownStore);
   private readonly _actionHistoryStore = inject(ActionHistoryStore)
+  private readonly _gameStateStore = inject(GameStateStore)
 
   //todo define an interface instead
     //todo jeweils als injection token of type gameState und dann gibts den service einmal mit game als quelle
@@ -50,6 +52,7 @@ export class GameEventDispatcherService {
 
   private syncGameStates(game: Game): void {
     game.selectGameState().subscribe((state) => {
+      this._gameStateStore.setMode(state);
       if(state === GAME_STATE.PAUSE) {
         this._roundCountdownStore.stopCountdown();
       }

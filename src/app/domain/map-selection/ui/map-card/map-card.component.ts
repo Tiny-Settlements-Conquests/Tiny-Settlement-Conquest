@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostBinding, HostListener, input } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faMaximize, faUser } from '@fortawesome/free-solid-svg-icons';
-import { MapInformation } from '../../domain/models/map-selection.model';
+import { MapInformation } from '@catan/shared/models';
 
 @Component({
     selector: 'app-map-card',

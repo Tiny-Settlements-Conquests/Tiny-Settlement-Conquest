@@ -1,11 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild, effect, inject, input } from '@angular/core';
-import { GraphBuildingNode } from '../../../buildings/domain/graph/graph-building-node';
+import { GraphBuildingNode, Graph, Playground } from '@catan/game-engine';
+import { MapPlaygroundInformation } from '@catan/shared/models';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
-import { Graph } from '../../../graph/domain/classes/graph';
-import { MapPlaygroundInformation } from '../../../map-selection/domain/models/map-selection.model';
-import { Playground } from '../../../playground/domain/classes/playground';
 import { PlaygroundGraphGenerator } from '../../../playground/domain/generators/playground-graph-generator';
 import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
 import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
@@ -17,9 +14,7 @@ import { Viewport } from '../../../viewport/classes/viewport';
 
 @Component({
     selector: 'app-map-preview',
-    imports: [
-        CommonModule,
-    ],
+    imports: [],
     templateUrl: './map-preview.component.html',
     styleUrl: './map-preview.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

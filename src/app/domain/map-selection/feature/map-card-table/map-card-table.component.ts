@@ -4,8 +4,8 @@ import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { map, startWith, switchMap } from 'rxjs';
-import { LobbyRepository } from '../../../lobby/domain/state/repository';
-import { MapInformation } from '../../domain/models/map-selection.model';
+import { LobbyStore } from '@catan/core';
+import { MapInformation } from '@catan/shared/models';
 import { MapSelectionService } from '../../domain/services/map-selection.service';
 import { MapCardComponent } from '../../ui/map-card/map-card.component';
 import { MapSelectionComponent } from '../../../../pages/map-selection';
@@ -23,7 +23,7 @@ import { MapSelectionComponent } from '../../../../pages/map-selection';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapCardTableComponent {
-  private readonly _lobbyRepository = inject(LobbyRepository);
+  private readonly _lobbyStore = inject(LobbyStore);
   private readonly mapSelectionService = inject(MapSelectionService);
   private readonly _fb = inject(FormBuilder);
   private readonly mapSelectionComponent = inject(MapSelectionComponent);

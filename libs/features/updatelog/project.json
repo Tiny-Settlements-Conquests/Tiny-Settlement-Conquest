@@ -1,0 +1,11 @@
+{
+  "name": "feature-updatelog",
+  "projectType": "library",
+  "sourceRoot": "libs/features/updatelog/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

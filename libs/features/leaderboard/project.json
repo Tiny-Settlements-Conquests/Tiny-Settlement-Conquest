@@ -1,0 +1,11 @@
+{
+  "name": "feature-leaderboard",
+  "projectType": "library",
+  "sourceRoot": "libs/features/leaderboard/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

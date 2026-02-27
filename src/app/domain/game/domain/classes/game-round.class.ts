@@ -50,7 +50,6 @@ export class GameRoundController {
           // takeUntil(this._resetNotifier),
         ).subscribe(() => {
           this._gamePhaseController.updateGamePhase(GAME_PHASE.ROLL);
-          console.log("round end...")
         })
 
         

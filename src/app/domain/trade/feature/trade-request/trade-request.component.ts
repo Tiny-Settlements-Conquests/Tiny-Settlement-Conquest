@@ -3,12 +3,10 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCheck, faCircleDown, faCircleUp, faClose, faHourglass } from '@fortawesome/free-solid-svg-icons';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
-import { GameSetupService } from '../../../game/domain/services/game-setup.service';
+import { EVENT_GATEWAY_TOKEN } from '@catan/core';
 import { resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
-import { Resources, ResourceType } from '../../../resources/domain/models/resources.model';
+import { PlayerTrade, Resources, ResourceType, RoundPlayer } from '@catan/shared/models';
 import { excludeEmptyResources } from '../../../resources/domain/utils/resource.utils';
-import { RoundPlayer } from '../../../round/domain/models/round-player.model';
-import { PlayerTrade } from '../../domain/models/trade.model';
 import { TradeStore } from '../../domain/state/trade.store';
 
 @Component({
@@ -23,7 +21,7 @@ import { TradeStore } from '../../domain/state/trade.store';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TradeRequestComponent {
-  private readonly gameSetupService = inject(GameSetupService);
+  private readonly gateway = inject(EVENT_GATEWAY_TOKEN);
 
   public readonly tradeOffer = input.required<PlayerTrade>();
   public readonly roundPlayers = input.required<RoundPlayer[]>();
@@ -64,7 +62,7 @@ export class TradeRequestComponent {
   }
 
   public acceptTrade() {
-    this.gameSetupService.eventGateway?.respondToTrade({
+    this.gateway.respondToTrade({
       accepted: true,
       respondedPlayer: this.me(),
       tradeId: this.tradeOffer().id
@@ -72,7 +70,7 @@ export class TradeRequestComponent {
   }
 
   public denyTrade() {
-    this.gameSetupService.eventGateway?.respondToTrade({
+    this.gateway.respondToTrade({
       accepted: false,
       respondedPlayer: this.me(),
       tradeId: this.tradeOffer().id

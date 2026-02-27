@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, HostListener, inject } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faForward } from '@fortawesome/free-solid-svg-icons';
-import { GameSetupService } from '../../../game/domain/services/game-setup.service';
+import { GameFacade } from '@catan/feature-game';
 
 @Component({
     selector: 'app-next-move-button',
@@ -13,13 +13,13 @@ import { GameSetupService } from '../../../game/domain/services/game-setup.servi
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NextMoveButtonComponent {
-  private readonly setupService = inject(GameSetupService);
+  private readonly _facade = inject(GameFacade);
   public icons = {
     next: faForward
   }
 
   @HostListener('click')
   public endMove() {
-    this.setupService.eventGateway?.nextRound();
+    this._facade.nextRound();
   }
 }

@@ -32,14 +32,12 @@ export class UpdatelogComponent {
   public readonly markdownContent = computed(() => {
     const raw = this.markdownContentRaw();
     if(raw === undefined) return '';
-    console.log(marked.lexer(raw))
     return <string>marked(raw);
   });
 
   public readonly headings = computed(() => {
     const markDown = this.markdownContentRaw();
     if(markDown === undefined) return;
-    console.log(extractHeadings(markDown))
     return extractHeadings(markDown);
   })
 

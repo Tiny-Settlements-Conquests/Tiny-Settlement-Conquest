@@ -1,0 +1,11 @@
+{
+  "name": "feature-trade",
+  "projectType": "library",
+  "sourceRoot": "libs/features/trade/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

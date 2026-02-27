@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { MapInformation, MapPlaygroundInformation } from '../models/map-selection.model';
+import { MapInformation, MapPlaygroundInformation, PlaygroundDimensions } from '@catan/shared/models';
 import { map, Observable, of } from 'rxjs';
-import { PlaygroundDimensions } from '../../../playground/domain/models/playground.model';
 import { PlaygroundGridGenerator } from '../../../playground/domain/generators/playground-grid-generator';
 import { ResourceGenerator } from '../../../resources/domain/classes/generators/resource-generator';
 

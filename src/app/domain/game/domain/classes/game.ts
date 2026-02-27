@@ -206,7 +206,6 @@ export class Game {
   }
 
   public nextRound() {
-    console.log("next ROUND")
     this._gameRoundController._nextRoundNotifier.next(true);
     
   }
@@ -244,7 +243,7 @@ export class Game {
         
       }
     } catch(e) {
-      console.log("ERROR",e)
+      // Build failed silently — node may already be occupied
     }
   }
 

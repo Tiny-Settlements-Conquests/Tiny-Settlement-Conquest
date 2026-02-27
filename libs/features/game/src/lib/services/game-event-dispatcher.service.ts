@@ -1,0 +1,1 @@
+export { GameEventDispatcherService } from '../../../../../../src/app/domain/event-dispatcher/game-event-dispatcher.service';

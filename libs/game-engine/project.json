@@ -1,0 +1,11 @@
+{
+  "name": "game-engine",
+  "projectType": "library",
+  "sourceRoot": "libs/game-engine/src",
+  "tags": ["scope:game-engine"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "feature-game",
+  "projectType": "library",
+  "sourceRoot": "libs/features/game/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

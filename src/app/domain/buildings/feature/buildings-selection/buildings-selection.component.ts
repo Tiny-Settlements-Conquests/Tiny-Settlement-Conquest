@@ -2,11 +2,9 @@ import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { GameMode } from '../../../game/domain/models/game-mode.model';
+import { GameMode } from '@catan/shared/models';
+import { GameFacade } from '@catan/feature-game';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
-import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
-import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
-import { GameModeStore } from '../../../game/domain/state/game-mode.store';
 @Component({
     selector: 'app-buildings-selection',
     imports: [
@@ -19,15 +17,13 @@ import { GameModeStore } from '../../../game/domain/state/game-mode.store';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BuildingsSelectionComponent {
-  private readonly _gameModeStore= inject(GameModeStore);
-  private readonly _inventoryStore = inject(InventoryStore);
-  private readonly _roundStore = inject(RoundPlayerStore);
+  private readonly _facade = inject(GameFacade);
 
-  public activeMode = this._gameModeStore.mode
+  public activeMode = this._facade.gameMode;
 
-  public inventory = this._inventoryStore.resources
+  public inventory = this._facade.inventory;
 
-  public readonly isMyTurn = this._roundStore.isMyTurn;
+  public readonly isMyTurn = this._facade.isMyTurn;
 
   public readonly activateRoad = computed(() => {
     const inventory = this.inventory();
@@ -58,9 +54,9 @@ export class BuildingsSelectionComponent {
   public updateGameMode(gameMode: GameMode): void {
     const activeMode = this.activeMode();
     if (activeMode === gameMode) {
-      this._gameModeStore.setMode('spectate');
+      this._facade.setGameMode('spectate');
     } else {
-      this._gameModeStore.setMode(gameMode);
+      this._facade.setGameMode(gameMode);
     }
   }
 }

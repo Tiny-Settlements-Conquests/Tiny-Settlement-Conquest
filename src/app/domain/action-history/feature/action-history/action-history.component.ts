@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { asapScheduler } from 'rxjs';
 import { ActionEventComponent } from '../action-event/action-event.component';
 import { ActionHistoryStore } from '../../domain/state/action-history.store';
-import { HistoryAction } from '../../domain/models/action.model';
+import { HistoryAction } from '@catan/shared/models';
 
 @Component({
     selector: 'app-action-history',

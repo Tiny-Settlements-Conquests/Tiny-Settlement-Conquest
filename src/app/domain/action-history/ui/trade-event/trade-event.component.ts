@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { TradeAction } from '../../domain/models/action.model';
+import { TradeAction } from '@catan/shared/models';
 
 @Component({
   selector: 'app-trade-event',

@@ -1,0 +1,11 @@
+{
+  "name": "feature-map-selection",
+  "projectType": "library",
+  "sourceRoot": "libs/features/map-selection/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

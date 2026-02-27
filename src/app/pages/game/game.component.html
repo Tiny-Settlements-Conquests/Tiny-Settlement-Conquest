@@ -21,3 +21,9 @@
         }
     }
 </div>
+@if(isDiceOverlayOpen()) {
+    <app-dice-overlay />
+}
+@if(isPaused()) {
+    <app-pause-overlay />
+}

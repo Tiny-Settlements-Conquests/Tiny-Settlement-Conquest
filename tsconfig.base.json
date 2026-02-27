@@ -1,0 +1,42 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022", "dom"],
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@catan/shared/models": ["libs/shared/models/src/index.ts"],
+      "@catan/shared/ui": ["libs/shared/ui/src/index.ts"],
+      "@catan/shared/util": ["libs/shared/util/src/index.ts"],
+      "@catan/core": ["libs/core/src/index.ts"],
+      "@catan/game-engine": ["libs/game-engine/src/index.ts"],
+      "@catan/feature-game": ["libs/features/game/src/index.ts"],
+      "@catan/feature-trade": ["libs/features/trade/src/index.ts"],
+      "@catan/feature-lobby": ["libs/features/lobby/src/index.ts"],
+      "@catan/feature-menu": ["libs/features/menu/src/index.ts"],
+      "@catan/feature-map-selection": ["libs/features/map-selection/src/index.ts"],
+      "@catan/feature-leaderboard": ["libs/features/leaderboard/src/index.ts"],
+      "@catan/feature-updatelog": ["libs/features/updatelog/src/index.ts"]
+    }
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}

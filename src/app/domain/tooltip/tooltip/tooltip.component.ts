@@ -1,10 +1,10 @@
-import {Component, inject, OnInit, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, ViewContainerRef} from '@angular/core';
 
 @Component({
     selector: 'tooltip',
     templateUrl: './tooltip.component.html',
     styleUrls: ['./tooltip.component.scss'],
-    standalone: false
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TooltipComponent implements OnInit {
   public readonly viewContainerRef = inject(ViewContainerRef);

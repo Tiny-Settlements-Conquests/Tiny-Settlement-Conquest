@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ActionCardComponent } from '../action-card/action-card.component';
-import { ActionCardMode } from '../../domain/models/action-card.model';
+import { ActionCardMode } from '@catan/shared/models';
 
 @Component({
     selector: 'app-action-card-stack',
@@ -12,23 +12,6 @@ import { ActionCardMode } from '../../domain/models/action-card.model';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionCardStackComponent { 
-  private readonly _count = signal(0);
-  
-  @Input()
-  public set count(v: number){
-    this._count.set(v);
-  }
-
-  public get count(){
-    return this._count();
-  }
-
-  private readonly _mode = signal<ActionCardMode>('blue');
-  @Input()
-  public set mode(v: ActionCardMode){
-    this._mode.set(v);
-  }
-  public get mode(){
-    return this._mode();
-  }
+  public readonly count = input(0);
+  public readonly mode = input<ActionCardMode>('blue');
 }

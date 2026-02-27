@@ -39,4 +39,5 @@ testem.log
 
 # System files
 .DS_Store
+.nx
 Thumbs.db

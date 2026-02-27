@@ -6,10 +6,9 @@ import { RouterLink } from '@angular/router';
 import { MapPreviewComponent } from '../../domain/game/feature/map-preview/map-preview.component';
 import { faCalendarDays, faMaximize, faSeedling, faUser } from '@fortawesome/free-solid-svg-icons';
 import { MapCardTableComponent } from '../../domain/map-selection/feature/map-card-table/map-card-table.component';
-import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { LobbyStore } from '@catan/core';
 import { DatePipe } from '@angular/common';
-import { MapInformation } from '../../domain/map-selection/domain/models/map-selection.model';
+import { MapInformation } from '@catan/shared/models';
 
 @Component({
     selector: 'app-map-selection',
@@ -27,7 +26,7 @@ import { MapInformation } from '../../domain/map-selection/domain/models/map-sel
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MapSelectionComponent { 
-  private readonly _lobbyRepository = inject(LobbyRepository);
+  private readonly _lobbyStore = inject(LobbyStore);
 
   public icons = {
     seed: faSeedling,
@@ -41,10 +40,10 @@ export class MapSelectionComponent {
   public setSelectedMap(){
     const map = this.selectedMapToPreview();
     if(!map) return;
-    this._lobbyRepository.setMapData(map)
+    this._lobbyStore.setMapData(map)
   }
 
   ngOnInit() {
-    this.selectedMapToPreview.set(this._lobbyRepository.getMapData())
+    this.selectedMapToPreview.set(this._lobbyStore.getMapData())
   }
 }

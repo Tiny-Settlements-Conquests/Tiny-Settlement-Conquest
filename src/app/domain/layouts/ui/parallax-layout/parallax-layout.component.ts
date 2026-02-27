@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostListener, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { VERSION_TOKEN } from '../../../../utils/tokens/version.token';
+import { VERSION_TOKEN } from '@catan/core';
 import { CloudSpawnerComponent } from '../../../menu/feature/cloud-spawner/cloud-spawner.component';
 import { ParallaxComponent } from '../../../menu/feature/parallax/parallax.component';
 import { CreditsComponent } from '../../../credits/credits/credits.component';

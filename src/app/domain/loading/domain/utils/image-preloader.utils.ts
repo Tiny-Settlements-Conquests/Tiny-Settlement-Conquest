@@ -5,14 +5,12 @@ export function preloadImageItems(items: PreloadImageItem[]): Observable<Preload
     const totalItems = items.length;
     let lastItem: null | PreloadImageItem = null
 
-    console.log("E!", totalItems)
     return from(items).pipe(
       concatMap((item) => 
         loadImage(item).pipe(
           delay(125),
         )
       ),
-      tap((c) => console.log(c)),
       tap((item) => lastItem = item),
       scan((loadedCount) => loadedCount + 1, 0), // Zählt die geladenen Bilder
       map((progress) => ({

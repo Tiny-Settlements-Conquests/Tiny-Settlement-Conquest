@@ -18,13 +18,8 @@ export class Graph<T extends GraphNode = GraphNode> {
   }
 
   public tryAddNode(node: T): void {
-    try {
-      if(this._nodes.some(n => n.id === node.id)) throw new Error('already exists');
-      this._nodes.push(node);
-
-    } catch(e) {
-      console.log("err")
-    }
+    if(this._nodes.some(n => n.id === node.id)) return;
+    this._nodes.push(node);
   }
 
   public tryAddConnection(source: T, target: T): void {

@@ -1,11 +1,8 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
     selector: 'app-block',
-    imports: [
-        CommonModule,
-    ],
+    imports: [],
     templateUrl: './block.component.html',
     styleUrl: './block.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

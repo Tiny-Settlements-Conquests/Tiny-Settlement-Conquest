@@ -1,45 +1,32 @@
-import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, ViewChild } from '@angular/core';
-import { DEV_TOKEN } from '../../../../utils/tokens/dev.token';
-import { BuildingType } from '../../../buildings/domain/models/building.model';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, HostListener, inject, input, OnDestroy, viewChild } from '@angular/core';
+import { DEV_TOKEN } from '@catan/core';
+import { BuildingType } from '@catan/shared/models';
+import { GameFacade } from '@catan/feature-game';
 import { CityRendererService } from '../../../buildings/domain/renderer/city-renderer.service';
 import { TownRendererService } from '../../../buildings/domain/renderer/town-renderer.service';
-import { GraphNode } from '../../../graph/domain/classes/graph-node';
-import { Playground } from '../../../playground/domain/classes/playground';
+import { GraphNode, Playground } from '@catan/game-engine';
 import { FieldRenderService } from '../../../playground/domain/renderer/field-render.service.ts';
 import { PlaygroundGraphRenderer } from '../../../playground/domain/renderer/playground-graph-renderer';
 import { PlaygroundRenderService } from '../../../playground/domain/renderer/playground-render.service';
 import { PolygonRendererService } from '../../../primitives/renderer/polygon-renderer.service';
 import { ResourceFieldRendererService } from '../../../resources/domain/classes/renderer/resource-field.renderer.service';
 import { Viewport } from '../../../viewport/classes/viewport';
-import { GameSetupService } from '../../domain/services/game-setup.service';
-import { GameModeStore } from '../../domain/state/game-mode.store';
 
 @Component({
     selector: 'app-canvas',
-    imports: [
-        CommonModule,
-    ],
+    imports: [],
     templateUrl: './canvas.component.html',
     styleUrl: './canvas.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CanvasComponent implements AfterViewInit {
-  private readonly _gameModeStore = inject(GameModeStore);
-  private readonly gameSetupService = inject(GameSetupService);
+export class CanvasComponent implements AfterViewInit, OnDestroy {
+  private readonly _facade = inject(GameFacade);
   
   private readonly _devMode = inject(DEV_TOKEN);
-  private readonly _gameMode = this._gameModeStore.mode;
+  private readonly _gameMode = this._facade.gameMode;
 
-  @ViewChild('canvas', {
-    static: true,
-  })
-  canvas: ElementRef<HTMLCanvasElement> | undefined ;
-
-  @ViewChild('canvasWrapper', {
-    static: true,
-  })
-  canvasWrapper: ElementRef<HTMLDivElement> | undefined ;
+  readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
+  readonly canvasWrapper = viewChild<ElementRef<HTMLDivElement>>('canvasWrapper');
 
 
   public playground = input.required<Playground>()
@@ -47,13 +34,14 @@ export class CanvasComponent implements AfterViewInit {
 
   public viewport !: Viewport;
   private renderer !: PlaygroundRenderService;
+  private _animationFrameId = 0;
 
   private lastClickedNode: GraphNode | null = null
 
 
   public ngAfterViewInit(): void {
-    const canvas = this.canvas?.nativeElement;
-    const canvasWrapper = this.canvasWrapper?.nativeElement;
+    const canvas = this.canvas()?.nativeElement;
+    const canvasWrapper = this.canvasWrapper()?.nativeElement;
     if(!canvas || !canvasWrapper) return;
     this.determineCanvasSize(canvasWrapper, canvas);
     this.viewport = new Viewport(canvas);
@@ -75,17 +63,21 @@ export class CanvasComponent implements AfterViewInit {
         )
       )
     );
-    this.animate()
+    this.animate();
   }
 
-  public animate() {
+  public ngOnDestroy(): void {
+    cancelAnimationFrame(this._animationFrameId);
+  }
+
+  public animate = (): void => {
     const playground = this.playground();
     this.viewport.reset();
     this.renderer.render(playground);
     if(this._devMode) {
-      this.renderer.renderDebugInformation(playground)
+      this.renderer.renderDebugInformation(playground);
     }
-    requestAnimationFrame(this.animate.bind(this));
+    this._animationFrameId = requestAnimationFrame(this.animate);
   }
 
   private determineCanvasSize(canvasWrapper: HTMLDivElement, canvas: HTMLCanvasElement): void {
@@ -95,8 +87,8 @@ export class CanvasComponent implements AfterViewInit {
 
   @HostListener('window:resize')
   onResize() {
-    const canvas = this.canvas?.nativeElement;
-    const canvasWrapper = this.canvasWrapper?.nativeElement;
+    const canvas = this.canvas()?.nativeElement;
+    const canvasWrapper = this.canvasWrapper()?.nativeElement;
     if (canvas && canvasWrapper) {
       this.determineCanvasSize(canvasWrapper, canvas);
     }
@@ -111,7 +103,7 @@ export class CanvasComponent implements AfterViewInit {
     this.viewport.handleMiddleMouseDown(event);
 
     if(gameMode === 'spectate') return;
-    const rect = this.canvas?.nativeElement.getBoundingClientRect()
+    const rect = this.canvas()?.nativeElement.getBoundingClientRect()
     if(!rect) return;
     const point = this.viewport.getMouse(event);
     const nearbyGraphNode = playground.getNearestGraphNode(point);
@@ -123,7 +115,7 @@ export class CanvasComponent implements AfterViewInit {
       let lastClickedNode = this.lastClickedNode
       const sourceNode = nearbyGraphNode;
       if(sourceNode && lastClickedNode){
-        this.gameSetupService.eventGateway?.tryBuildRoadBetweenGraphNodes(
+        this._facade.buildRoad(
           sourceNode,
           lastClickedNode
         )
@@ -132,7 +124,7 @@ export class CanvasComponent implements AfterViewInit {
         this.lastClickedNode = sourceNode;
       }
     } else {
-      this.gameSetupService.eventGateway?.tryBuildBuildingOnGraphNode(
+      this._facade.buildBuilding(
         nearbyGraphNode,
         gameMode == 'city' ? BuildingType.CITY : BuildingType.TOWN
       )
@@ -155,7 +147,7 @@ export class CanvasComponent implements AfterViewInit {
     event.preventDefault();
   }
 
-  @HostListener("mousewheel", ["$event"])
+  @HostListener("wheel", ["$event"])
   onmouseWheel(event: WheelEvent) {
     this.viewport.handleMouseWheel(event);
   }

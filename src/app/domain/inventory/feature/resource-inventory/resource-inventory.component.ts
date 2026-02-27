@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
-import { InventoryStore } from '../../domain/state/inventory.store';
+import { GameFacade } from '@catan/feature-game';
 
 @Component({
     selector: 'app-resource-inventory',
@@ -12,7 +12,7 @@ import { InventoryStore } from '../../domain/state/inventory.store';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResourceInventoryComponent {
-  private readonly _inventoryStore = inject(InventoryStore);
+  private readonly _facade = inject(GameFacade);
   
-  public readonly inventory = this._inventoryStore.resources;
+  public readonly inventory = this._facade.inventory;
 }

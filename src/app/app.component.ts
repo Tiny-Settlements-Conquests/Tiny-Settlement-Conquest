@@ -1,6 +1,6 @@
-import { Component, ViewContainerRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UserRepository } from './domain/user/domain/state/user.repository';
+import { UserStore } from '@catan/core';
 
 @Component({
     selector: 'app-root',
@@ -9,13 +9,13 @@ import { UserRepository } from './domain/user/domain/state/user.repository';
     ],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  public readonly _ref = inject(ViewContainerRef)
-  private readonly _userRepository = inject(UserRepository)
+  private readonly _userStore = inject(UserStore)
 
   ngOnInit() {
-    this._userRepository.setUser({
+    this._userStore.setUser({
       name: 'Player',
       profileUrl: 'assets/avatars/robot_3.png',
       id: '2',

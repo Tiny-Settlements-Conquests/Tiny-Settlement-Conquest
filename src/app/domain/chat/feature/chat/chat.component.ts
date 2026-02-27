@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { BlockComponent } from '../../../layouts/ui/block/block.component';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';

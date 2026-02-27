@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { ResourceAction } from '../../domain/models/action.model';
+import { ResourceAction } from '@catan/shared/models';
 
 @Component({
   selector: 'app-resource-event',

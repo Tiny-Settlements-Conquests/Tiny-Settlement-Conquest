@@ -1,27 +1,23 @@
 import { inject, Injectable } from '@angular/core';
-import { dispatch } from '@ngneat/effects';
 import { delay, merge } from 'rxjs';
 import { DiceStore } from '../dice/domain/state/dice.store';
-import { Game } from '../game/domain/classes/game';
+import { Game } from '@catan/game-engine';
 import { resourcesToResourceCards, resourceTypeToResourceCard } from '../resources/domain/function/resource-type.function';
-import { RoundPlayer } from '../round/domain/models/round-player.model';
 import { RoundPlayerStore } from '../round/domain/state/round-player.store';
-import { UserRepository } from '../user/domain/state/user.repository';
+import { UserStore } from '@catan/core';
 import { InventoryStore } from '../inventory/domain/state/inventory.store';
 import { GameModeStore } from '../game/domain/state/game-mode.store';
 import { BankStore } from '../bank/domain/state/bank.store';
 import { TradeStore } from '../trade/domain/state/trade.store';
 import { RoundCountdownStore } from '../round/domain/state/countdown/round-countdown.store';
 import { ActionHistoryStore } from '../action-history/domain/state/action-history.store';
-import { GAME_STATE } from '../game/domain/models/game-state.model';
+import { GAME_STATE, RoundPlayer } from '@catan/shared/models';
 import { GameStateStore } from '../game/domain/state/game-state.store';
 
-@Injectable({
-  providedIn: 'any'
-})
+@Injectable()
 export class GameEventDispatcherService {
   private readonly _roundPlayerStore = inject(RoundPlayerStore);
-  private readonly _userRepository = inject(UserRepository);
+  private readonly _userStore = inject(UserStore);
   private readonly _diceStore = inject(DiceStore);
   private readonly _inventoryStore = inject(InventoryStore);
   private readonly _gameModeStore = inject(GameModeStore);
@@ -123,7 +119,7 @@ export class GameEventDispatcherService {
 
   private syncOwnInventoryUpdate(game: Game): void {
     //todo das ist noch ungünstig gelöst
-    const me = this._userRepository.getUser();
+    const me = this._userStore.getUser();
     if(!me) throw new Error('user has not been loaded');
     const player = game.round.getPlayerById(me.id);
     if(!player) throw new Error('player has not been found');

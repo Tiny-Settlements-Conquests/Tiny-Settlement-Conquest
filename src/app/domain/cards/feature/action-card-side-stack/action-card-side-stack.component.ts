@@ -1,6 +1,6 @@
 import { NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, computed, signal } from '@angular/core';
-import { ActionCardMode } from '../../domain/models/action-card.model';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ActionCardMode } from '@catan/shared/models';
 import { ActionCardComponent } from '../action-card/action-card.component';
 
 @Component({
@@ -14,34 +14,13 @@ import { ActionCardComponent } from '../action-card/action-card.component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionCardSideStackComponent { 
-  private readonly _count = signal(0);
-  
-  
-  @Input()
-  public set count(v: number){
-    this._count.set(v);
-  }
+  public readonly count = input(0);
+  public readonly mode = input<ActionCardMode>('blue');
 
-  public get count(){
-    return this._count();
-  }
-
-  private readonly _countArray = computed(() => {
+  public readonly countArray = computed(() => {
     // - 1 because we have one display card which doesnt count!
-    if(this.count === 0) return [];
-    return new Array(this.count - 1).fill(0);
-  })
-
-  public get countArray() {
-    return this._countArray();
-  }
-
-  private readonly _mode = signal<ActionCardMode>('blue');
-  @Input()
-  public set mode(v: ActionCardMode){
-    this._mode.set(v);
-  }
-  public get mode(){
-    return this._mode();
-  }
+    const c = this.count();
+    if(c === 0) return [];
+    return new Array(c - 1).fill(0);
+  });
 }

@@ -1,8 +1,6 @@
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { DiceStore } from '../../../dice/domain/state/dice.store';
-import { UserRepository } from '../../../user/domain/state/user.repository';
-import { RoundPlayerStore } from '../../domain/state/round-player.store';
+import { GameFacade } from '@catan/feature-game';
 import { PlayerCardComponent } from '../../ui/player-card/player-card.component';
 
 @Component({
@@ -16,14 +14,13 @@ import { PlayerCardComponent } from '../../ui/player-card/player-card.component'
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoundPlayerCardsComponent { 
-  private readonly _roundPlayerStore= inject(RoundPlayerStore);
-  private readonly _diceStore = inject(DiceStore);
+  private readonly _facade = inject(GameFacade);
   
-  public readonly players = this._roundPlayerStore.entities
+  public readonly players = this._facade.roundPlayers;
 
-  public readonly activePlayer = this._roundPlayerStore.activeRoundPlayer
+  public readonly activePlayer = this._facade.activePlayer;
 
-  public readonly me = this._roundPlayerStore.me
+  public readonly me = this._facade.me;
 
-  public readonly dices = this._diceStore.dices
+  public readonly dices = this._facade.dices;
 }

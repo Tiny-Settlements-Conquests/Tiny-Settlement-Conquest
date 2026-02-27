@@ -1,13 +1,10 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostBinding, HostListener, input, output } from '@angular/core';
 
 export type colors = 'yellow' | 'red' | 'brown';
 
 @Component({
     selector: 'app-button',
-    imports: [
-        CommonModule,
-    ],
+    imports: [],
     templateUrl: './button.component.html',
     styleUrl: './button.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTooltip } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -9,7 +8,7 @@ import { MapPreviewComponent } from '../../domain/game/feature/map-preview/map-p
 import { BackArrowComponent } from '../../domain/layouts/ui/back-arrow/back-arrow.component';
 import { TitleComponent } from '../../domain/layouts/ui/title/title.component';
 import { GameLoaderComponent } from '../../domain/loading/feature/game-loader/game-loader.component';
-import { LobbyRepository } from '../../domain/lobby/domain/state/repository';
+import { LobbyStore } from '@catan/core';
 import { LobbyPlayerCardsComponent } from '../../domain/lobby/feature/lobby-player-cards/lobby-player-cards.component';
 
 
@@ -39,7 +38,7 @@ export interface Player {
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LobbyComponent {
-  private readonly _lobbyRepository = inject(LobbyRepository);
+  private readonly _lobbyStore = inject(LobbyStore);
 
   public readonly gameStarted = signal(false);
 
@@ -53,13 +52,9 @@ export class LobbyComponent {
     bracketArrow: faArrowRightToBracket
   }
 
-  private readonly selectUsers = toSignal(
-    this._lobbyRepository.selectUsers()
-  )
+  private readonly selectUsers = this._lobbyStore.users
 
-  public readonly selectedMap = toSignal(
-    this._lobbyRepository.selectMapData()
-  )
+  public readonly selectedMap = this._lobbyStore.mapData
 
   public canStart = computed(() => {
     const users = this.selectUsers();

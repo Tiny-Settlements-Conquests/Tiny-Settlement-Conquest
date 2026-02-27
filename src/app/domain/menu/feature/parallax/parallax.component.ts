@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, effect, ElementRef, HostListener, inject, input, viewChild } from '@angular/core';
-import { VERSION_TOKEN } from '../../../../utils/tokens/version.token';
+import { VERSION_TOKEN } from '@catan/core';
 
 @Component({
     selector: 'app-parallax',

@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, InjectionToken, Input, ViewChild, effect, inject, signal } from '@angular/core';
-import { Subject } from 'rxjs';
+import { ChangeDetectionStrategy, Component, effect, inject, signal, ViewChild } from '@angular/core';
+import { outputToObservable } from '@angular/core/rxjs-interop';
+import { delay, take, tap } from 'rxjs';
 import { DiceRandomNumberComponent } from '../dice-random-number/dice-random-number.component';
 import { DiceStore } from '../../domain/state/dice.store';
-import { DiceSyncService } from '../../domain/services/dice-sync.service';
+import { GameFacade } from '@catan/feature-game';
 
 @Component({
     selector: 'app-dice-overlay',
@@ -13,36 +14,37 @@ import { DiceSyncService } from '../../domain/services/dice-sync.service';
     styleUrl: './dice-overlay.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DiceOverlayComponent{ 
-  public readonly diceStore = inject(DiceStore);
-  public readonly diceSyncService = inject(DiceSyncService);
+export class DiceOverlayComponent { 
+  private readonly _diceStore = inject(DiceStore);
+  private readonly _facade = inject(GameFacade);
   public readonly hasRolled = signal(false);
-  public readonly cd = inject(ChangeDetectorRef)
 
   @ViewChild(DiceRandomNumberComponent, {
     static: false
   })
-  private readonly diceComponent : DiceRandomNumberComponent | undefined;
+  private readonly diceComponent: DiceRandomNumberComponent | undefined;
 
-  public readonly result = new Subject();
-
-  private readonly _dices = signal<[number, number]>([1,1]);
-
-  @Input()
-  set dices(v: [number, number]) {
-    this._dices.set(v);
+  constructor() {
+    effect(() => {
+      const dices = this._diceStore.dices();
+      if (dices !== undefined) {
+        this.rollDices(dices);
+      }
+    });
   }
 
-  get dices(): [number, number] {
-    return this._dices();
+  public rollDiceRequest(): void {
+    this._facade.rollDice();
   }
 
-  public rollDices() {
-    if(this.hasRolled() || this.diceComponent === undefined) return;
+  private rollDices(dices: [number, number]): void {
+    if (this.hasRolled() || !this.diceComponent) return;
     this.hasRolled.set(true);
-    this.diceComponent.dices = this.dices;
-    this.diceComponent?.result.subscribe(() => {
-      this.result.next(this.dices);
-    })
+    this.diceComponent.dices = dices;
+    outputToObservable(this.diceComponent.result).pipe(
+      take(1),
+      delay(1000),
+      tap(() => this._diceStore.setIsOverlayOpen(false))
+    ).subscribe();
   }
 }

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { HistoryAction } from '../../domain/models/action.model';
+import { HistoryAction } from '@catan/shared/models';
 import { BuildEventComponent } from '../../ui/build-event/build-event.component';
 import { DiceEventComponent } from "../../ui/dice-event/dice-event.component";
 import { TradeEventComponent } from '../../ui/trade-event/trade-event.component';

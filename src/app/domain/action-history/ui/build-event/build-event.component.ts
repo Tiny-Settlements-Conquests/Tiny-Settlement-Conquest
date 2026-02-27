@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { BuildAction } from '../../domain/models/action.model';
+import { BuildAction } from '@catan/shared/models';
 
 @Component({
   selector: 'app-build-event',

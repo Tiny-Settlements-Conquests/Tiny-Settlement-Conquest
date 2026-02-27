@@ -5,22 +5,22 @@ import {
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { ActionHistoryComponent } from '../../domain/action-history/feature/action-history/action-history.component';
-import { DiceSyncService } from '../../domain/dice/domain/services/dice-sync.service';
+import { DiceOverlayComponent } from '../../domain/dice/ui/dice-overlay/dice-overlay.component';
 import { GameEventDispatcherService } from '../../domain/event-dispatcher/game-event-dispatcher.service';
-import { Game } from '../../domain/game/domain/classes/game';
+import { EVENT_GATEWAY_TOKEN } from '@catan/core';
+import { Game } from '@catan/game-engine';
+import { GAME_STATE } from '@catan/shared/models';
 import { provideGameClientEditionService } from '../../domain/game/domain/providers/game-client-edition-service.provider';
-import { provideGameComponentRef } from '../../domain/game/domain/providers/game-component-ref.provider';
 import { provideGameEventStores } from '../../domain/game/domain/providers/game-event-stores.provider';
-import { GameSetupService } from '../../domain/game/domain/services/game-setup.service';
+import { GameInitializerService } from '../../domain/game/domain/services/game-initializer.service';
+import { GameFacade } from '@catan/feature-game';
 import { GAME_CLIENT_EDITION_SERVICE_TOKEN } from '../../domain/game/domain/tokens/game-client-edition-service.token';
 import { CanvasComponent } from '../../domain/game/feature/canvas/canvas.component';
 import { GameActionButtonsComponent } from '../../domain/game/feature/game-action-buttons/game-action-buttons.component';
 import { BuildingOptionsInventoryComponent } from '../../domain/info/feature/building-options-inventory/building-options-inventory.component';
 import { GameInformationBarComponent } from '../../domain/info/feature/game-information-bar/game-information-bar.component';
-import { RoundPlayerStore } from '../../domain/round/domain/state/round-player.store';
-import { TradeStore } from '../../domain/trade/domain/state/trade.store';
 import { TradeRequestComponent } from '../../domain/trade/feature/trade-request/trade-request.component';
-import { PauseOverlaySyncService } from '../../domain/pause/domain/pause-overlay-sync.service';
+import { PauseOverlayComponent } from '../../domain/pause/feature/pause-overlay/pause-overlay.component';
 
 
 @Component({
@@ -32,30 +32,32 @@ import { PauseOverlaySyncService } from '../../domain/pause/domain/pause-overlay
         GameInformationBarComponent,
         BuildingOptionsInventoryComponent,
         GameActionButtonsComponent,
-        TradeRequestComponent
+        TradeRequestComponent,
+        DiceOverlayComponent,
+        PauseOverlayComponent,
     ],
     templateUrl: './game.component.html',
     styleUrl: './game.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-      provideGameComponentRef(),
       GameEventDispatcherService,
       provideGameEventStores(),
       provideGameClientEditionService(),
-      DiceSyncService,
-      GameSetupService,
-      PauseOverlaySyncService
+      GameInitializerService,
+      {
+        provide: EVENT_GATEWAY_TOKEN,
+        useFactory: (init: GameInitializerService) => init.initializeGame().gateway,
+        deps: [GameInitializerService],
+      },
+      GameFacade,
     ]
 })
 export class GameComponent { 
-  private readonly _roundPlayerStore = inject(RoundPlayerStore);
-  private readonly _tradeStore = inject(TradeStore);
+  private readonly _facade = inject(GameFacade);
   private readonly _gameModeServiceLoader = inject(GAME_CLIENT_EDITION_SERVICE_TOKEN) // do not remove
   readonly dialog = inject(MatDialog);
-  private readonly _gameSetupService = inject(GameSetupService);
+  private readonly _initializer = inject(GameInitializerService);
   public readonly eventDispatcher = inject(GameEventDispatcherService);
-  private readonly _diceSyncService = inject(DiceSyncService); // do not remove
-  private readonly _pauseOverlaySyncService = inject(PauseOverlaySyncService);
   
   public icons = {
     clock: faClock
@@ -67,19 +69,19 @@ export class GameComponent {
     return this._game()?.playground;
   })
 
-  public readonly me = this._roundPlayerStore.me;
+  public readonly me = this._facade.me;
+  public readonly isDiceOverlayOpen = this._facade.isDiceOverlayOpen;
+  public readonly isPaused = computed(() => this._facade.gameState() === GAME_STATE.PAUSE);
 
   //todo move to own component
-  public readonly selectTradeRequests = this._tradeStore.entities;
-  public readonly roundPlayers = this._roundPlayerStore.entities;
+  public readonly selectTradeRequests = this._facade.trades;
+  public readonly roundPlayers = this._facade.roundPlayers;
 
 
 
   public ngOnInit() {
-    const game = this._gameSetupService.loadGame();
-
-    console.log('game', this._gameSetupService)
+    const { game } = this._initializer.initializeGame();
     this._game.set(game);
-    this.eventDispatcher.sync(game)
+    this.eventDispatcher.sync(game);
   }
 }

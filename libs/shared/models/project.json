@@ -1,0 +1,11 @@
+{
+  "name": "shared-models",
+  "projectType": "library",
+  "sourceRoot": "libs/shared/models/src",
+  "tags": ["scope:shared", "type:domain"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

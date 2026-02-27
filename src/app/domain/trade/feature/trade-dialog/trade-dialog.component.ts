@@ -22,6 +22,9 @@ import { TradeMenuComponent } from '../trade-menu/trade-menu.component';
     templateUrl: './trade-dialog.component.html',
     styleUrl: './trade-dialog.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+      TradeOfferService
+    ]
 })
 export class TradeDialogComponent {
   private readonly _matDialogRef = inject(MatDialogRef)

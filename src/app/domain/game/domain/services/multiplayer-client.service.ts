@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'any'
-})
+/** TODO: Implement multiplayer client logic */
+@Injectable()
 export class MultiplayerClientServices {
 
 }

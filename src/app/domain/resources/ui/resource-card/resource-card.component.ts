@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
 import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../domain/function/resource-type.function';
-import { ResourceType } from '../../domain/models/resources.model';
+import { ResourceType } from '@catan/shared/models';
 
 @Component({
     selector: 'app-resource-card',

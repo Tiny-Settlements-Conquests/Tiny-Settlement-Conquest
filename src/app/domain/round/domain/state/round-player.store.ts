@@ -2,7 +2,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from "@
 import { setEntities, updateEntity, withEntities } from '@ngrx/signals/entities';
 import { RoundPlayer } from "../models/round-player.model";
 import { computed, inject, Inject } from "@angular/core";
-import { UserRepository } from "../../../user/domain/state/user.repository";
+import { UserStore } from '@catan/core';
 
 type DiceState = {
     activePlayerId: RoundPlayer['id'] | undefined;
@@ -15,7 +15,7 @@ const initialState: DiceState = {
 export const RoundPlayerStore = signalStore(
     withEntities<RoundPlayer>(),
     withState(initialState),
-    withComputed((store, userStore = inject(UserRepository)) => ({
+    withComputed((store, userStore = inject(UserStore)) => ({
         activeRoundPlayer: computed(() => {
             const players = store.entityMap();
             const activeId = store.activePlayerId();

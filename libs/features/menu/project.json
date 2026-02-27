@@ -1,0 +1,11 @@
+{
+  "name": "feature-menu",
+  "projectType": "library",
+  "sourceRoot": "libs/features/menu/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

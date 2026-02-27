@@ -3,7 +3,7 @@ import { TimePipe } from '../../../time/domain/pipes/time.pipe';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
-import { RoundCountdownStore } from '../../domain/state/countdown/round-countdown.store';
+import { GameFacade } from '@catan/feature-game';
 
 @Component({
     selector: 'app-round-countdown-clock',
@@ -16,8 +16,8 @@ import { RoundCountdownStore } from '../../domain/state/countdown/round-countdow
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoundCountdownClockComponent { 
-  private readonly _roundCountdownRepository = inject(RoundCountdownStore);
-  public readonly countdown = this._roundCountdownRepository.countdownInMS
+  private readonly _facade = inject(GameFacade);
+  public readonly countdown = this._facade.countdown;
 
   public readonly icons = {
     clock: faClock

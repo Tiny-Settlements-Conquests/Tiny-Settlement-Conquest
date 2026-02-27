@@ -1,10 +1,10 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, Component, HostBinding, Input, computed, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, Input, computed, input, output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faDiceFive, faDiceFour, faDiceOne, faDiceSix, faDiceThree, faDiceTwo } from '@fortawesome/free-solid-svg-icons';
 import { finalize, interval, take } from 'rxjs';
 import { rollDice } from '../../domain/functions/roll-dice.function';
-import { Dices } from '../../domain/models/dice.model';
+import { Dices } from '@catan/shared/models';
 
 @Component({
     selector: 'app-dice-random-number',
@@ -53,14 +53,9 @@ export class DiceRandomNumberComponent {
     5: faDiceSix
   };
 
-  @HostBinding('style.color') get valid() { return this._contrast ? 'rgb(30 41 59) !important': ''; }
+  public readonly contrast = input(false);
 
-  private _contrast: boolean = false;
-
-  @Input()
-  public set contrast(v: boolean) {
-    this._contrast = v;
-  }
+  @HostBinding('style.color') get valid() { return this.contrast() ? 'rgb(30 41 59) !important': ''; }
 
   @Input()
   public set staticDice(dices: Dices) {

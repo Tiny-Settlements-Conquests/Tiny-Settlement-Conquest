@@ -1,13 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, HostBinding, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, input } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { ActionCardMode } from '../../domain/models/action-card.model';
+import { ActionCardMode } from '@catan/shared/models';
 
 
 @Component({
     selector: 'app-action-card',
     imports: [
-        CommonModule,
         FontAwesomeModule
     ],
     templateUrl: './action-card.component.html',
@@ -15,26 +13,9 @@ import { ActionCardMode } from '../../domain/models/action-card.model';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionCardComponent { 
-
-  private readonly _count = signal(0);
-
-  @Input()
-  set count(v: number) {
-    this._count.set(v);
-  }
-
-  public get count() {
-    return this._count();
-  }
-
-  private readonly _mode = signal<ActionCardMode>('blue');
-
-
-  @Input()
-  set mode(v: ActionCardMode) {
-    this._mode.set(v);
-  }
+  public readonly count = input(0);
+  public readonly mode = input<ActionCardMode>('blue');
 
   @HostBinding('class')
-  get modeClass() { return this._mode(); }
+  get modeClass() { return this.mode(); }
 }

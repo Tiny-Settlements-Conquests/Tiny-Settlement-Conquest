@@ -1,0 +1,11 @@
+{
+  "name": "feature-lobby",
+  "projectType": "library",
+  "sourceRoot": "libs/features/lobby/src",
+  "tags": ["scope:feature", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

@@ -1,9 +1,9 @@
 import { Provider } from "@angular/core";
-import { Edition, ENVIRONMENT } from "../../../../../env/environment";
+import { Edition, environment } from '@catan/core';
 import { RemoteGateway } from "../remote/remote.gateway";
 
 // export function provideGateway(): Provider {
-//     if (ENVIRONMENT.edition === Edition.SINGLEPLAYER ) {
+//     if (environment.edition === Edition.SINGLEPLAYER ) {
 //         return {
 //             // provide: GATEWAY_TOKEN,
 //             // useClass: LocalGateway,

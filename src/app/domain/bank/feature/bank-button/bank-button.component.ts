@@ -1,6 +1,6 @@
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay';
 import { ChangeDetectionStrategy, Component, effect, ElementRef, HostListener, inject, signal, ViewContainerRef } from '@angular/core';
-import { BankStore } from '../../domain/state/bank.store';
+import { GameFacade } from '@catan/feature-game';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
 
 @Component({
@@ -17,9 +17,9 @@ import { ActionCardStackComponent } from '../../../cards/feature/action-card-sta
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BankButtonComponent {
-    private readonly _bankStore = inject(BankStore);
+    private readonly _facade = inject(GameFacade);
     
-    public readonly bankInventory = this._bankStore.resources;
+    public readonly bankInventory = this._facade.bankResources;
 
     elementRef = inject(ElementRef);
 

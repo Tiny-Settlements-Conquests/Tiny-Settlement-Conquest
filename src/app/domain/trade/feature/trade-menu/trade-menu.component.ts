@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { resourceTypes } from '@catan/shared/models';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCircleDown, faCircleUp, faUser, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ActionCardStackComponent } from '../../../cards/feature/action-card-stack/action-card-stack.component';
-import { BlockComponent } from '../../../layouts/ui/block/block.component';
-import { resourceTypes } from '../../../resources/domain/models/resources.model';
 import { ResourceCardComponent } from '../../../resources/ui/resource-card/resource-card.component';
 
 import { TradeOfferService } from '../../domain/services/trade-offer.service';

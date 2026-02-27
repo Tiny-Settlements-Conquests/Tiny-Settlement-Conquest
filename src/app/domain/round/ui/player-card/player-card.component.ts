@@ -1,8 +1,7 @@
-import { NgStyle } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { ActionCardComponent } from '../../../cards/feature/action-card/action-card.component';
-import { RoundPlayer } from '../../domain/models/round-player.model';
+import { RoundPlayer } from '@catan/shared/models';
 import { PlayerWinningPointsComponent } from '../player-winning-points/player-winning-points.component';
 
 
@@ -22,19 +21,6 @@ export class PlayerCardComponent {
   }
 
   public readonly player = input.required<RoundPlayer>();
-
   public readonly winningPoints = input<number>(0);
-
-  private readonly _isMe = signal<boolean>(false);
-  
-  @Input()
-  public set isMe(v: boolean) {
-    this._isMe.set(v);
-  }
-
-  public get isMe() {
-    return this._isMe();
-  }
-
-  
+  public readonly isMe = input(false);
 }

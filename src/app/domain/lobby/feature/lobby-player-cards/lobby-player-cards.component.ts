@@ -1,21 +1,16 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { faCrown, faX } from '@fortawesome/free-solid-svg-icons';
-import { tap } from 'rxjs';
 import { ButtonComponent } from '../../../button/button/button.component';
-import { UserRepository } from '../../../user/domain/state/user.repository';
-import { LobbyRepository } from '../../domain/state/repository';
+import { UserStore, LobbyStore } from '@catan/core';
+import { DEFAULT_WINNING_POINTS, MAX_PLAYER_COUNT } from '@catan/shared/models';
 import { generateRandomLobbyRobot } from '../../domain/utils/lobby.utils';
-import { DEFAULT_WINNING_POINTS, MAX_PLAYER_COUNT } from '../../domain/models/lobby.model';
 
 
 
 @Component({
     selector: 'app-lobby-player-cards',
     imports: [
-        CommonModule,
         FaIconComponent,
         ButtonComponent
     ],
@@ -24,32 +19,29 @@ import { DEFAULT_WINNING_POINTS, MAX_PLAYER_COUNT } from '../../domain/models/lo
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LobbyPlayerCardsComponent {
-  private readonly _lobbyRepository = inject(LobbyRepository)
-  private readonly _userRepository = inject(UserRepository);
+  private readonly _lobbyStore = inject(LobbyStore)
+  private readonly _userStore = inject(UserStore);
 
-  public readonly me = toSignal(
-    this._userRepository.selectUser().pipe(
-      tap((me) => {
-        if(!me) return;
-        this._lobbyRepository.setUsers([{...me, isRobot: false}, generateRandomLobbyRobot()])
-      })
-    )
-  )
+  public readonly me = this._userStore.user;
 
-  public readonly users = toSignal(
-    this._lobbyRepository.selectUsers()
-  )
+  public readonly users = this._lobbyStore.users;
 
-  public readonly isMaxUsers = toSignal(
-    this._lobbyRepository.selectIsMaxPlayers()
-  )
+  public readonly isMaxUsers = this._lobbyStore.isMaxPlayers;
+
+  constructor() {
+    effect(() => {
+      const me = this._userStore.user();
+      if(!me) return;
+      this._lobbyStore.setUsers([{...me, isRobot: false}, generateRandomLobbyRobot()])
+    });
+  }
 
   public kickPlayer(id: string) {
-    this._lobbyRepository.removePlayer(id);
+    this._lobbyStore.removePlayer(id);
   }
 
   public addPlayer() {
-    this._lobbyRepository.addPlayer(generateRandomLobbyRobot());
+    this._lobbyStore.addPlayer(generateRandomLobbyRobot());
   }
 
   public readonly icons = {

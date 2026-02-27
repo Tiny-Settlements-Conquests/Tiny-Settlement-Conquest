@@ -7,8 +7,8 @@ export class Viewport {
   private minZoom = 0.3;
   public zoom = 1;
   
-  public center = new Point(this.canvas.width / 2, this.canvas.height / 2);
-  public offset = scale(this.center, -1);
+  public center!: Point;
+  public offset!: Point;
   public maxOffset = 50;
   public minOffset = -1000;
 
@@ -21,6 +21,8 @@ export class Viewport {
 
   constructor(public canvas: HTMLCanvasElement) {
     this.ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    this.center = new Point(this.canvas.width / 2, this.canvas.height / 2);
+    this.offset = scale(this.center, -1);
   }
 
   public handleMouseWheel(event: WheelEvent) {

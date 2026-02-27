@@ -1,24 +1,22 @@
 import { inject, Injectable } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { combineLatest, filter, map, Observable, startWith, switchMap } from 'rxjs';
-import { GameSetupService } from '../../../game/domain/services/game-setup.service';
-import { ResourceInventory } from '../../../inventory/domain/classes/resource-inventory';
+import { EVENT_GATEWAY_TOKEN } from '@catan/core';
+import { EventGateway } from '@catan/shared/models';
+import { ResourceInventory } from '@catan/game-engine';
 import { InventoryStore } from '../../../inventory/domain/state/inventory.store';
 import { resourceTypeToActionCardMode, resourceTypeToResourceCard } from '../../../resources/domain/function/resource-type.function';
-import { ResourceType } from '../../../resources/domain/models/resources.model';
+import { ResourceType, TradeType } from '@catan/shared/models';
 import { RoundPlayerStore } from '../../../round/domain/state/round-player.store';
-import { TradeType } from '../models/trade.model';
 import { checkIsAValidBankTrade } from '../utils/bank.utils';
 import { isAValidTrade } from '../utils/trade.utils';
 
-@Injectable({
-  providedIn: 'any'
-})
+@Injectable()
 export class TradeOfferService {
   private readonly _fb = inject(FormBuilder)
   private readonly _inventoryStore = inject(InventoryStore);
   private readonly _playerStore = inject(RoundPlayerStore); 
-  private readonly _gameSetupService = inject(GameSetupService);
+  private readonly _gateway: EventGateway = inject(EVENT_GATEWAY_TOKEN);
 
   public readonly offerForm = this._fb.group({
     isPlayerTrade: this._fb.control<boolean>(true),
@@ -153,7 +151,7 @@ export class TradeOfferService {
     const isPlayerTrade = this.offerForm.controls.isPlayerTrade.value
 
     if(!me || !offeredResources || !requestedResources) return;
-    this._gameSetupService.eventGateway?.startTrade({
+    this._gateway.startTrade({
       typ: isPlayerTrade ? TradeType.Player : TradeType.Bank,
       player: me,
       offeredResources: offeredResources.resources,
